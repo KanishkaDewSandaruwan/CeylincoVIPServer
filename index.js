@@ -87,6 +87,7 @@ app.get('/data', (req, res) => {
 // });
 
 // //create post to add data to database
+
 app.post('/adddata', (req, res) => {
 
     const name = req.body.name;
