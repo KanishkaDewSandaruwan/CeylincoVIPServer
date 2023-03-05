@@ -87,29 +87,29 @@ app.get('/data', (req, res) => {
 // });
 
 // //create post to add data to database
-// app.post('/adddata', (req, res) => {
+app.post('/adddata', (req, res) => {
 
-//     const name = req.body.name;
-//     const age = req.body.age;
+    const name = req.body.name;
+    const age = req.body.age;
 
-//     const query = `INSERT INTO test(name, age) VALUES('${name}','${age}')`;
+    const query = `INSERT INTO test(name, age) VALUES('${name}','${age}')`;
 
-//     connection.query(query, (error, results) => {
-//         if (error) {
-//             res.status(500).send({ error: 'Error inserting data into database' });
-//             return;
-//         }
+    connection.query(query, (error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error inserting data into database' });
+            return;
+        }
 
-//         res.send({ success: 'Data inserted successfully' });
-//     });
-// });
+        res.send({ success: 'Data inserted successfully' });
+    });
+});
 
 app.get('/test', (req, res) => {
     res.send('Full Insurance!');
 });
 
 
-var server = app.listen(port, hostname, function () {
+var server = app.listen(port, function () {
     console.log('Server is running..');
     console.log(`Server running at http://${hostname}:${port}/`);
 });
