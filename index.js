@@ -43,7 +43,7 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 // //create post to add data to database
 
 app.post('/policy/addpolicy', async (req, res) => {
-  const fieldsString = policy_table.fields.map(field => `${field.name} ${field.type}`).join(', ');
+  const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
   //create new array with only the field names
   const fields = policy_table.fields.map(field => `${field.name}`);
