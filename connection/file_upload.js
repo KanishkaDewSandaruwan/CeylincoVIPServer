@@ -10,24 +10,19 @@ const policy_upload = multer.diskStorage({
     }
 });
 
+const policyupload = multer({
+    storage: policy_upload,
+    // Only allow images and PDFs
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png|pdf/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb('Error: Only images and PDFs are allowed!');
+        }
+    }
+});
 
-// const policyupload = multer({
-//     storage: policy_upload,
-//     // Only allow images and PDFs
-//     fileFilter: function (req, file, cb) {
-//         const filetypes = /jpeg|jpg|png|pdf/;
-//         const mimetype = filetypes.test(file.mimetype);
-//         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//         if (mimetype && extname) {
-//             return cb(null, true);
-//         } else {
-//             cb('Error: Only images and PDFs are allowed!');
-//         }
-//     }
-// });
-  
-const policyupload = multer({ storage: policy_upload }).single('cr_image');
-
-module.exports = [
-    policyupload
-]
+module.exports = policyupload;
