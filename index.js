@@ -42,6 +42,24 @@ app.get('/policy/getAllpolicy', async (req, res) => {
   }
 });
 
+app.get('/api/:tableName', async (req, res) => {
+  try {
+    const tableName = req.params.tableName;
+    // Find table info based on table name
+    const table = tableInfo.find(t => t.tableName === tableName);
+    if (!table) {
+      return res.status(404).json({ error: 'Table not found' });
+    }
+    const fields = table.fields.map(f => f.name).join(', ');
+    const result = await pool.query(`SELECT ${fields} FROM ${tableName}`);
+    const rows = result[0];
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch data from database' });
+  }
+});
+
 //multiple is used to upload multiple files
 app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
   try {
