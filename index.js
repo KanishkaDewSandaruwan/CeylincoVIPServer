@@ -19,18 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.get('/data', (req, res) => {
-  connection.query('SELECT * FROM test1', (error, results) => {
-    if (error) {
-      res.status(500).send({ error: 'Error fetching data from database' });
-      return;
-    }
-
-    res.send(results);
-  });
-});
-
-app.get('/api/data/:tableName', (req, res) => {
+// Get all data from a table
+app.get('/api/all/:tableName', (req, res) => {
   const tableName = req.params.tableName;
   connection.query(`SELECT * FROM ${tableName}`, (error, results) => {
     if (error) {
@@ -42,40 +32,54 @@ app.get('/api/data/:tableName', (req, res) => {
   });
 });
 
-app.get('/policy/getAllpolicy', async (req, res) => {
-  try {
-    const result = await pool.query(`SELECT * FROM ${policy_table.tableName}`);
-    const rows = result[0];
-    res.json(rows);
-    console.log(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch data from database' });
-  }
+// Get a single row from a table
+app.get('/api/:tableName/:id', (req, res) => {
+  const tableName = req.params.tableName;
+  const id = req.params.id;
+  connection.query(`SELECT * FROM ${tableName} WHERE id = ?`, [id], (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error fetching data from database' });
+      return;
+    }
+
+    res.send(results[0]);
+  });
 });
 
+// Update a row in a table
+app.put('/api/:tableName/:id', (req, res) => {
+  const tableName = req.params.tableName;
+  const id = req.params.id;
+  const fields = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name} = ?`).join(', ');
+  const values = tableInfo.find(table => table.tableName === tableName).fields.map(field => req.body[field.name]);
+  values.push(id);
 
+  connection.query(`UPDATE ${tableName} SET ${fields} WHERE id = ?`, values, (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error updating data in database' });
+      return;
+    }
 
-// app.get('/api/:tableName', async (req, res) => {
-//   try {
-//     const tableName = req.params.tableName;
-//     // Find table info based on table name
-//     const table = tableInfo.find(t => t.tableName === tableName);
-//     if (!table) {
-//       return res.status(404).json({ error: 'Table not found' });
-//     }
-//     const fields = table.fields.map(f => f.name).join(', ');
-//     const result = await pool.query(`SELECT ${fields} FROM ${tableName}`);
-//     const rows = result[0];
-//     res.json(rows);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Failed to fetch data from database' });
-//   }
-// });
+    res.send(results);
+  });
+});
 
-//multiple is used to upload multiple files
-app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
+// Delete a row from a table
+app.delete('/api/:tableName/:id', (req, res) => {
+  const tableName = req.params.tableName;
+  const id = req.params.id;
+  connection.query(`DELETE FROM ${tableName} WHERE id = ?`, [id], (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error deleting data from database' });
+      return;
+    }
+
+    res.send(results);
+  });
+});
+
+//multiple is used to upload multiple files in policy table
+app.post('api/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
   try {
     // Check if all required fields and files are present
 
