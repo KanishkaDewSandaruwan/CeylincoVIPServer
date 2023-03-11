@@ -1,28 +1,35 @@
 const multer = require('multer');
 const path = require('path');
 
-const policy_upload = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/policy');
-    },
+const storage = multer.diskStorage({
+    destination: './uploads',
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
+      cb(null, Date.now() + '-' + file.originalname);
     }
-});
-
-const policyupload = multer({
-    storage: policy_upload,
-    // Only allow images and PDFs
+  });
+  
+  // Initialize file upload
+  const policyupload = multer({
+    storage: storage,
     fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png|pdf/;
-        const mimetype = filetypes.test(file.mimetype);
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb('Error: Only images and PDFs are allowed!');
-        }
+      checkFileType(file, cb);
     }
-});
+  });
+
+
+function checkFileType(file, cb) {
+    // Allowed extensions
+    const filetypes = /jpeg|jpg|png|pdf/;
+    // Check extension
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check mimetype
+    const mimetype = filetypes.test(file.mimetype);
+  
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb('Error: Only images and PDFs are allowed!');
+    }
+  }
 
 module.exports = policyupload;
