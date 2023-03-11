@@ -94,7 +94,7 @@ app.delete('/api/:tableName/:id', (req, res) => {
 });
 
 //multiple is used to upload multiple files in policy table
-app.post('api/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
+app.post('/api/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
   try {
     // Check if all required fields and files are present
 
