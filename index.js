@@ -69,51 +69,52 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 
 //multiple is used to upload multiple files
 app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'previous_insurance_card_image' }]), async (req, res) => {
-
-  // Check if all required fields and files are present
-  const requiredFields = ['field1', 'field2'];
-  const requiredFiles = ['cr_image', 'vehicle_image', 'previous_insurance_card_image'];
-  for (const field of requiredFields) {
-    if (!req.body[field]) {
-      return res.status(400).json({ error: `Missing required field: ${field}` });
-    }
-  }
-  for (const file of requiredFiles) {
-    if (!req.files[file]) {
-      return res.status(400).json({ error: `Missing required file: ${file}` });
-    }
-  }
-
-  const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
-  const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
-
-  //create new array with only the field names
-  const fields = policy_table.fields.map(field => `${field.name}`);
-  
-  //create new array with only the field values
-  const values = fields.map(field => {
-    if (field === 'cr_image') {
-      return req.files['cr_image'][0].filename;
-    } else if (field === 'vehicle_image') {
-      return req.files['vehicle_image'][0].filename;
-    } else if (field === 'previous_insurance_card_image') {
-      return req.files['previous_insurance_card_image'][0].filename;
-    } else {
-      return req.body[field];
-    }
-  });
-
-  console.log("fieldsString", fieldsString);
-  console.log("fieldsparameters", fieldsparameters);
-
   try {
+    // Check if all required fields and files are present
+    const requiredFields = ['field1', 'field2'];
+    const requiredFiles = ['cr_image', 'vehicle_image', 'previous_insurance_card_image'];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({ error: `Missing required field: ${field}` });
+      }
+    }
+    for (const file of requiredFiles) {
+      if (!req.files[file]) {
+        return res.status(400).json({ error: `Missing required file: ${file}` });
+      }
+    }
+
+    const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
+    const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
+
+    //create new array with only the field names
+    const fields = policy_table.fields.map(field => `${field.name}`);
+
+    //create new array with only the field values
+    const values = fields.map(field => {
+      if (field === 'cr_image') {
+        return req.files['cr_image'][0].filename;
+      } else if (field === 'vehicle_image') {
+        return req.files['vehicle_image'][0].filename;
+      } else if (field === 'previous_insurance_card_image') {
+        return req.files['previous_insurance_card_image'][0].filename;
+      } else {
+        return req.body[field];
+      }
+    });
+
+    console.log("fieldsString", fieldsString);
+    console.log("fieldsparameters", fieldsparameters);
+
     await pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters})`, values);
     res.json({ success: true });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to insert data into database' });
   }
 });
+
 
 
 //normal data manage
