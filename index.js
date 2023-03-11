@@ -44,14 +44,15 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 
 // //create post to add data to database
 
-app.post('/policy/addpolicy', upload.single('image'), async (req, res) => {
+//single is used to upload single file
+app.post('/policy/addpolicy', upload.single('cr_image'), async (req, res) => {
 
   const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
 
   //create new array with only the field names
   const fields = policy_table.fields.map(field => `${field.name}`);
-  
+
   //create new array with only the field values
   const values = fields.map(field => (field === 'cr_image' ? req.file.filename : req.body[field]));
   console.log("fieldsString", fieldsString);
@@ -66,6 +67,40 @@ app.post('/policy/addpolicy', upload.single('image'), async (req, res) => {
   }
 });
 
+//multiple is used to upload multiple files
+// app.post('/policy/addpolicy', policyUpload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'previous_insurance_card_image' }]), async (req, res) => {
+
+//   const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
+//   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
+
+//   //create new array with only the field names
+//   const fields = policy_table.fields.map(field => `${field.name}`);
+  
+//   //create new array with only the field values
+//   const values = fields.map(field => {
+//     if (field === 'cr_image') {
+//       return req.files['cr_image'][0].filename;
+//     } else if (field === 'vehicle_image') {
+//       return req.files['vehicle_image'][0].filename;
+//     } else if (field === 'previous_insurance_card_image') {
+//       return req.files['previous_insurance_card_image'][0].filename;
+//     } else {
+//       return req.body[field];
+//     }
+//   });
+//   console.log("fieldsString", fieldsString);
+//   console.log("fieldsparameters", fieldsparameters);
+
+//   try {
+//     await pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters})`, values);
+//     res.json({ success: true });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Failed to insert data into database' });
+//   }
+// });
+
+//normal data manage
 // app.post('/policy/addpolicy', upload.single('image'), async (req, res) => {
 //   const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
 //   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
