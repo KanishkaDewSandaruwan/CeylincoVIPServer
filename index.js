@@ -30,6 +30,18 @@ app.get('/data', (req, res) => {
   });
 });
 
+app.get('/api/data/:tableName', (req, res) => {
+  const tableName = req.params.tableName;
+  connection.query(`SELECT * FROM ${tableName}`, (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error fetching data from database' });
+      return;
+    }
+
+    res.send(results);
+  });
+});
+
 app.get('/policy/getAllpolicy', async (req, res) => {
   try {
     const result = await pool.query(`SELECT * FROM ${policy_table.tableName}`);
@@ -42,23 +54,25 @@ app.get('/policy/getAllpolicy', async (req, res) => {
   }
 });
 
-app.get('/api/:tableName', async (req, res) => {
-  try {
-    const tableName = req.params.tableName;
-    // Find table info based on table name
-    const table = tableInfo.find(t => t.tableName === tableName);
-    if (!table) {
-      return res.status(404).json({ error: 'Table not found' });
-    }
-    const fields = table.fields.map(f => f.name).join(', ');
-    const result = await pool.query(`SELECT ${fields} FROM ${tableName}`);
-    const rows = result[0];
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to fetch data from database' });
-  }
-});
+
+
+// app.get('/api/:tableName', async (req, res) => {
+//   try {
+//     const tableName = req.params.tableName;
+//     // Find table info based on table name
+//     const table = tableInfo.find(t => t.tableName === tableName);
+//     if (!table) {
+//       return res.status(404).json({ error: 'Table not found' });
+//     }
+//     const fields = table.fields.map(f => f.name).join(', ');
+//     const result = await pool.query(`SELECT ${fields} FROM ${tableName}`);
+//     const rows = result[0];
+//     res.json(rows);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Failed to fetch data from database' });
+//   }
+// });
 
 //multiple is used to upload multiple files
 app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
