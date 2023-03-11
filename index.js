@@ -1,116 +1,84 @@
 // Description: This is the main entry point of the application
 // Server is listening on port 3002
-const hostname = '127.0.0.1';
-const port = 3002;
-
+//Here we can use pool or connection to connect to database but when we use pool we get error that pool is not a function
 // Importing the express module
-const express = require('express');
-const app = express();
-const mysql = require('mysql2');
-const bodyParser = require('body-parser');  
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const { config, pool, connection, app, bodyParser, cors, morgan, multer, upload, fs, path, express } = require('./connection/header.js');
+const { checkTables, tableInfo } = require('./databse_handle/table.js');
+
+const policy_table = tableInfo[0];
+
+
+app.use(morgan('dev'))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(express.json());
-app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3002');
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    // Pass to next layer of middleware
-    next();
-});
-
-
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'ceylinco_vip_appdb'
-});
-
+app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/data', (req, res) => {
-    connection.query('SELECT * FROM test', (error, results) => {
-        if (error) {
-            res.status(500).send({ error: 'Error fetching data from database' });
-            return;
-        }
+  connection.query('SELECT * FROM test1', (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error fetching data from database' });
+      return;
+    }
 
-        res.send(results);
-    });
+    res.send(results);
+  });
 });
 
-// app.delete('/deletedata2', (req, res) => {
-//     console.log(req.query.id);
-//     const id = req.query.id;
-    
-//     const query = `DELETE FROM test WHERE id = ${id}`;
-
-//     connection.query(query, (error, results) => {
-//         if (error) {
-//             res.status(500).send({ error: 'Error fetching data from database' });
-//             return;
-//         }
-
-//         res.send({ success: 'Delete successfully' });
-//     });
-// });
-
-// app.delete('/deletedata/:id', (req, res) => {
-//     console.log(req.params.id);
-//     const id = req.params.id;
-
-//     const query = `DELETE FROM test WHERE id = ${id}`;
-//     connection.query(query, (error, results) => {
-//         if (error) {
-//             res.status(500).send({ error: 'Error deleting data from database' });
-//             return;
-//         }
-
-//         res.send({ success: 'Data deleted successfully' });
-//     });
-// });
+app.get('/policy/getAllpolicy', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM ${policy_table.tableName}`);
+    const rows = result[0];
+    res.json(rows);
+    console.log(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch data from database' });
+  }
+});
 
 // //create post to add data to database
 
-app.post('/adddata', (req, res) => {
+app.post('/policy/addpolicy', async (req, res) => {
+  const fieldsString = policy_table.fields.map(field => `${field.name} ${field.type}`).join(', ');
+  const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
+  //create new array with only the field names
+  const fields = policy_table.fields.map(field => `${field.name}`);
+  //create new array with only the field values
+  const values = fields.map(field => req.body[field]);
+  console.log("fieldsString", fieldsString);
+  console.log("fieldsparameters", fieldsString);
 
-    const name = req.body.name;
-    const age = req.body.age;
-
-    const query = `INSERT INTO test(name, age) VALUES('${name}','${age}')`;
-
-    connection.query(query, (error, results) => {
-        if (error) {
-            res.status(500).send({ error: 'Error inserting data into database' });
-            return;
-        }
-
-        res.send({ success: 'Data inserted successfully' });
-    });
+  try {
+    await pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters})`, values);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to insert data into database' });
+  }
 });
 
-app.get('/test', (req, res) => {
-    res.send('Full Insurance!');
+app.post('/addtest2', async (req, res) => {
+  const { email, phone, address } = req.body;
+  try {
+    await pool.query('INSERT INTO test2 (email, phone, address) VALUES (?, ?, ?)', [email, phone, address]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to insert data into database' });
+  }
 });
 
 
-var server = app.listen(port, function () {
-    console.log('Server is running..');
-    console.log(`Server running at http://${hostname}:${port}/`);
+const server = app.listen(config.port, () => {
+  if (server.address().port === config.port) {
+    console.log(`Server running at http://${config.hostname}:${config.port}/`);
+  }else{
+    console.log(`Server running at http://${config.hostname}:${server.address().port}/`);
+  }
+  checkTables();
+ 
 });
