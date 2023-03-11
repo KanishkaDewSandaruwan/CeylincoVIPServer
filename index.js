@@ -71,18 +71,6 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'previous_insurance_card_image' }]), async (req, res) => {
   try {
     // Check if all required fields and files are present
-    const requiredFields = ['field1', 'field2'];
-    const requiredFiles = ['cr_image', 'vehicle_image', 'previous_insurance_card_image'];
-    for (const field of requiredFields) {
-      if (!req.body[field]) {
-        return res.status(400).json({ error: `Missing required field: ${field}` });
-      }
-    }
-    for (const file of requiredFiles) {
-      if (!req.files[file]) {
-        return res.status(400).json({ error: `Missing required file: ${file}` });
-      }
-    }
 
     const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
     const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
