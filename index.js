@@ -68,7 +68,7 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 // });
 
 //multiple is used to upload multiple files
-app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'previous_insurance_card_image' }]), async (req, res) => {
+app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
   try {
     // Check if all required fields and files are present
 
@@ -84,8 +84,8 @@ app.post('/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name:
         return req.files['cr_image'][0].filename;
       } else if (field === 'vehicle_image') {
         return req.files['vehicle_image'][0].filename;
-      } else if (field === 'previous_insurance_card_image') {
-        return req.files['previous_insurance_card_image'][0].filename;
+      } else if (field === 'privious_insurence_card_image') {
+        return req.files['privious_insurence_card_image'][0].filename;
       } else {
         return req.body[field];
       }
