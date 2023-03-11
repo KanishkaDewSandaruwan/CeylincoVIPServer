@@ -4,6 +4,8 @@
 // Importing the express module
 const { config, pool, connection, app, bodyParser, cors, morgan, multer, upload, fs, path, express } = require('./connection/header.js');
 const { checkTables, tableInfo } = require('./databse_handle/table.js');
+const { error, Console } = require('console');
+const { policyUpload } = require('./connection/file_upload.js');
 
 const policy_table = tableInfo[0];
 
@@ -42,13 +44,16 @@ app.get('/policy/getAllpolicy', async (req, res) => {
 
 // //create post to add data to database
 
-app.post('/policy/addpolicy', async (req, res) => {
+app.post('/policy/addpolicy', upload.single('image'), async (req, res) => {
+
   const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
+
   //create new array with only the field names
   const fields = policy_table.fields.map(field => `${field.name}`);
+  
   //create new array with only the field values
-  const values = fields.map(field => req.body[field]);
+  const values = fields.map(field => (field === 'cr_image' ? req.file.filename : req.body[field]));
   console.log("fieldsString", fieldsString);
   console.log("fieldsparameters", fieldsString);
 
@@ -60,6 +65,25 @@ app.post('/policy/addpolicy', async (req, res) => {
     res.status(500).json({ error: 'Failed to insert data into database' });
   }
 });
+
+// app.post('/policy/addpolicy', upload.single('image'), async (req, res) => {
+//   const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
+//   const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
+//   //create new array with only the field names
+//   const fields = policy_table.fields.map(field => `${field.name}`);
+//   //create new array with only the field values
+//   const values = fields.map(field => req.body[field]);
+//   console.log("fieldsString", fieldsString);
+//   console.log("fieldsparameters", fieldsString);
+
+//   try {
+//     await pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters})`, values);
+//     res.json({ success: true });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Failed to insert data into database' });
+//   }
+// });
 
 app.post('/addtest2', async (req, res) => {
   const { email, phone, address } = req.body;
