@@ -6,6 +6,7 @@ const tableInfo = [
     tableName: 'policy',
     fields: [
       { name: 'policy_id', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
+      { name: 'vehicle_type', type: 'INT(255)' },
       { name: 'customer_fullname', type: 'VARCHAR(255)' },
       { name: 'customer_address', type: 'VARCHAR(20)' },
       { name: 'customer_nic', type: 'VARCHAR(20)' },
