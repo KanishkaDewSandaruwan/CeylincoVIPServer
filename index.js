@@ -46,6 +46,21 @@ app.get('/api/:tableName/:id', (req, res) => {
   });
 });
 
+//get data from policy table by policy number
+app.get('/api/policy/:policy_number', (req, res) => {
+  const policy_number = req.params.policy_number;
+  connection.query(`SELECT * FROM policy WHERE policy_number = ?`, [policy_number], (error, results) => {
+    if (error) {
+      res.status(500).send({ error: 'Error fetching data from database' });
+      return;
+    }
+
+    res.send(results[0]);
+  });
+});
+
+
+
 // Update a row in a table
 app.put('/api/:tableName/:id', (req, res) => {
   const tableName = req.params.tableName;
