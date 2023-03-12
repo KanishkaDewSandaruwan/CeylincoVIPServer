@@ -5,7 +5,7 @@
 const { config, pool, connection, app, bodyParser, cors, morgan, multer, upload, fs, path, express } = require('./connection/header.js');
 const { checkTables, tableInfo } = require('./databse_handle/table.js');
 const { error, Console } = require('console');
-const policyupload = require('./connection/file_upload.js');
+const { policyupload, uploadCRImage } = require('./connection/file_upload.js');
 
 const policy_table = tableInfo[0];
 
@@ -91,6 +91,21 @@ app.delete('/api/:tableName/:id', (req, res) => {
 
     res.send(results);
   });
+});
+
+app.post('/api/upload/policy/crimage', uploadCRImage.single('file'), (req, res) => {
+  if (req.file) {
+      res.json({
+          success: true,
+          message: 'File uploaded successfully',
+          filename: req.file.filename // send the filename in the response
+      });
+  } else {
+      res.json({
+          success: false,
+          message: 'No file uploaded'
+      });
+  }
 });
 
 //multiple is used to upload multiple files in policy table
