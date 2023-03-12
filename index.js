@@ -93,7 +93,7 @@ app.delete('/api/:tableName/:id', (req, res) => {
   });
 });
 
-app.post('/api/upload/policy/crimage', uploadCRImage.single('file'), (req, res) => {
+app.post('/api/upload/policy/crimage', uploadCRImage.single('image'), (req, res) => {
   if (req.file) {
       res.json({
           success: true,
