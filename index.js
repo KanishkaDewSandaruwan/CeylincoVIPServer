@@ -107,6 +107,34 @@ app.post('/api/upload/policy/crimage', uploadCRImage.single('image'), (req, res)
       });
   }
 });
+app.post('/api/upload/policy/vehicleimage', uploadCRImage.single('image'), (req, res) => {
+  if (req.file) {
+      res.json({
+          success: true,
+          message: 'File uploaded successfully',
+          filename: req.file.filename // send the filename in the response
+      });
+  } else {
+      res.json({
+          success: false,
+          message: 'No file uploaded'
+      });
+  }
+});
+app.post('/api/upload/policy/previouscardimage', uploadCRImage.single('image'), (req, res) => {
+  if (req.file) {
+      res.json({
+          success: true,
+          message: 'File uploaded successfully',
+          filename: req.file.filename // send the filename in the response
+      });
+  } else {
+      res.json({
+          success: false,
+          message: 'No file uploaded'
+      });
+  }
+});
 
 //multiple is used to upload multiple files in policy table
 app.post('/api/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {

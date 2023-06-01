@@ -15,7 +15,14 @@ const morgan = require('morgan');
 
 // const connection = mysql.createConnection(config.connection);
 const connection = mysql.createConnection(config.connection);
-const pool = mysql.createPool(config.connection);
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  connectionLimit: 10, // adjust the limit based on your needs
+  // other connection options if required
+});
 
 // connect();
 pool.getConnection((err, connection) => {
