@@ -1,8 +1,8 @@
 require('dotenv').config();
 
 module.exports = {
-  hostname: process.env.HOSTNAME || 'localhost',
-  port: process.env.PORT || 3002,
+  hostname: process.env.HOSTNAME,
+  port: process.env.PORT,
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
