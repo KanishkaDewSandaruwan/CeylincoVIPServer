@@ -184,7 +184,6 @@ app.post('/api/upload/policy/previouscardimage/:id', uploadCRImage.single('image
 app.post('/api/policy/addpolicy', async (req, res) => {
   try {
     // Check if all required fields and files are present
-    const cr_image = req.body?.cr_image || ''; // Use optional chaining and provide a default value if undefined
     const tableName = 'policy';
     const id = req.params.id;
     const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
@@ -212,8 +211,7 @@ app.post('/api/policy/addpolicy', async (req, res) => {
       req.body.horse_power,
       req.body.value_of_vehicle,
       req.body.use_perpose,
-      cr_image, // Use the cr_image variable here
-      // Populate the remaining values from the request body
+      req.body.cr_image,
       req.body.vehicle_image,
       req.body.previous_insurance_card_image,
       req.body.policy_price,
