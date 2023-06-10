@@ -93,7 +93,8 @@ app.delete('/api/:tableName/:id', (req, res) => {
   });
 });
 
-app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, res) => {
+// Function to handle image upload and update
+function uploadAndUpdateImage(req, res, tableName, fieldName) {
   if (!req.file) {
     return res.status(400).json({
       success: false,
@@ -102,19 +103,9 @@ app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, 
   }
 
   const id = req.params.id;
-  const tableName = 'policy';
-  const table = tableInfo.find((table) => table.tableName === tableName);
-
-  if (!table) {
-    return res.status(500).json({
-      success: false,
-      message: 'Invalid table name'
-    });
-  }
-
   const filename = req.file.filename;
 
-  connection.query('UPDATE ?? SET cr_image = ? WHERE policy_id = ?', [tableName, filename, id], (error, results) => {
+  connection.query(`UPDATE ?? SET ${fieldName} = ? WHERE policy_id = ?`, [tableName, filename, id], (error, results) => {
     if (error) {
       console.error('Error updating data in the database:', error);
       return res.status(500).json({
@@ -130,66 +121,29 @@ app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, 
       results: results // include the results of the query in the response
     });
   });
+}
+
+// Route for uploading CR image
+app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, res) => {
+  const tableName = 'policy';
+  const fieldName = 'cr_image';
+  uploadAndUpdateImage(req, res, tableName, fieldName);
 });
 
-
+// Route for uploading vehicle image
 app.post('/api/upload/policy/vehicleimage/:id', uploadCRImage.single('image'), (req, res) => {
-  if (req.file) {
-    const tableName = 'policy';
-    const id = req.params.id;
-    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-
-    // Get the field name for the vehicle_image column
-    const fieldName = tableInfo.find(table => table.tableName === tableName).fields.find(field => field.name === 'vehicle_image').name;
-
-    // Update the vehicle_image field for the given policy_id
-    connection.query(`UPDATE ${tableName} SET ${fieldName} = ? WHERE policy_id = ?`, [req.file.filename, id], (error) => {
-      if (error) {
-        res.status(500).send({ error: 'Error updating data in the database' });
-        return;
-      }
-      res.json({
-        success: true,
-        message: 'File uploaded successfully',
-        filename: req.file.filename
-      });
-    });
-  } else {
-    res.json({
-      success: false,
-      message: 'No file uploaded'
-    });
-  }
+  const tableName = 'policy';
+  const fieldName = 'vehicle_image';
+  uploadAndUpdateImage(req, res, tableName, fieldName);
 });
 
+// Route for uploading previous card image
 app.post('/api/upload/policy/previouscardimage/:id', uploadCRImage.single('image'), (req, res) => {
-  if (req.file) {
-    const tableName = 'policy';
-    const id = req.params.id;
-    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-
-    // Get the field name for the previous_insurence_card_image column
-    const fieldName = tableInfo.find(table => table.tableName === tableName).fields.find(field => field.name === 'privious_insurence_card_image').name;
-
-    // Update the previous_insurence_card_image field for the given policy_id
-    connection.query(`UPDATE ${tableName} SET ${fieldName} = ? WHERE policy_id = ?`, [req.file.filename, id], (error) => {
-      if (error) {
-        res.status(500).send({ error: 'Error updating data in the database' });
-        return;
-      }
-      res.json({
-        success: true,
-        message: 'File uploaded successfully',
-        filename: req.file.filename
-      });
-    });
-  } else {
-    res.json({
-      success: false,
-      message: 'No file uploaded'
-    });
-  }
+  const tableName = 'policy';
+  const fieldName = 'previous_insurence_card_image';
+  uploadAndUpdateImage(req, res, tableName, fieldName);
 });
+
 
 // Multiple files can be uploaded to the policy table
 app.post('/api/policy/addpolicy', async (req, res) => {
