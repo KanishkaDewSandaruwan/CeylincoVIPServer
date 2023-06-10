@@ -185,14 +185,20 @@ app.post('/api/policy/addpolicy', async (req, res) => {
   try {
     // Check if all required fields and files are present
     const tableName = 'policy';
- 
+
     const fieldsString = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name}`).join(', ');
     const fieldsParameters = tableInfo.find(table => table.tableName === tableName).fields.map(() => '?').join(', ');
 
     // Create a new array with only the field names
     const fields = tableInfo.find(table => table.tableName === tableName).fields.map(field => field.name);
 
-    const values = fields.map(field => req.body[field]);
+    const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in 'YYYY-MM-DD' format
+    const values = fields.map(field => {
+      if (field === 'policy_start_date') {
+        return currentDate; // Set the current date for policy_start_date
+      }
+      return req.body[field];
+    });
 
     connection.query(`INSERT INTO ${tableName} (${fieldsString}) VALUES (${fieldsParameters})`, values, (error, result) => {
       if (error) {
@@ -208,6 +214,7 @@ app.post('/api/policy/addpolicy', async (req, res) => {
     res.status(500).json({ error: 'Failed to insert data into the database' });
   }
 });
+
 
 app.use('/upload/policy', express.static('policy'))
 
