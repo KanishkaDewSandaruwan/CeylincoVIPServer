@@ -100,21 +100,20 @@ app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, 
       message: 'No file uploaded'
     });
   }
-  
+
   const tableName = 'policy';
   const id = req.params.id;
-  const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-  const table = tableInfo.find(table => table.tableName === tableName);
-  
+  const table = tableInfo.find((table) => table.tableName === tableName);
+
   if (!table) {
     return res.status(500).json({
       success: false,
       message: 'Invalid table name'
     });
   }
-  
-  const fields = table.fields.map(field => `${field.name} = ?`).join(', ');
-  const values = table.fields.map(field => req.body[field.name]);
+
+  const fields = table.fields.map((field) => `${field.name} = ?`).join(', ');
+  const values = table.fields.map((field) => req.body[field.name]);
   values.push(id);
 
   connection.query(`UPDATE ${tableName} SET ${fields} WHERE policy_id = ?`, values, (error, results) => {
@@ -125,7 +124,7 @@ app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, 
         error: 'Error updating data in the database'
       });
     }
-    
+
     res.json({
       success: true,
       message: 'File uploaded successfully',
