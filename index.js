@@ -80,7 +80,7 @@ app.put('/api/:tableName/:id', (req, res) => {
 });
 
 // Delete a row from a table
-app.delete('/api/:tableName/:id', (req, res) => {
+app.delete('/api/delete/:tableName/:id', (req, res) => {
   const tableName = req.params.tableName;
   const id = req.params.id;
   connection.query(`DELETE FROM ${tableName} WHERE id = ?`, [id], (error, results) => {
