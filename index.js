@@ -186,8 +186,7 @@ app.post('/api/policy/addpolicy', async (req, res) => {
     // Check if all required fields and files are present
     const tableName = 'policy';
     const id = req.params.id;
-    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-
+ 
     const fieldsString = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name}`).join(', ');
     const fieldsParameters = tableInfo.find(table => table.tableName === tableName).fields.map(field => `?`).join(', ');
 
