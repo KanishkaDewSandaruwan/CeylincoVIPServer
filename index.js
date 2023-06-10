@@ -94,33 +94,47 @@ app.delete('/api/:tableName/:id', (req, res) => {
 });
 
 app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, res) => {
-  if (req.file) {
-    const tableName = 'policy';
-    const id = req.params.id;
-    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-    const fields = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name} = ?`).join(', ');
-    const values = tableInfo.find(table => table.tableName === tableName).fields.map(field => req.body[field.name]);
-    values.push(id);
-
-    connection.query(`UPDATE ${tableName} SET ${fields} WHERE policy_id = ?`, values, (error, results) => {
-      if (error) {
-        res.status(500).send({ error: 'Error updating data in the database' });
-        return;
-      }
-      res.json({
-        success: true,
-        message: 'File uploaded successfully',
-        filename: req.file.filename,
-        results: results // include the results of the query in the response
-      });
-    });
-  } else {
-    res.json({
+  if (!req.file) {
+    return res.status(400).json({
       success: false,
       message: 'No file uploaded'
     });
   }
+  
+  const tableName = 'policy';
+  const id = req.params.id;
+  const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
+  const table = tableInfo.find(table => table.tableName === tableName);
+  
+  if (!table) {
+    return res.status(500).json({
+      success: false,
+      message: 'Invalid table name'
+    });
+  }
+  
+  const fields = table.fields.map(field => `${field.name} = ?`).join(', ');
+  const values = table.fields.map(field => req.body[field.name]);
+  values.push(id);
+
+  connection.query(`UPDATE ${tableName} SET ${fields} WHERE policy_id = ?`, values, (error, results) => {
+    if (error) {
+      console.error('Error updating data in the database:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Error updating data in the database'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'File uploaded successfully',
+      filename: req.file.filename,
+      results: results // include the results of the query in the response
+    });
+  });
 });
+
 
 app.post('/api/upload/policy/vehicleimage/:id', uploadCRImage.single('image'), (req, res) => {
   if (req.file) {
