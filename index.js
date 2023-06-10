@@ -93,84 +93,150 @@ app.delete('/api/:tableName/:id', (req, res) => {
   });
 });
 
-app.post('/api/upload/policy/crimage', uploadCRImage.single('image'), (req, res) => {
+app.post('/api/upload/policy/crimage/:id', uploadCRImage.single('image'), (req, res) => {
   if (req.file) {
+    const tableName = 'policy';
+    const id = req.params.id;
+    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
+    const fields = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name} = ?`).join(', ');
+    const values = tableInfo.find(table => table.tableName === tableName).fields.map(field => req.body[field.name]);
+    values.push(id);
+
+    connection.query(`UPDATE ${tableName} SET ${fields} WHERE policy_id = ?`, values, (error, results) => {
+      if (error) {
+        res.status(500).send({ error: 'Error updating data in database' });
+        return;
+      }
+
       res.json({
-          success: true,
-          message: 'File uploaded successfully',
-          filename: req.file.filename // send the filename in the response
+        success: true,
+        message: 'File uploaded successfully',
+        filename: req.file.filename,
+        results: results // include the results of the query in the response
       });
+    });
   } else {
-      res.json({
-          success: false,
-          message: 'No file uploaded'
-      });
-  }
-});
-app.post('/api/upload/policy/vehicleimage', uploadCRImage.single('image'), (req, res) => {
-  if (req.file) {
-      res.json({
-          success: true,
-          message: 'File uploaded successfully',
-          filename: req.file.filename // send the filename in the response
-      });
-  } else {
-      res.json({
-          success: false,
-          message: 'No file uploaded'
-      });
-  }
-});
-app.post('/api/upload/policy/previouscardimage', uploadCRImage.single('image'), (req, res) => {
-  if (req.file) {
-      res.json({
-          success: true,
-          message: 'File uploaded successfully',
-          filename: req.file.filename // send the filename in the response
-      });
-  } else {
-      res.json({
-          success: false,
-          message: 'No file uploaded'
-      });
+    res.json({
+      success: false,
+      message: 'No file uploaded'
+    });
   }
 });
 
+app.post('/api/upload/policy/vehicleimage/:id', uploadCRImage.single('image'), (req, res) => {
+  if (req.file) {
+    const tableName = 'policy';
+    const id = req.params.id;
+    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
+
+    // Get the field name for the vehicle_image column
+    const fieldName = tableInfo.find(table => table.tableName === tableName).fields.find(field => field.name === 'vehicle_image').name;
+
+    // Update the vehicle_image field for the given policy_id
+    connection.query(`UPDATE ${tableName} SET ${fieldName} = ? WHERE policy_id = ?`, [req.file.filename, id], (error) => {
+      if (error) {
+        res.status(500).send({ error: 'Error updating data in database' });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'File uploaded successfully',
+        filename: req.file.filename
+      });
+    });
+  } else {
+    res.json({
+      success: false,
+      message: 'No file uploaded'
+    });
+  }
+});
+
+app.post('/api/upload/policy/previouscardimage/:id', uploadCRImage.single('image'), (req, res) => {
+  if (req.file) {
+    const tableName = 'policy';
+    const id = req.params.id;
+    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
+
+    // Get the field name for the previous_insurence_card_image column
+    const fieldName = tableInfo.find(table => table.tableName === tableName).fields.find(field => field.name === 'privious_insurence_card_image').name;
+
+    // Update the previous_insurence_card_image field for the given policy_id
+    connection.query(`UPDATE ${tableName} SET ${fieldName} = ? WHERE policy_id = ?`, [req.file.filename, id], (error) => {
+      if (error) {
+        res.status(500).send({ error: 'Error updating data in database' });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'File uploaded successfully',
+        filename: req.file.filename
+      });
+    });
+  } else {
+    res.json({
+      success: false,
+      message: 'No file uploaded'
+    });
+  }
+});
+
+
 //multiple is used to upload multiple files in policy table
-app.post('/api/policy/addpolicy', policyupload.fields([{ name: 'cr_image' }, { name: 'vehicle_image' }, { name: 'privious_insurence_card_image' }]), async (req, res) => {
+app.post('/api/policy/addpolicy', async (req, res) => {
   try {
     // Check if all required fields and files are present
 
     const fieldsString = policy_table.fields.map(field => `${field.name}`).join(', ');
     const fieldsparameters = policy_table.fields.map(field => `?`).join(', ');
 
-    //create new array with only the field names
+    // Create a new array with only the field names
     const fields = policy_table.fields.map(field => `${field.name}`);
-
-    //create new array with only the field values
-    const values = fields.map(field => {
-      if (field === 'cr_image') {
-        return req.files['cr_image'][0].filename;
-      } else if (field === 'vehicle_image') {
-        return req.files['vehicle_image'][0].filename;
-      } else if (field === 'privious_insurence_card_image') {
-        return req.files['privious_insurence_card_image'][0].filename;
-      } else {
-        return req.body[field];
-      }
-    });
 
     console.log("fieldsString", fieldsString);
     console.log("fieldsparameters", fieldsparameters);
 
-    await pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters})`, values);
-    res.json({ success: true });
+    const cr_image = req.body?.cr_image || ''; // Use optional chaining and provide a default value if undefined
+
+    const values = [
+      // Populate the values array with the corresponding values from the request body
+      req.body.vehicle_type,
+      req.body.customer_fullname,
+      req.body.customer_address,
+      req.body.customer_nic,
+      req.body.customer_phone,
+      req.body.vehicle_reg_no,
+      req.body.engine_no,
+      req.body.chassis_no,
+      req.body.model,
+      req.body.years_of_make,
+      req.body.leasing_company,
+      req.body.vehicle_color,
+      req.body.horse_power,
+      req.body.value_of_vehicle,
+      req.body.use_perpose,
+      cr_image, // Use the cr_image variable here
+      // Populate the remaining values from the request body
+      req.body.vehicle_image,
+      req.body.previous_insurance_card_image,
+      req.body.policy_price,
+      req.body.policy_status,
+      req.body.policy_type,
+      req.body.policy_start_date
+    ];
+
+    const result = pool.query(`INSERT INTO ${policy_table.tableName} (${fieldsString}) VALUES (${fieldsparameters}) RETURNING policy_id`, values);
+    const policyId = result.rows[0].policy_id;
+    res.json({ success: true, policy_id: policyId });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to insert data into database' });
+    res.status(500).json({ error: 'Failed to insert data into the database' });
   }
 });
+
 
 
 app.use('/upload/policy', express.static('policy'))
@@ -178,9 +244,9 @@ app.use('/upload/policy', express.static('policy'))
 const server = app.listen(config.port, () => {
   if (server.address().port === config.port) {
     console.log(`Server running at http://${config.hostname}:${config.port}/`);
-  }else{
+  } else {
     console.log(`Server running at http://${config.hostname}:${server.address().port}/`);
   }
   checkTables();
- 
+
 });
