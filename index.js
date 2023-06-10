@@ -238,64 +238,6 @@ app.post('/api/policy/addpolicy', async (req, res) => {
 
 
 
-// Multiple files can be uploaded to the policy table
-app.post('/api/policy/addpolicy', async (req, res) => {
-  try {
-    // Check if all required fields and files are present
-    const cr_image = req.body?.cr_image || ''; // Use optional chaining and provide a default value if undefined
-    const tableName = 'policy';
-    const id = req.params.id;
-    const tableInfo = getTableInfo(); // Replace with your table information retrieval logic
-
-    const fieldsString = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name}`).join(', ');
-    const fieldsParameters = tableInfo.find(table => table.tableName === tableName).fields.map(field => `?`).join(', ');
-
-    // Create a new array with only the field names
-    const fields = tableInfo.find(table => table.tableName === tableName).fields.map(field => `${field.name}`);
-
-    const values = [
-      // Populate the values array with the corresponding values from the request body
-      req.body.vehicle_type,
-      req.body.customer_fullname,
-      req.body.customer_address,
-      req.body.customer_nic,
-      req.body.customer_phone,
-      req.body.vehicle_reg_no,
-      req.body.engine_no,
-      req.body.chassis_no,
-      req.body.model,
-      req.body.years_of_make,
-      req.body.leasing_company,
-      req.body.vehicle_color,
-      req.body.horse_power,
-      req.body.value_of_vehicle,
-      req.body.use_perpose,
-      cr_image, // Use the cr_image variable here
-      // Populate the remaining values from the request body
-      req.body.vehicle_image,
-      req.body.previous_insurance_card_image,
-      req.body.policy_price,
-      req.body.policy_status,
-      req.body.policy_type,
-      req.body.policy_start_date
-    ];
-
-    connection.query(`INSERT INTO ${tableName} (${fieldsString}) VALUES (${fieldsParameters}) RETURNING policy_id`, values, (error, result) => {
-      if (error) {
-        res.status(500).send({ error: 'Error inserting data into the database' });
-        return;
-      }
-      const policyId = result.rows[0].policy_id;
-      res.json({ success: true, policy_id: policyId });
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to insert data into the database' });
-  }
-});
-
-
-
 app.use('/upload/policy', express.static('policy'))
 
 const server = app.listen(config.port, () => {
