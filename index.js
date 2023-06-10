@@ -140,7 +140,7 @@ app.post('/api/upload/policy/vehicleimage/:id', uploadCRImage.single('image'), (
 // Route for uploading previous card image
 app.post('/api/upload/policy/previouscardimage/:id', uploadCRImage.single('image'), (req, res) => {
   const tableName = 'policy';
-  const fieldName = 'previous_insurence_card_image';
+  const fieldName = 'privious_insurence_card_image';
   uploadAndUpdateImage(req, res, tableName, fieldName);
 });
 
