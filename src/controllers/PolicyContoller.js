@@ -74,7 +74,6 @@ const changePolicyStatus = (req, res) => {
     });
 };
 
-
 const updateEmail = (req, res) => {
     const { policy_id } = req.params;
     const { customer_email } = req.body;
@@ -92,7 +91,7 @@ const updateEmail = (req, res) => {
 
         PolicyModel.updateEmail(policy_id, customer_email, (error, results) => {
             if (error) {
-                res.status(500).send({ error: 'Error updating email in the database' });
+                res.status(500).send({ error: 'Error updating password in the database' });
                 return;
             }
 
@@ -100,7 +99,6 @@ const updateEmail = (req, res) => {
         });
     });
 };
-
 
 const deletePolicy = (req, res) => {
     const { policy_id } = req.params;
