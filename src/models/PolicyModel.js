@@ -14,7 +14,7 @@ const PolicyModel = {
     addPolicy(policy, callback) {
         const defaultValue = 0;
         const policy_start_date = new Date();
-        
+
         const {
             vehicle_type,
             customer_fullname,
@@ -117,6 +117,13 @@ const PolicyModel = {
         });
     },
 
+    updateEmail(policy_id, customer_email, callback) {
+        const query = 'UPDATE user SET customer_email = ? WHERE policy_id = ?';
+        const values = [customer_email, policy_id];
+
+        connection.query(query, values, callback);
+    },
+
 
     updatePolicyStatus(policy_id, status, callback) {
         const query = 'UPDATE policy SET status = ? WHERE policy_id = ?';
@@ -131,11 +138,11 @@ const PolicyModel = {
 
         connection.query(query, values, callback);
     },
-    
+
     updateUpload(field, policy_id, filePath, callback) {
         const query = `UPDATE policy SET ${field} = ? WHERE policy_id = ?`;
         const values = [filePath, policy_id];
-    
+
         connection.query(query, values, callback);
     }
 };

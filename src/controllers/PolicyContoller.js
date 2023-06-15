@@ -74,6 +74,32 @@ const changePolicyStatus = (req, res) => {
     });
 };
 
+const updateEmail = (req, res) => {
+    const { policyId } = req.params;
+    const { customer_email } = req.body;
+
+    PolicyModel.getPolicyById(policyId, (error, user) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!user[0]) {
+            res.status(404).send({ error: 'Policy not found' });
+            return;
+        }
+
+        PolicyModel.updateEmail(policyId, customer_email, (error, results) => {
+            if (error) {
+                res.status(500).send({ error: 'Error updating password in the database' });
+                return;
+            }
+
+            res.status(200).send({ success: true, policyId });
+        });
+    });
+};
+
 const deletePolicy = (req, res) => {
     const { policy_id } = req.params;
 
@@ -174,5 +200,6 @@ module.exports = {
     changePolicyStatus,
     deletePolicy,
     uploadFiles,
-    getFiles
+    getFiles,
+    updateEmail
 };

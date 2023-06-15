@@ -32,7 +32,7 @@ const tableInfo = [
       { name: 'policy_start_date', type: 'DATETIME' },
       { name: 'status', type: 'INT(5)' },
       { name: 'is_delete', type: 'INT(5)' },
-      { name: 'customer_email', type: 'INT(5)' },
+      { name: 'customer_email', type: 'VARCHAR(255)' },
     ]
   },
   {
