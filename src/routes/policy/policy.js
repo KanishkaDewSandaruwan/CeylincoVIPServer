@@ -9,6 +9,7 @@ module.exports = (config) => {
 
   router.post('/create', addPolicy);
   router.get('/all', getAllPolicy);
+  router.get('/latest/:policy_id', findPolicy);
   router.get('/getfiles/:fields/:policy_id', getFiles);
   router.put('/upload/:field/:policy_id', uploadPolicyFiles.single('image'), uploadFiles);
   router.use('/files', express.static('src/uploads/policy/'));
