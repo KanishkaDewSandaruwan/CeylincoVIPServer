@@ -128,6 +128,13 @@ const PolicyModel = {
         const values = [policy_id];
 
         connection.query(query, values, callback);
+    },
+    
+    updateUpload(field, policy_id, filePath, callback) {
+        const query = `UPDATE policy SET ${field} = ? WHERE policy_id = ?`;
+        const values = [filePath, policy_id];
+    
+        connection.query(query, values, callback);
     }
 };
 

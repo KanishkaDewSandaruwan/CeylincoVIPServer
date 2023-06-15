@@ -1,4 +1,6 @@
 const PolicyModel = require('../models/PolicyModel');
+const path = require('path');
+const fs = require('fs');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -97,10 +99,80 @@ const deletePolicy = (req, res) => {
     });
 };
 
+const uploadFiles = (req, res) => {
+    const { field, policy_id } = req.params;
+
+    PolicyModel.getPolicyById(policy_id, (error, policy) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!policy[0]) {
+            res.status(404).send({ error: 'Policy not found' });
+            return;
+        }
+
+        const filePath = req.file.filename; // Get the uploaded file filename
+
+        PolicyModel.updateUpload(field, policy_id, filePath, (error, results) => {
+            if (error) {
+                res.status(500).send({ error: 'Error updating policy in the database' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Policy updated successfully' });
+        });
+    });
+};
+
+
+const getFiles = (req, res) => {
+    const { fields, policy_id } = req.params;
+
+    PolicyModel.getPolicyById(policy_id, (error, policy) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!policy[0]) {
+            res.status(404).send({ error: 'Policy not found' });
+            return;
+        }
+
+        const requestedFields = fields.split(',');
+        const responseData = {};
+
+        // Initialize all fields with an empty string
+        requestedFields.forEach((field) => {
+            responseData[field] = '';
+        });
+
+        requestedFields.forEach((field) => {
+            const filePath = policy[0][field];
+
+            if (filePath) {
+                const file = path.join(__dirname, '../uploads/policy/', filePath);
+                if (fs.existsSync(file)) {
+                    const fileName = path.basename(file);
+                    responseData[field] = fileName;
+                }
+            }
+        });
+
+        res.status(200).send(responseData);
+    });
+};
+
+
+
 module.exports = {
     getAllPolicy,
     findPolicy,
     addPolicy,
     changePolicyStatus,
-    deletePolicy
+    deletePolicy,
+    uploadFiles,
+    getFiles
 };
