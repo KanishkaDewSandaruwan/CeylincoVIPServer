@@ -42,7 +42,7 @@ const addPolicy = (req, res) => {
             return;
         }
 
-        res.status(200).send({ message: 'Policy created successfully', policyId });
+        res.status(200).send({ success: true, policyId });
     });
 };
 
