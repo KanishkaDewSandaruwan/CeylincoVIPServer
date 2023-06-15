@@ -118,7 +118,7 @@ const PolicyModel = {
     },
 
     updateEmail(policy_id, customer_email, callback) {
-        const query = 'UPDATE user SET customer_email = ? WHERE policy_id = ?';
+        const query = 'UPDATE policy SET customer_email = ? WHERE policy_id = ?';
         const values = [customer_email, policy_id];
 
         connection.query(query, values, callback);
