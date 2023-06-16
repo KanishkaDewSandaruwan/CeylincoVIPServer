@@ -14,6 +14,7 @@ module.exports = (config) => {
   router.get('/getfiles/:fields/:policy_id', getFiles);
   router.put('/upload/:field/:policy_id', uploadPolicyFiles.single('image'), uploadFiles);
   router.use('/files', express.static('src/uploads/policy/'));
+  router.put('/appstatus/:policy_id', changePolicyStatus);
 
   router.get('/:policy_id', authenticateToken, findPolicy);
   router.put('/status/:policy_id', authenticateToken, changePolicyStatus);
