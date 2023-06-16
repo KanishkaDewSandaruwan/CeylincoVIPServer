@@ -127,7 +127,7 @@ const PolicyModel = {
 
     updatePolicyStatus(policy_id, status, callback) {
         const query = 'UPDATE policy SET status = ? WHERE policy_id = ?';
-        const values = [policy_id, status];
+        const values = [status, policy_id];
 
         connection.query(query, values, callback);
     },
