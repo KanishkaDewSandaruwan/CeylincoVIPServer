@@ -52,6 +52,8 @@ const changePolicyStatus = (req, res) => {
     const { policy_id } = req.params;
     const { status } = req.body;
 
+    console.log(status);
+
     PolicyModel.getPolicyById(policy_id, (error, policy) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
