@@ -15,12 +15,12 @@ module.exports = (config) => {
     router.put('/status/:dealer_id', authenticateTokenDealer, changeStatus);
     router.put('/delete/:dealer_id', authenticateTokenDealer, deleteDealer);
 
-    router.get('/me/:userid', authorizeValidateDealer, getDealerById);
-    router.put('/update/:userid', authorizeValidateDealer, updateDealer);
+    router.get('/me/:dealer_id', authorizeValidateDealer, getDealerById);
+    router.put('/update/:dealer_id', authorizeValidateDealer, updateDealer);
 
-    router.put('/changePassword/:userid', authorizeValidateDealer, changePassword);
-    router.put('/changeEmail/:userid', authorizeValidateDealer, updateDealer);
-    router.put('/deleteme/:userid', authorizeValidateDealer, deleteDealer);
+    router.put('/changePassword/:dealer_id', authorizeValidateDealer, changePassword);
+    router.put('/changeEmail/:dealer_id', authorizeValidateDealer, updateDealer);
+    router.put('/deleteme/:dealer_id', authorizeValidateDealer, deleteDealer);
 
     return router;
 };
