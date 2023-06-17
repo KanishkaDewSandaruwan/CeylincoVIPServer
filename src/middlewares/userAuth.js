@@ -63,7 +63,35 @@ async function authorizeValidateUser(req, res, next) {
   }
 }
 
+//dealer
+
+function authenticateTokenDealer(req, res, next) {
+  try {
+    const token = req.headers['x-token-dealer'];
+    const userIdFromBody = req.body.userId;
+
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json({ error: 'Token expired' });
+        }
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+
+      req.decoded = decoded; // Save the decoded payload for further use
+      next();
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
 module.exports = {
   authenticateToken,
-  authorizeValidateUser
+  authorizeValidateUser,
+  authenticateTokenDealer
 };

@@ -47,8 +47,9 @@ const tableInfo = [
       { name: 'dealer_email', type: 'VARCHAR(255)' },
       { name: 'dealer_image', type: 'VARCHAR(255)' },
       { name: 'dealer_password', type: 'VARCHAR(255)' },
-      { name: 'dealer_status', type: 'INT(20)' },
-      { name: 'dealer_reg_date', type: 'DATETIME' },
+      { name: 'pin_number', type: 'INT(4)' },
+      { name: 'reg_date', type: 'DATETIME' },
+      { name: 'company_id', type: 'INT(255)' },
       { name: 'status', type: 'INT(5)' },
       { name: 'is_delete', type: 'INT(5)' },
     ]
