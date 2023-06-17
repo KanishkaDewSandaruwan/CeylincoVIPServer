@@ -10,6 +10,16 @@ const policyStorage = multer.diskStorage({
   }
 });
 
-const uploadPolicyFiles = multer({ storage: policyStorage });
+const dealerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'src/uploads/dealer');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
 
-module.exports = { uploadPolicyFiles };
+const uploadPolicyFiles = multer({ storage: policyStorage });
+const uploadDealer = multer({ storage: dealerStorage });
+
+module.exports = { uploadPolicyFiles, uploadDealer };

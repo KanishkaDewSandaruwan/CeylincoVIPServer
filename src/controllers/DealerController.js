@@ -86,8 +86,9 @@ const findDealer = (req, res) => {
 
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
+    const dealer_image = req.file.filename;
 
-    DealerModel.addDealer(dealer, (error, dealer_id) => {
+    DealerModel.addDealer(dealer, dealer_image, (error, dealer_id) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;

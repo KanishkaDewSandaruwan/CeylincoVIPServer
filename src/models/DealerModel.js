@@ -17,8 +17,8 @@ const DealerModel = {
     connection.query('SELECT * FROM dealer WHERE dealer_id = ? AND is_delete = 0', [dealer_id], callback);
   },
 
-  addDealer(user, callback) {
-    const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_image, dealer_password, pin_number, company_id } = user;
+  addDealer(dealer, dealer_image, callback) {
+    const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, pin_number, company_id } = dealer;
     const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const defaultvalues = 0;
 
