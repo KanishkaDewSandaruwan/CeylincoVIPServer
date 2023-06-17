@@ -5,6 +5,7 @@ require('dotenv').config(); // Load environment variables
 
 const login = (req, res) => {
     const { dealer_email, dealer_password } = req.body;
+    console.log(dealer_email + ' ' + dealer_password);
 
     DealerModel.getDealerUserByUsernameAndPassword(dealer_email, dealer_password, (error, results) => {
         if (error) {
@@ -82,6 +83,18 @@ const findDealer = (req, res) => {
         res.status(200).send(results);
     });
 };
+
+const validate = (req, res) => {
+    const { field, value } = req.params;
+    DealerModel.validate(field, value, (error, count) => {
+      if (error) {
+        res.status(500).send({ error: 'Error fetching data from the database' });
+        return;
+      }
+  
+      res.status(200).send({ count });
+    });
+  };
 
 
 const addDealer = (req, res) => {
@@ -256,5 +269,6 @@ module.exports = {
     changePassword,
     changeEmail,
     changeStatus,
-    deleteDealer
+    deleteDealer,
+    validate
 };
