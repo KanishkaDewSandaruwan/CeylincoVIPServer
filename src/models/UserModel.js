@@ -17,6 +17,10 @@ const UserModel = {
     connection.query('SELECT * FROM user WHERE userid = ? AND is_delete = 0', [userid], callback);
   },
 
+  getUserByEmail(email, callback) {
+    connection.query('SELECT * FROM user WHERE email = ? AND is_delete = 0', [email], callback);
+  },
+
   addUser(user, callback) {
     const { fullname, phonenumber, address, email, username, password, userrole } = user;
     const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -37,9 +41,9 @@ const UserModel = {
   },
 
   updateUser(user, userid, callback) {
-    const { fullname, phonenumber, address, userrole } = user;
-    const query = 'UPDATE user SET fullname = ?, phonenumber = ?, address = ?, userrole = ? WHERE userid = ?';
-    const values = [fullname, phonenumber, address, userrole, userid];
+    const { fullname, phonenumber, address, userrole, status } = user;
+    const query = 'UPDATE user SET fullname = ?, phonenumber = ?, address = ?, userrole = ?, status = ? WHERE userid = ?';
+    const values = [fullname, phonenumber, address, userrole, status, userid];
 
     connection.query(query, values, callback);
   },

@@ -53,9 +53,9 @@ const DealerModel = {
     },
 
     updateDealer(user, dealer_id, callback) {
-        const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id } = user;
-        const query = 'UPDATE dealer SET dealer_fullname = ?, dealer_phone = ?, dealer_address = ?, dealer_nic = ?, dealer_whatsapp_number = ?, company_id = ? WHERE dealer_id = ?';
-        const values = [dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, dealer_id];
+        const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status } = user;
+        const query = 'UPDATE dealer SET dealer_fullname = ?, dealer_phone = ?, dealer_address = ?, dealer_nic = ?, dealer_whatsapp_number = ?, company_id = ?, status = ? WHERE dealer_id = ?';
+        const values = [dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status, dealer_id];
 
         connection.query(query, values, callback);
     },

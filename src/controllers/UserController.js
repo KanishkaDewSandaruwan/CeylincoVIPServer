@@ -238,7 +238,7 @@ const deleteuser = (req, res) => {
 // Generate token using JWT
 function generateToken(email, userrole) {
     const payload = { email, userrole };
-    const options = { expiresIn: '5m' }; // Token expiration time
+    const options = { expiresIn: '1h' }; // Token expiration time
 
     // Sign the token with the secret key from the .env file
     const token = jwt.sign(payload, process.env.JWT_SECRET, options);
