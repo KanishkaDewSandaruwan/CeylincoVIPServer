@@ -91,7 +91,7 @@ const addUser = (req, res) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Phone number validation regular expression
-    const phoneRegex = /^\d{10}$/;
+    const phoneRegex = /^\d{12}$/;
 
     // Check if email is valid
     if (!emailRegex.test(user.email)) {
@@ -151,7 +151,7 @@ const updateUser = (req, res) => {
     const user = req.body;
 
     // Phone number validation regular expression
-    const phoneRegex = /^\d{10}$/;
+    const phoneRegex = /^\d{12}$/;
 
     // Check if phone number is in the correct format
     if (user.phonenumber && !phoneRegex.test(user.phonenumber)) {
@@ -212,6 +212,18 @@ const changePassword = (req, res) => {
     const { userid } = req.params;
     const { currentPassword, newPassword } = req.body;
 
+    // Check if current password is empty
+    if (!currentPassword) {
+        res.status(400).send({ error: 'Current password is required' });
+        return;
+    }
+
+    // Check if new password is empty
+    if (!newPassword) {
+        res.status(400).send({ error: 'New password is required' });
+        return;
+    }
+
     UserModel.getUserById(userid, (error, user) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -239,6 +251,7 @@ const changePassword = (req, res) => {
     });
 };
 
+
 const changeEmail = (req, res) => {
     const { userid } = req.params;
     const { currentEmail, newEmail } = req.body;
@@ -246,15 +259,15 @@ const changeEmail = (req, res) => {
     // Email validation regular expression
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Check if current email is in the correct format
-    if (!emailRegex.test(currentEmail)) {
-        res.status(400).send({ error: 'Invalid current email format' });
+    // Check if current email is empty or not in the correct format
+    if (!currentEmail || !emailRegex.test(currentEmail)) {
+        res.status(400).send({ error: 'Invalid or missing current email' });
         return;
     }
 
-    // Check if new email is in the correct format
-    if (!emailRegex.test(newEmail)) {
-        res.status(400).send({ error: 'Invalid new email format' });
+    // Check if new email is empty or not in the correct format
+    if (!newEmail || !emailRegex.test(newEmail)) {
+        res.status(400).send({ error: 'Invalid or missing new email' });
         return;
     }
 
@@ -297,9 +310,16 @@ const changeEmail = (req, res) => {
     });
 };
 
+
+
 const changeUsername = (req, res) => {
     const { userid } = req.params;
     const { newUsername } = req.body;
+
+    if (!newUsername) {
+        res.status(400).send({ error: 'New username is required' });
+        return;
+    }
 
     UserModel.getUserById(userid, (error, user) => {
         if (error) {
@@ -341,6 +361,12 @@ const changeStatus = (req, res) => {
     const { userid } = req.params;
     const { status } = req.body;
 
+    // Check if status is empty
+    if (!status) {
+        res.status(400).send({ error: 'Status is required' });
+        return;
+    }
+
     UserModel.getUserById(userid, (error, user) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -354,14 +380,15 @@ const changeStatus = (req, res) => {
 
         UserModel.updatestatus(userid, status, (error, results) => {
             if (error) {
-                res.status(500).send({ error: 'Error updating Status in the database' });
+                res.status(500).send({ error: 'Error updating status in the database' });
                 return;
             }
 
-            res.status(200).send({ message: 'Status Updated successfully' });
+            res.status(200).send({ message: 'Status updated successfully' });
         });
     });
 };
+
 
 const deleteuser = (req, res) => {
     const { userid } = req.params;
