@@ -89,9 +89,9 @@ async function authorizeAccessControll(req, res, next) {
       return res.status(401).json({ error: 'Invalid User Access' });
     }
 
-    if (user[0].userrole !== 1) {
-      return res.status(401).json({ error: 'You dont have permission' });
-    }
+    // if (user[0].userrole !== 1) {
+    //   return res.status(401).json({ error: 'You dont have permission' });
+    // }
 
     next();
   } catch (err) {
