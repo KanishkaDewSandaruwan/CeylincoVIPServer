@@ -37,10 +37,11 @@ const PolicyModel = {
             policy_price,
             policy_type,
             policy_status,
-            customer_email
+            customer_email,
+            dealer_id
         } = policy;
 
-        const query = `INSERT INTO policy(vehicle_type, customer_fullname, customer_address, customer_nic, customer_phone, vehicle_reg_no, engin_no, chassis_no, model, years_of_make, leasing_company, vehicle_color, horse_power, value_of_vehicle, use_perpose, cr_image, vehicle_image, privious_insurence_card_image, policy_price, policy_type, policy_status, policy_start_date, status, is_delete, customer_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `INSERT INTO policy(vehicle_type, customer_fullname, customer_address, customer_nic, customer_phone, vehicle_reg_no, engin_no, chassis_no, model, years_of_make, leasing_company, vehicle_color, horse_power, value_of_vehicle, use_perpose, cr_image, vehicle_image, privious_insurence_card_image, policy_price, policy_type, policy_status, policy_start_date, status, is_delete, customer_email, dealer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const values = [
             vehicle_type,
@@ -67,7 +68,8 @@ const PolicyModel = {
             policy_start_date,
             defaultValue,
             defaultValue,
-            customer_email
+            customer_email,
+            dealer_id
         ];
 
         connection.query(query, values, (error, results) => {
@@ -120,6 +122,13 @@ const PolicyModel = {
     updateEmail(policy_id, customer_email, callback) {
         const query = 'UPDATE policy SET customer_email = ? WHERE policy_id = ?';
         const values = [customer_email, policy_id];
+
+        connection.query(query, values, callback);
+    },
+
+    updatePrice(policy_id, policy_price, callback) {
+        const query = 'UPDATE policy SET policy_price = ? WHERE policy_id = ?';
+        const values = [policy_price, policy_id];
 
         connection.query(query, values, callback);
     },

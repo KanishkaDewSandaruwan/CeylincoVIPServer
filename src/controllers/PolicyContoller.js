@@ -76,9 +76,9 @@ const changePolicyStatus = (req, res) => {
     });
 };
 
-const updateEmail = (req, res) => {
+const updatePrice = (req, res) => {
     const { policy_id } = req.params;
-    const { customer_email } = req.body;
+    const { policy_price } = req.body;
 
     PolicyModel.getPolicyById(policy_id, (error, policy) => {
         if (error) {
@@ -91,7 +91,7 @@ const updateEmail = (req, res) => {
             return;
         }
 
-        PolicyModel.updateEmail(policy_id, customer_email, (error, results) => {
+        PolicyModel.updatePrice(policy_id, policy_price, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error updating password in the database' });
                 return;
@@ -203,5 +203,5 @@ module.exports = {
     deletePolicy,
     uploadFiles,
     getFiles,
-    updateEmail
+    updatePrice
 };

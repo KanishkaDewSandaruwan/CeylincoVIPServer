@@ -13,9 +13,12 @@ module.exports = (config) => {
 
     router.get('/all', authenticateTokenDealer, getAll);
     router.get('/:dealer_id', authenticateTokenDealer, findDealer);
-    router.put('/status/:dealer_id', authorizeAccessControll, changeStatus);
-    router.put('/delete/:dealer_id', authorizeAccessControll, deleteDealer);
-    router.put('/update/:dealer_id', authorizeAccessControll, updateDealer);
+    
+    
+    router.get('/dash/all', authorizeAccessControll, getAll);
+    router.put('/dash/status/:dealer_id', authorizeAccessControll, changeStatus);
+    router.put('/dash/delete/:dealer_id', authorizeAccessControll, deleteDealer);
+    router.put('/dash/update/:dealer_id', authorizeAccessControll, updateDealer);
 
     //this api can change only for them. 
     router.get('/me/:dealer_id', authorizeValidateDealer, getDealerById);

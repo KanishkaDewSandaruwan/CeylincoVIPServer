@@ -33,6 +33,7 @@ const tableInfo = [
       { name: 'status', type: 'INT(5)' },
       { name: 'is_delete', type: 'INT(5)' },
       { name: 'customer_email', type: 'VARCHAR(255)' },
+      { name: 'dealer_id', type: 'INT(255)' },
     ]
   },
   {

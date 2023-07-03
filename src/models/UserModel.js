@@ -21,6 +21,14 @@ const UserModel = {
     connection.query('SELECT * FROM user WHERE email = ? AND is_delete = 0', [email], callback);
   },
 
+  getUserByPhonenumber(phonenumber, callback) {
+    connection.query('SELECT * FROM user WHERE phonenumber = ? AND is_delete = 0', [phonenumber], callback);
+  },
+
+  getUserByUsername(username, callback) {
+    connection.query('SELECT * FROM user WHERE username = ? AND is_delete = 0', [username], callback);
+  },
+
   addUser(user, callback) {
     const { fullname, phonenumber, address, email, username, password, userrole } = user;
     const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -62,6 +70,13 @@ const UserModel = {
     connection.query(query, values, callback);
   },
 
+  changeUsername(userid, username, callback) {
+    const query = 'UPDATE user SET username = ? WHERE userid = ?';
+    const values = [username, userid];
+
+    connection.query(query, values, callback);
+  },
+
   updatestatus(userid, status, callback) {
     const query = 'UPDATE user SET status = ? WHERE userid = ?';
     const values = [status, userid];
@@ -86,6 +101,18 @@ const UserModel = {
   userById(userid) {
     return new Promise((resolve, reject) => {
       connection.query('SELECT * FROM user WHERE userid = ?', [userid], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  },
+
+  userByEmail(email) {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT * FROM user WHERE email = ?', [email], (error, results) => {
         if (error) {
           reject(error);
         } else {

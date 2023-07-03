@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllPolicy, findPolicy, addPolicy, changePolicyStatus, deletePolicy, uploadFiles, getFiles, updateEmail } = require('../../controllers/PolicyContoller');
+const { getAllPolicy, findPolicy, addPolicy, changePolicyStatus, deletePolicy, uploadFiles, getFiles, updatePrice } = require('../../controllers/PolicyContoller');
 const { authenticateToken } = require('../../middlewares/userAuth');
 
 const { uploadPolicyFiles } = require('../../../config/fileUpload');
@@ -10,7 +10,7 @@ module.exports = (config) => {
   router.post('/create', addPolicy);
   router.get('/all', getAllPolicy);
   router.get('/latest/:policy_id', findPolicy);
-  router.put('/email/:policy_id', updateEmail);
+  router.put('/price/:policy_id', updatePrice);
   router.get('/getfiles/:fields/:policy_id', getFiles);
   router.put('/upload/:field/:policy_id', uploadPolicyFiles.single('image'), uploadFiles);
   router.use('/files', express.static('src/uploads/policy/'));
