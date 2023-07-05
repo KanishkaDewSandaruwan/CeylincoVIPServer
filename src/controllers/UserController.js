@@ -150,15 +150,6 @@ const updateUser = (req, res) => {
     const { userid } = req.params;
     const user = req.body;
 
-    // Phone number validation regular expression
-    const phoneRegex = /^\d{10}/;
-
-    // Check if phone number is in the correct format
-    if (user.phonenumber && !phoneRegex.test(user.phonenumber)) {
-        res.status(400).send({ error: 'Invalid phone number format' });
-        return;
-    }
-
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -170,9 +161,24 @@ const updateUser = (req, res) => {
             return;
         }
 
+        // Check if the provided phone number is already associated with another user
+        if (user.phonenumber && user.phonenumber !== existingUser[0].phonenumber) {
+            UserModel.getUserByPhonenumber(user.phonenumber, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error fetching data from the database' });
+                    return;
+                }
 
-        updateExistingUser(user, userid);
+                if (results.length > 0) {
+                    res.status(409).send({ error: 'Phone number already exists' });
+                    return;
+                }
 
+                updateExistingUser(user, userid);
+            });
+        } else {
+            updateExistingUser(user, userid);
+        }
     });
 
     function updateExistingUser(user, userid) {
