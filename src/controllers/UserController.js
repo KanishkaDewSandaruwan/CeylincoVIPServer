@@ -151,7 +151,7 @@ const updateUser = (req, res) => {
     const user = req.body;
 
     // Phone number validation regular expression
-    const phoneRegex = /^\d{12}$/;
+    const phoneRegex = /^\d{10}$/;
 
     // Check if phone number is in the correct format
     if (user.phonenumber && !phoneRegex.test(user.phonenumber)) {

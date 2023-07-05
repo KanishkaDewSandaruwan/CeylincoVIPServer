@@ -26,7 +26,7 @@ const tableInfo = [
       { name: 'cr_image', type: 'VARCHAR(255)' },
       { name: 'vehicle_image', type: 'VARCHAR(255)' },
       { name: 'privious_insurence_card_image', type: 'VARCHAR(255)' },
-      { name: 'policy_price', type: 'INT(255)' },
+      { name: 'policy_price', type: 'FLOAT(255)' },
       { name: 'policy_type', type: 'INT(20)' },
       { name: 'policy_status', type: 'INT(20)' },
       { name: 'policy_start_date', type: 'DATETIME' },
