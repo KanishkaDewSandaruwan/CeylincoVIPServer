@@ -73,7 +73,7 @@ const tableInfo = [
     fields: [
       { name: 'userid', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
       { name: 'fullname', type: 'VARCHAR(255)' },
-      { name: 'phonenumber', type: 'INT(10)' },
+      { name: 'phonenumber', type: 'VARCHAR(10)' },
       { name: 'address', type: 'VARCHAR(255)' },
       { name: 'email', type: 'VARCHAR(255)' },
       { name: 'username', type: 'VARCHAR(255)' },

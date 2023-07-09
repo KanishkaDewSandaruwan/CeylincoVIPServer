@@ -88,7 +88,7 @@ const addUser = (req, res) => {
     const user = req.body; // Retrieve the user data from the request body
 
     // Email validation regular expression
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     // Phone number validation regular expression
     const phoneRegex = /^\d{12}$/;
@@ -96,12 +96,6 @@ const addUser = (req, res) => {
     // Check if email is valid
     if (!emailRegex.test(user.email)) {
         res.status(400).send({ error: 'Invalid email format' });
-        return;
-    }
-
-    // Check if phone number is valid
-    if (!phoneRegex.test(user.phonenumber)) {
-        res.status(400).send({ error: 'Invalid phone number format' });
         return;
     }
 
