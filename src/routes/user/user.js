@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { login, getAll, getUserById, addUser, updateUser, findUser, changePassword, changeStatus, deleteuser, changeUsername } = require('../../controllers/UserController');
+const { login, getAll, getUserById, addUser, updateUser, findUser, changePassword, changeStatus, deleteuser, changeUsername , deleteusers } = require('../../controllers/UserController');
 const { authenticateToken, authorizeValidateUser, authorizeAccessControll } = require('../../middlewares/userAuth');
 
 module.exports = (config) => {
@@ -15,6 +15,7 @@ module.exports = (config) => {
     router.get('/:userid', authorizeAccessControll, findUser);
     router.put('/status/:userid', authorizeAccessControll, changeStatus);
     router.put('/delete/:userid', authorizeAccessControll, deleteuser);
+    router.put('/delete', authorizeAccessControll, deleteusers);
     router.put('/update/:userid', authorizeAccessControll, updateUser);
 
     //same user authontication

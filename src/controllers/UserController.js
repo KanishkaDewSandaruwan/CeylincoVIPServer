@@ -400,6 +400,56 @@ const deleteuser = (req, res) => {
     });
 };
 
+const deleteusers = (req, res) => {
+    const { userIds } = req.body;
+
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+        res.status(400).send({ error: 'Invalid User IDs' });
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const userid of userIds) {
+        UserModel.getUserById(userid, (error, results) => {
+            if (error) {
+                failCount++;
+            } else if (results.length === 0) {
+                failCount++;
+            } else {
+                UserModel.deleteuser(userid, 1, (deleteError, deleteResult) => {
+                    if (deleteError) {
+                        failCount++;
+                    } else {
+                        successCount++;
+                    }
+
+                    // Check if all deletions have been processed
+                    if (successCount + failCount === userIds.length) {
+                        const totalCount = userIds.length;
+                        res.status(200).send({
+                            totalCount,
+                            successCount,
+                            failCount,
+                        });
+                    }
+                });
+            }
+
+            // Check if all suppliers have been processed
+            if (successCount + failCount === userIds.length) {
+                const totalCount = userIds.length;
+                res.status(200).send({
+                    totalCount,
+                    successCount,
+                    failCount,
+                });
+            }
+        });
+    }
+};
+
 // Generate token using JWT
 function generateToken(email, userrole) {
     const payload = { email, userrole };
@@ -421,5 +471,6 @@ module.exports = {
     changeEmail,
     changeStatus,
     deleteuser,
-    changeUsername
-};
+    changeUsername,
+    deleteusers
+};                                                                                                                                            
