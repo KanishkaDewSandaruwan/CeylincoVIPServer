@@ -7,7 +7,7 @@ const { uploadDealer } = require('../../../config/fileUpload');
 module.exports = (config) => {
     const router = express.Router();
 
-    router.post('/create', uploadDealer.single('image'), addDealer);
+    router.post('/create', addDealer);
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
 

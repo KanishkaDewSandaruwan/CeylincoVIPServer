@@ -33,13 +33,13 @@ const DealerModel = {
     },
 
 
-    addDealer(dealer, dealer_image, callback) {
+    addDealer(dealer, callback) {
         const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, pin_number, company_id } = dealer;
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = 0;
 
-        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_image, dealer_password, status, is_delete , pin_number, reg_date, company_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)';
-        const values = [dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_image, dealer_password, defaultvalues, defaultvalues, pin_number, trndate, company_id];
+        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete , pin_number, reg_date, company_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        const values = [dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, defaultvalues, defaultvalues, pin_number, trndate, company_id];
 
         connection.query(query, values, (error, results) => {
             if (error) {

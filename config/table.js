@@ -46,7 +46,6 @@ const tableInfo = [
       { name: 'dealer_phone', type: 'INT(10)' },
       { name: 'dealer_whatsapp_number', type: 'INT(10)' },
       { name: 'dealer_email', type: 'VARCHAR(255)' },
-      { name: 'dealer_image', type: 'VARCHAR(255)' },
       { name: 'dealer_password', type: 'VARCHAR(255)' },
       { name: 'pin_number', type: 'INT(4)' },
       { name: 'reg_date', type: 'DATETIME' },
