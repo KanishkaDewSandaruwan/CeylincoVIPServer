@@ -99,6 +99,7 @@ const validate = (req, res) => {
 
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
+    console.log(dealer)
 
     DealerModel.addDealer(dealer, (error, dealer_id) => {
         if (error) {
