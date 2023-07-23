@@ -38,8 +38,9 @@ const DealerModel = {
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = 0;
 
+
         const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete , pin_number, reg_date, company_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)';
-        const values = [dealerFullname, dealerAddress, dealerNic, dealerPhone, dealerWhatsappNumber, dealerEmail, dealerPassword, defaultvalues, defaultvalues, pinNumber, trndate, companyId];
+        const values = [dealerFullname, dealerAddress, dealerNic, dealerPhone, dealerWhatsappNumber, dealerEmail, dealerPassword, defaultvalues, defaultvalues, pinNumber, trndate, defaultvalues];
 
         connection.query(query, values, (error, results) => {
             if (error) {
