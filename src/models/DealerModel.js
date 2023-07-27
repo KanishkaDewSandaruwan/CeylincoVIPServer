@@ -48,9 +48,9 @@ const DealerModel = {
 
         const trndate = new Date().toISOString(); // Use the correct ISO date format
 
-        const defaultvalues = '0'; // Convert numeric default values to strings
+        const defaultvalues = 0; // Convert numeric default values to strings
 
-        console.log(dealer);
+        console.log(dealer_fullname);
 
         const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, pin_number, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
