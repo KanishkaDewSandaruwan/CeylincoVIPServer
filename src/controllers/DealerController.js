@@ -100,7 +100,7 @@ const validate = (req, res) => {
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
 
-    DealerModel.addDealer(dealer, (error, dealer_id) => {
+    DealerModel.addDealers(dealer, (error, dealer_id) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;
