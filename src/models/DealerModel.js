@@ -36,23 +36,38 @@ const DealerModel = {
     addDealers(dealer, callback) {
         const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, pin_number, company_id } = dealer;
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const defaultvalues = 0;
+        const defaultvalues = '0'; // Convert numeric default values to strings
 
-        console.log(dealer)
-        const query = 'INSERT INTO dealer(dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete , pin_number, reg_date, company_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
-        const values = ["John Doe", "dealer_address", "dealer_nic", "dealer_phone", "dealer_whatsapp_number", "dealer_email", "dealer_password", defaultvalues, defaultvalues, "pin_number", trndate, 1];
-        
+        console.log(dealer);
+
+        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, pin_number, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [
+            dealer_fullname,
+            dealer_address,
+            dealer_nic,
+            dealer_phone,
+            dealer_whatsapp_number,
+            dealer_email,
+            dealer_password,
+            defaultvalues,
+            defaultvalues,
+            pin_number,
+            trndate,
+            company_id
+        ];
+
         connection.query(query, values, (error, results) => {
             if (error) {
                 callback(error, null);
                 return;
             }
-            
-            console.log(results.insertId)
+
+            console.log(results.insertId);
             const dealer_id = results.insertId;
             callback(null, dealer_id);
         });
     },
+
 
     updateDealer(user, dealer_id, callback) {
         const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status } = user;
