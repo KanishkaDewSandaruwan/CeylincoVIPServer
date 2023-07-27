@@ -40,7 +40,7 @@ const DealerModel = {
 
         console.log(dealer)
         const query = 'INSERT INTO dealer(dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete , pin_number, reg_date, company_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
-        const values = [dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, defaultvalues, defaultvalues, pin_number, trndate, company_id];
+        const values = ["John Doe", "dealer_address", "dealer_nic", "dealer_phone", "dealer_whatsapp_number", "dealer_email", "dealer_password", defaultvalues, defaultvalues, "pin_number", trndate, 1];
         
         connection.query(query, values, (error, results) => {
             if (error) {
