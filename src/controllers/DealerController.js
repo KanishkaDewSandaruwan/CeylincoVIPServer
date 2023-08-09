@@ -130,7 +130,7 @@ const sendMailToUsers = (req, res) => {
     });
 
     const mailOptions = {
-        from: 'your_email@gmail.com', // Sender's email address
+        from: 'ceylincodk97@gmail.com', // Sender's email address
         to: to, // Receiver's email address (provided in the request body)
         subject: subject,
         text: text
