@@ -125,7 +125,7 @@ const sendMailToUsers = (req, res) => {
         service: 'Gmail',
         auth: {
             user: 'kanishkadewsandaruwan@gmail.com', // Replace with your Gmail email
-            pass: 'DewThili@0923' // Replace with your Gmail password or app-specific password
+            pass: 'sticaflvmwigaeiw' // Replace with your Gmail password or app-specific password
         }
     });
 
