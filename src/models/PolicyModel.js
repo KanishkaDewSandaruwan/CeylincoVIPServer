@@ -11,7 +11,7 @@ const PolicyModel = {
         connection.query(query, [policy_id], callback);
     },
 
-    addPolicy(policy, callback) {
+                    addPolicy(policy, callback) {
         const defaultValue = 0;
         const policy_start_date = new Date();
 

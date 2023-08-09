@@ -87,15 +87,14 @@ const findDealer = (req, res) => {
 const validate = (req, res) => {
     const { field, value } = req.params;
     DealerModel.validate(field, value, (error, count) => {
-      if (error) {
-        res.status(500).send({ error: 'Error fetching data from the database' });
-        return;
-      }
-  
-      res.status(200).send({ count });
-    });
-  };
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
 
+        res.status(200).send({ count });
+    });
+};
 
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
@@ -111,9 +110,86 @@ const addDealer = (req, res) => {
             return;
         }
 
+        // Send verification email
+        sendVerificationEmail(dealer.email);
+
         res.status(200).send({ message: 'Dealer created successfully', dealer_id });
     });
 };
+
+const sendMailToUsers = (req, res) => {
+    const { to, subject, text } = req.body;
+
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
+            pass: 'Isuru##0765' // Replace with your Gmail password or app-specific password
+        }
+    });
+
+    const mailOptions = {
+        from: 'your_email@gmail.com', // Sender's email address
+        to: to, // Receiver's email address (provided in the request body)
+        subject: subject,
+        text: text
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+            res.status(500).send('Error sending email');
+        } else {
+            console.log('Email sent:', info.response);
+            res.status(200).send('Email sent successfully');
+        }
+    });
+};
+
+// Function to send verification email
+const sendVerificationEmail = (email) => {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
+            pass: 'Isuru##0765' // Replace with your Gmail password or app-specific password
+        }
+    });
+
+    const mailOptions = {
+        from: 'ceylincodk97@gmail.com', // Sender's email address
+        to: email, // Receiver's email address (dealer's email)
+        subject: 'Account Verification',
+        text: 'Thank you for registering. Please verify your account by clicking the link.' // You can include HTML here for a more formatted email
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+};
+
+
+// const addDealer = (req, res) => {
+//     const dealer = req.body; // Retrieve the user data from the request body
+
+//     DealerModel.addDealers(dealer, (error, dealer_id) => {
+//         if (error) {
+//             res.status(500).send({ error: 'Error fetching data from the database' });
+//             return;
+//         }
+
+//         if (!dealer_id) {
+//             res.status(404).send({ error: 'Failed to create user' });
+//             return;
+//         }
+
+//         res.status(200).send({ message: 'Dealer created successfully', dealer_id });
+//     });
+// };
 
 
 const updateDealer = (req, res) => {
@@ -248,9 +324,10 @@ const deleteDealer = (req, res) => {
     });
 };
 
+
 // Generate token using JWT
 function generateToken(email) {
-    const payload = { email};
+    const payload = { email };
     const options = { expiresIn: '1h' }; // Token expiration time
 
     // Sign the token with the secret key from the .env file
@@ -269,5 +346,6 @@ module.exports = {
     changeEmail,
     changeStatus,
     deleteDealer,
-    validate
+    validate,
+    sendMailToUsers
 };

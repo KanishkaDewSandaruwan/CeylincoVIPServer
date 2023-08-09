@@ -1,5 +1,5 @@
 const express = require('express');
-const { login, getAll, getDealerById, addDealer, updateDealer, findDealer, changePassword, changeEmail, validate, changeStatus, deleteDealer } = require('../../controllers/DealerController');
+const { login, getAll, getDealerById, sendMailToUsers, addDealer, updateDealer, findDealer, changePassword, changeEmail, validate, changeStatus, deleteDealer } = require('../../controllers/DealerController');
 const { authenticateTokenDealer, authorizeValidateDealer, authorizeAccessControll } = require('../../middlewares/userAuth');
 
 const { uploadDealer } = require('../../../config/fileUpload');
@@ -8,6 +8,7 @@ module.exports = (config) => {
     const router = express.Router();
 
     router.post('/create', addDealer);
+    router.post('/mail', sendMailToUsers);
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
 
