@@ -1,6 +1,7 @@
 const DealerModel = require('../models/DealerModel');
 const dealerView = require('../views/dealerView');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 require('dotenv').config(); // Load environment variables
 
 const login = (req, res) => {
