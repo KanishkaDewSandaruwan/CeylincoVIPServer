@@ -124,13 +124,13 @@ const sendMailToUsers = (req, res) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
-            pass: 'Isuru##0765' // Replace with your Gmail password or app-specific password
+            user: 'kanishkadewsandaruwan@gmail.com', // Replace with your Gmail email
+            pass: 'DewThili@0923' // Replace with your Gmail password or app-specific password
         }
     });
 
     const mailOptions = {
-        from: 'ceylincodk97@gmail.com', // Sender's email address
+        from: 'kanishkadewsandaruwan@gmail.com', // Sender's email address
         to: to, // Receiver's email address (provided in the request body)
         subject: subject,
         text: text
