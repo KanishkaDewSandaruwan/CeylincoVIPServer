@@ -83,6 +83,20 @@ const tableInfo = [
       { name: 'is_delete', type: 'INT(5)' },
     ],
   },
+  {
+    tableName: 'payment',
+    fields: [
+      { name: 'paymentid', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
+      { name: 'dealerid', type: 'INT(255)' },
+      { name: 'policyid', type: 'INT(255)' },
+      { name: 'policy_amount', type: 'FLOAT' },
+      { name: 'paid_amount', type: 'FLOAT' },
+      { name: 'commition_amount', type: 'FLOAT' },
+      { name: 'trndate', type: 'DATETIME' },
+      { name: 'status', type: 'INT(5)' },
+      { name: 'is_delete', type: 'INT(5)' },
+    ],
+  },
 ];
 
 

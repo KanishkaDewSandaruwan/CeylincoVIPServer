@@ -124,13 +124,13 @@ const sendMailToUsers = (req, res) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: 'kanishkadewsandaruwan@gmail.com', // Replace with your Gmail email
-            pass: 'sticaflvmwigaeiw' // Replace with your Gmail password or app-specific password
+            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
+            pass: 'fltwiuttvqaykgok' // Replace with your Gmail password or app-specific password
         }
     });
 
     const mailOptions = {
-        from: 'kanishkadewsandaruwan@gmail.com', // Sender's email address
+        from: 'ceylincodk97@gmail.com', // Sender's email address
         to: to, // Receiver's email address (provided in the request body)
         subject: subject,
         text: text
@@ -153,7 +153,7 @@ const sendVerificationEmail = (email) => {
         service: 'Gmail',
         auth: {
             user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
-            pass: 'Isuru##0765' // Replace with your Gmail password or app-specific password
+            pass: 'fltwiuttvqaykgok' // Replace with your Gmail password or app-specific password
         }
     });
 
@@ -161,7 +161,7 @@ const sendVerificationEmail = (email) => {
         from: 'ceylincodk97@gmail.com', // Sender's email address
         to: email, // Receiver's email address (dealer's email)
         subject: 'Account Verification',
-        text: 'Thank you for registering. Please verify your account by clicking the link.' // You can include HTML here for a more formatted email
+        text: 'Thank you for registering. Please verify your account by clicking the link. ' // You can include HTML here for a more formatted email
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
