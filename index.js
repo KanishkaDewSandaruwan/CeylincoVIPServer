@@ -7,6 +7,7 @@ const routeHandler = require('./src/routes/index');
 const fs = require('fs');
 
 const { checkTables } = require('./config/table');
+const path = require('path');
 
 
 const file = fs.readFileSync('./5CC63538058B6205F8561A80B30B1F31.txt')
@@ -21,8 +22,12 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/.well-known/pki-validation/5CC63538058B6205F8561A80B30B1F31.txt',  (req, res) => {
-    res.sendFile('./home/ubuntu/CeylincoVIPServer/5CC63538058B6205F8561A80B30B1F31.txt');
+app.get('/.well-known/pki-validation/5CC63538058B6205F8561A80B30B1F31.txt', (req, res) => {
+    // Construct the absolute file path using the 'path' module
+    const filePath = path.join(__dirname, '5CC63538058B6205F8561A80B30B1F31.txt');
+    
+    // Send the file using the correct absolute file path
+    res.sendFile(filePath);
 });
 
 app.use('/api', routeHandler(config));
