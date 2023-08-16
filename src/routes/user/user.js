@@ -12,7 +12,7 @@ module.exports = (config) => {
     //user role permission authontication
     router.post('/create', authorizeAccessControll, addUser);
     router.get('/all', authorizeAccessControll, getAll);
-    router.get('/:userid', authorizeAccessControll, findUser);
+    router.get('/:userid', authenticateToken, findUser);
     router.put('/status/:userid', authorizeAccessControll, changeStatus);
     router.put('/delete/:userid', authorizeAccessControll, deleteuser);
     router.put('/delete', authorizeAccessControll, deleteusers);
