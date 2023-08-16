@@ -1,5 +1,5 @@
 const express = require('express');
-const { login, getAll, getDealerById, sendMailToUsers, addDealer, updateDealer, findDealer, changePassword, changeEmail, validate, changeStatus, deleteDealer } = require('../../controllers/DealerController');
+const { login, getAll, getDealerById, deleteDealers, sendMailToUsers, addDealer, updateDealer, findDealer, changePassword, changeEmail, validate, changeStatus, deleteDealer } = require('../../controllers/DealerController');
 const { authenticateTokenDealer, authorizeValidateDealer, authorizeAccessControll } = require('../../middlewares/userAuth');
 
 const { uploadDealer } = require('../../../config/fileUpload');
@@ -20,6 +20,7 @@ module.exports = (config) => {
     router.put('/dash/status/:dealer_id', authorizeAccessControll, changeStatus);
     router.put('/dash/delete/:dealer_id', authorizeAccessControll, deleteDealer);
     router.put('/dash/update/:dealer_id', authorizeAccessControll, updateDealer);
+    router.put('/dash/deletes', authorizeAccessControll, deleteDealers);
 
     //this api can change only for them. 
     router.get('/me/:dealer_id', authorizeValidateDealer, getDealerById);

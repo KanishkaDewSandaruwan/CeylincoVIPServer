@@ -197,19 +197,102 @@ const updateDealer = (req, res) => {
     const { dealer_id } = req.params;
     const dealer = req.body;
 
-    DealerModel.updateDealer(dealer, dealer_id, (error, results) => {
+    DealerModel.getUserById(dealer_id, (error, existingDealer) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;
         }
 
-        if (results.affectedRows === 0) {
-            res.status(404).send({ error: 'Dealer not found or no changes made' });
+        if (!existingDealer[0]) {
+            res.status(404).send({ error: 'Dealer not found' });
             return;
         }
 
-        res.status(200).send({ message: 'Dealer updated successfully' });
+        if (dealer.phonenumber && dealer.phonenumber !== existingDealer[0].phonenumber) {
+
+
+            DealerModel.getUserByPhonenumber(dealer.phonenumber, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error fetching data from the database' });
+                    return;
+                }
+
+                if (results.length > 0) {
+                    res.status(409).send({ error: 'Phone number already exists' });
+                    return;
+                }
+
+                updateExistingDealer(dealer, dealer_id);
+            });
+        } else {
+            updateExistingDealer(dealer, dealer_id);
+        }
     });
+
+    function updateExistingDealer(dealer, dealerid) {
+        DealerModel.updateDealer(dealer, dealerid, (error, results) => {
+            if (error) {
+                res.status(500).send({ error: 'Error fetching data from the database' });
+                return;
+            }
+
+            if (results.affectedRows === 0) {
+                res.status(404).send({ error: 'Dealer not found or no changes made' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Dealer updated successfully' });
+        });
+    }
+};
+
+const deleteDealers = (req, res) => {
+    const { dealer_ids } = req.body;
+
+    if (!Array.isArray(dealer_ids) || dealer_ids.length === 0) {
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const DealerId of dealer_ids) {
+        DealerModel.getDealerById(DealerId, (error, results) => {
+            if (error) {
+                failCount++;
+            } else if (results.length === 0) {
+                failCount++;
+            } else {
+                DealerModel.deletedealer(DealerId, 1, (deleteError, deleteResult) => {
+                    if (deleteError) {
+                        failCount++;
+                    } else {
+                        successCount++;
+                    }
+
+                    // Check if all deletions have been processed
+                    if (successCount + failCount === dealer_ids.length) {
+                        const totalCount = dealer_ids.length;
+                        res.status(200).send({
+                            totalCount,
+                            successCount,
+                            failCount,
+                        });
+                    }
+                });
+            }
+
+            // Check if all Dealer have been processed
+            if (successCount + failCount === dealer_ids.length) {
+                const totalCount = dealer_ids.length;
+                res.status(200).send({
+                    totalCount,
+                    successCount,
+                    failCount,
+                });
+            }
+        });
+    }
 };
 
 const changePassword = (req, res) => {
@@ -223,7 +306,7 @@ const changePassword = (req, res) => {
         }
 
         if (!dealer[0]) {
-            res.status(404).send({ error: 'User not found' });
+            res.status(404).send({ error: 'Dealer not found' });
             return;
         }
 
@@ -254,7 +337,7 @@ const changeEmail = (req, res) => {
         }
 
         if (!dealer[0]) {
-            res.status(404).send({ error: 'User not found' });
+            res.status(404).send({ error: 'Dealer not found' });
             return;
         }
 
@@ -348,5 +431,6 @@ module.exports = {
     changeStatus,
     deleteDealer,
     validate,
-    sendMailToUsers
+    sendMailToUsers,
+    deleteDealers
 };

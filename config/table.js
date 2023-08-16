@@ -61,7 +61,7 @@ const tableInfo = [
       { name: 'company_name', type: 'VARCHAR(255)' },
       { name: 'company_branch', type: 'VARCHAR(255)' },
       { name: 'company_address', type: 'VARCHAR(255)' },
-      { name: 'company_phone', type: 'INT(10)' },
+      { name: 'company_phone', type: 'VARCHAR(15)' },
       { name: 'company_email', type: 'VARCHAR(255)' },
       { name: 'status', type: 'INT(5)' },
       { name: 'is_delete', type: 'INT(5)' },
@@ -72,7 +72,7 @@ const tableInfo = [
     fields: [
       { name: 'userid', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
       { name: 'fullname', type: 'VARCHAR(255)' },
-      { name: 'phonenumber', type: 'VARCHAR(10)' },
+      { name: 'phonenumber', type: 'VARCHAR(15)' },
       { name: 'address', type: 'VARCHAR(255)' },
       { name: 'email', type: 'VARCHAR(255)' },
       { name: 'username', type: 'VARCHAR(255)' },
