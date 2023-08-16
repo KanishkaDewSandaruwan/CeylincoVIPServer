@@ -1,6 +1,6 @@
 const express = require('express');
 const { getAllPolicy, findPolicy, addPolicy, changePolicyStatus, deletePolicy, uploadFiles, getFiles, updatePrice } = require('../../controllers/PolicyContoller');
-const { authenticateToken, authenticateToken } = require('../../middlewares/userAuth');
+const { authenticateToken } = require('../../middlewares/userAuth');
 
 const { uploadPolicyFiles } = require('../../../config/fileUpload');
 
