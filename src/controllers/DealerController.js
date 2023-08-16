@@ -197,7 +197,7 @@ const updateDealer = (req, res) => {
     const { dealer_id } = req.params;
     const dealer = req.body;
 
-    DealerModel.getUserById(dealer_id, (error, existingDealer) => {
+    DealerModel.getDealerById(dealer_id, (error, existingDealer) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;
