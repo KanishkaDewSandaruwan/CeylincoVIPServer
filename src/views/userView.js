@@ -1,6 +1,6 @@
 const userView = {
     renderUser(res, user, token) {
-        const { userid, fullname, username, email, phone, address } = user;
+        const { userid, fullname, username, email, userrole, phone, address } = user;
 
         const data = {
             userData: {
@@ -10,6 +10,7 @@ const userView = {
                 phone,
                 address
             },
+            userrole,
             userid,
             token
         }

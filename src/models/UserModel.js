@@ -10,7 +10,7 @@ const UserModel = {
   },
 
   getAll(callback) {
-    connection.query('SELECT * FROM user WHERE is_delete = 0', callback);
+    connection.query('SELECT * FROM user WHERE is_delete = 0 AND username != "admin"', callback);
   },
 
   getUserById(userid, callback) {
