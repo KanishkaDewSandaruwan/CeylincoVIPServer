@@ -10,7 +10,7 @@ const { checkTables } = require('./config/table');
 const path = require('path');
 
 
-const file = fs.readFileSync('./5CC63538058B6205F8561A80B30B1F31.txt')
+const file = fs.readFileSync('./9C73DE1D0432DC480820A9D825991163.txt')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -31,9 +31,9 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/.well-known/pki-validation/5CC63538058B6205F8561A80B30B1F31.txt', (req, res) => {
+app.get('/.well-known/pki-validation/9C73DE1D0432DC480820A9D825991163.txt', (req, res) => {
     // Construct the absolute file path using the 'path' module
-    const filePath = path.join(__dirname, '5CC63538058B6205F8561A80B30B1F31.txt');
+    const filePath = path.join(__dirname, '9C73DE1D0432DC480820A9D825991163.txt');
     
     // Send the file using the correct absolute file path
     res.sendFile(filePath);
