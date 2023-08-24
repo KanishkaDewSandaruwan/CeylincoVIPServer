@@ -47,7 +47,7 @@ app.all('*', (req, res) => {
     });
 });
 
-const server = app.listen(config.port || 80, () => {
+const server = app.listen( 80, () => {
     console.log(`Server running at http://${config.hostname}:${server.address().port}/`);
     checkTables();
 });
