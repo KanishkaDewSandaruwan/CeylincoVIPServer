@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 app.use(function (req, res, next) {
     const allowedOrigins = [
         'http://localhost:3000',
+        'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com',
         'https://backend.policycollector.xyz/'
     ];
 
