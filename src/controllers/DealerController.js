@@ -125,6 +125,7 @@ const validateDealer = async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded.dealer_email)
 
         const dealer_email = decoded.dealer_email; // Use the correct field name from the token
 
