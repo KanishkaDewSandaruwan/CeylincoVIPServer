@@ -1,82 +1,101 @@
 const PaymentModel = require('../models/PaymentModel');
 
-const getPaymentById = async (req, res) => {
-    try {
-        const { paymentid } = req.params;
-        const results = await PaymentModel.getPaymentById(paymentid);
-
-        if (results.length === 0) {
-            res.status(404).send({ error: 'Payment not found' });
-        } else {
-            res.status(200).send(results);
-        }
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment data' });
-    }
+const getPaymentById = (req, res) => {
+    const { paymentid } = req.params;
+    PaymentModel.getPaymentById(paymentid)
+        .then((results) => {
+            if (results.length === 0) {
+                res.status(404).send({ error: 'Payment not found' });
+            } else {
+                res.status(200).send(results);
+            }
+        })
+        .catch((error) => {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+        });
 };
 
-const updatePaymentStatus = async (req, res) => {
-    try {
-        const { paymentid } = req.params;
-        const { status } = req.body;
+const updatePaymentStatus = (req, res) => {
+    const { paymentid } = req.params;
+    const { status } = req.body;
 
-        const results = await PaymentModel.getPaymentById(paymentid);
-
-        if (results.length === 0) {
-            res.status(404).send({ error: 'Payment not found' });
-        } else {
-            await PaymentModel.updatePaymentStatus(paymentid, status);
-            res.status(200).send({ message: 'Payment status updated successfully' });
-        }
-    } catch (error) {
-        res.status(500).send({ error: 'Error updating payment status' });
-    }
+    PaymentModel.getPaymentById(paymentid)
+        .then((results) => {
+            if (results.length === 0) {
+                res.status(404).send({ error: 'Payment not found' });
+            } else {
+                PaymentModel.updatePaymentStatus(paymentid, status, (error, updateResults) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error updating payment status' });
+                    } else {
+                        res.status(200).send({ message: 'Payment status updated successfully' });
+                    }
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).send({ error: 'Error fetching payment data' });
+        });
 };
 
-const deletePayment = async (req, res) => {
-    try {
-        const { paymentid } = req.params;
-        const results = await PaymentModel.getPaymentById(paymentid);
 
-        if (results.length === 0) {
-            res.status(404).send({ error: 'Payment not found' });
-        } else {
-            await PaymentModel.deletePayment(paymentid);
-            res.status(200).send({ message: 'Payment deleted successfully' });
-        }
-    } catch (error) {
-        res.status(500).send({ error: 'Error deleting payment' });
-    }
+const deletePayment = (req, res) => {
+    const { paymentid } = req.params;
+
+    PaymentModel.getPaymentById(paymentid)
+        .then((results) => {
+            if (results.length === 0) {
+                res.status(404).send({ error: 'Payment not found' });
+            } else {
+                PaymentModel.deletePayment(paymentid, (error, deleteResults) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error deleting payment' });
+                    } else {
+                        res.status(200).send({ message: 'Payment deleted successfully' });
+                    }
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).send({ error: 'Error fetching payment data' });
+        });
 };
+
 
 const getPayments = (req, res) => {
     PaymentModel.getPayments((error, results) => {
         if (error) {
-            res.status(500).send({ error: 'Error fetching data from the database' });
-            return;
+            res.status(500).send({ error: 'Error fetching payments from the database' });
+        } else {
+            res.status(200).send(results);
         }
-
-        res.status(200).send(results); // Modify the response as per your requirement
     });
 };
 
-const updatePaidAmount = async (req, res) => {
-    try {
-        const { paymentid } = req.params;
-        const { paid_amount } = req.body;
+const updatePaidAmount = (req, res) => {
+    const { paymentid } = req.params;
+    const { paid_amount } = req.body;
 
-        const results = await PaymentModel.getPaymentById(paymentid);
-
-        if (results.length === 0) {
-            res.status(404).send({ error: 'Payment not found' });
-        } else {
-            await PaymentModel.updatePaidAmount(paymentid, paid_amount);
-            res.status(200).send({ message: 'Paid amount updated successfully' });
-        }
-    } catch (error) {
-        res.status(500).send({ error: 'Error updating paid amount' });
-    }
+    PaymentModel.getPaymentById(paymentid)
+        .then((results) => {
+            if (results.length === 0) {
+                res.status(404).send({ error: 'Payment not found' });
+            } else {
+                PaymentModel.updatePaidAmount(paymentid, paid_amount, (error, updateResults) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error updating paid amount' });
+                    } else {
+                        res.status(200).send({ message: 'Paid amount updated successfully' });
+                    }
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).send({ error: 'Error fetching payment data' });
+        });
 };
+
+
 
 module.exports = {
     getPaymentById,
@@ -84,4 +103,5 @@ module.exports = {
     deletePayment,
     getPayments,
     updatePaidAmount,
+
 };
