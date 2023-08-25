@@ -112,12 +112,9 @@ const addDealer = (req, res) => {
             return;
         }
 
-        console.log(dealer)
-        console.log(dealer.dealer_email)
-
         // Send verification email
         const verificationToken = generateVerificationToken(dealer.dealer_email);
-        sendVerificationEmail(dealer.email, verificationToken);
+        sendVerificationEmail(dealer.dealer_email, verificationToken);
 
         // res.status(200).send({ message: 'Dealer created successfully', dealer_id });
     });
