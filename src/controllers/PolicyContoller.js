@@ -77,9 +77,16 @@ const changePolicyStatus = (req, res) => {
 };
 
 const updatePolicyPayment = (req, res) => {
-    const { policy } = req.body;
+    const { commition_amount, policy_id, policy_price } = req.body;
 
-    PolicyModel.getPolicyById(policy.policy_id, (error, policies) => {
+    const policy = {
+        policy_id : policy_id,
+        commition_amount:commition_amount,
+        policy_price : policy_price
+    }
+    console.log(policy)
+
+    PolicyModel.getPolicyById(policy_id, (error, policies) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;
