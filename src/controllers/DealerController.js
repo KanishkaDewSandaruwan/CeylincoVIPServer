@@ -112,7 +112,8 @@ const addDealer = (req, res) => {
             return;
         }
 
-        const dealer = req.body;
+        console.log(dealer)
+        console.log(dealer.dealer_email)
 
         // Send verification email
         const verificationToken = generateVerificationToken(dealer.dealer_email);
