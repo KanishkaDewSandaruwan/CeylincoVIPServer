@@ -17,6 +17,10 @@ const DealerModel = {
         connection.query('SELECT * FROM dealer WHERE dealer_id = ? AND is_delete = 0', [dealer_id], callback);
     },
 
+    getDealerByemail(email, callback) {
+        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0', [email], callback);
+    },
+
     validate(field, value, callback) {
         const query = 'SELECT COUNT(*) AS count FROM dealer WHERE ?? = ? AND is_delete = 0';
         const params = [field, value];

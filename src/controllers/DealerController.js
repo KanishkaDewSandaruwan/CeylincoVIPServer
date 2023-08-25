@@ -120,46 +120,69 @@ const addDealer = (req, res) => {
     });
 };
 
-const validateDealer = (req, res) => {
-    const { dealer_id } = req.params;
+const validateDealer = async (req, res) => {
+    const { token } = req.params;
 
-    DealerModel.getDealerById(dealer_id, async (error, existingDealer) => {
-        if (error) {
-            res.status(500).send({ error: 'Error fetching data from the database' });
-            return;
-        }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (!existingDealer[0]) {
-            res.status(404).send({ error: 'Dealer not found' });
-            return;
-        }
+        const dealer_email = decoded.dealer_email; // Use the correct field name from the token
 
-        if (!existingDealer[0].email_verified) {
-            // Check if the dealer has a verification token
-            if (!existingDealer[0].verification_token) {
-                res.status(400).send({ error: 'No verification token found' });
-                return;
+        DealerModel.getDealerByemail(dealer_email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
             }
 
-            try {
-                const decoded = jwt.verify(existingDealer[0].verification_token, process.env.JWT_SECRET);
-
-                // Update the dealer's status to 1 (active)
-                DealerModel.updatestatus(dealer_id, 1, (updateError, updateResult) => {
-                    if (updateError) {
-                        res.status(500).send({ error: 'Error updating dealer status' });
-                    } else {
-                        res.status(200).send({ message: 'Email verified and dealer status updated' });
-                    }
-                });
-            } catch (verifyError) {
-                res.status(400).send({ error: 'Email verification token is invalid or expired' });
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Dealer not found' });
             }
-        } else {
-            res.status(400).send({ error: 'Dealer email is already verified' });
-        }
-    });
+
+            if (!existingDealer[0].email_verified) {
+                if (!existingDealer[0].verification_token) {
+                    return res.status(400).send({ error: 'No verification token found' });
+                }
+
+                try {
+                    const decoded = jwt.verify(existingDealer[0].verification_token, process.env.JWT_SECRET);
+
+                    // Update the dealer's status to 1 (active)
+                    DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
+                        if (updateError) {
+                            return res.status(500).send({ error: 'Error updating dealer status' });
+                        } else {
+                            // Redirect back to Gmail and close the page after a delay
+                            const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                            const htmlResponse = `
+                                <html>
+                                    <head>
+                                        <script>
+                                            setTimeout(function() {
+                                                window.location.href = "${redirectUrl}";
+                                                window.close();
+                                            }, 2000); // Adjust the delay time as needed
+                                        </script>
+                                    </head>
+                                    <body>
+                                        <p>Email verified. Redirecting to Gmail...</p>
+                                    </body>
+                                </html>
+                            `;
+                            return res.status(200).send(htmlResponse);
+                        }
+                    });
+                } catch (verifyError) {
+                    return res.status(400).send({ error: 'Email verification token is invalid or expired' });
+                }
+            } else {
+                return res.status(400).send({ error: 'Dealer email is already verified' });
+            }
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
 };
+
+
 
 
 async function simulateEmailVerification(email) {
@@ -183,7 +206,7 @@ const sendVerificationEmail = (email, verificationToken) => {
         }
     });
 
-    const verificationLink = `https://backend.policycollector.xyz/api/dealer/verify?token=${verificationToken}`;
+    const verificationLink = `https://backend.policycollector.xyz/api/dealer/verify/${verificationToken}`;
 
     const mailOptions = {
         from: 'ceylincodk97@gmail.com', // Sender's email address
