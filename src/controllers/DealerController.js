@@ -125,18 +125,18 @@ const validateDealer = async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded.email)
-
+        
         const email = decoded.email; // Use the correct field name from the token
-
+        
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-
+            
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
+            console.log(existingDealer[0].dealer_id)
 
             DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
                 if (updateError) {
@@ -159,7 +159,7 @@ const validateDealer = async (req, res) => {
                             </body>
                         </html>
                     `;
-                    return res.status(200).send(htmlResponse);
+                    // return res.status(200).send(htmlResponse);
                 }
             });
         });
