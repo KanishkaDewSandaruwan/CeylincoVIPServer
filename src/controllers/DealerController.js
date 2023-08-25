@@ -138,45 +138,30 @@ const validateDealer = async (req, res) => {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
 
-            if (!existingDealer[0].email_verified) {
-                if (!existingDealer[0].verification_token) {
-                    return res.status(400).send({ error: 'No verification token found' });
+            DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
+                if (updateError) {
+                    return res.status(500).send({ error: 'Error updating dealer status' });
+                } else {
+                    // Redirect back to Gmail and close the page after a delay
+                    const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                    const htmlResponse = `
+                        <html>
+                            <head>
+                                <script>
+                                    setTimeout(function() {
+                                        window.location.href = "${redirectUrl}";
+                                        window.close();
+                                    }, 2000); // Adjust the delay time as needed
+                                </script>
+                            </head>
+                            <body>
+                                <p>Email verified. Redirecting to Gmail...</p>
+                            </body>
+                        </html>
+                    `;
+                    return res.status(200).send(htmlResponse);
                 }
-
-                try {
-                    const decoded = jwt.verify(existingDealer[0].verification_token, process.env.JWT_SECRET);
-
-                    // Update the dealer's status to 1 (active)
-                    DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
-                        if (updateError) {
-                            return res.status(500).send({ error: 'Error updating dealer status' });
-                        } else {
-                            // Redirect back to Gmail and close the page after a delay
-                            const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
-                            const htmlResponse = `
-                                <html>
-                                    <head>
-                                        <script>
-                                            setTimeout(function() {
-                                                window.location.href = "${redirectUrl}";
-                                                window.close();
-                                            }, 2000); // Adjust the delay time as needed
-                                        </script>
-                                    </head>
-                                    <body>
-                                        <p>Email verified. Redirecting to Gmail...</p>
-                                    </body>
-                                </html>
-                            `;
-                            return res.status(200).send(htmlResponse);
-                        }
-                    });
-                } catch (verifyError) {
-                    return res.status(400).send({ error: 'Email verification token is invalid or expired' });
-                }
-            } else {
-                return res.status(400).send({ error: 'Dealer email is already verified' });
-            }
+            });
         });
     } catch (tokenError) {
         return res.status(400).send({ error: 'Token is invalid or expired' });
