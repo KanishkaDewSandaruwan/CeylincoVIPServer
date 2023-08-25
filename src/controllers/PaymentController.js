@@ -49,13 +49,16 @@ const deletePayment = async (req, res) => {
     }
 };
 
-const getPayments = async (req, res) => {
-    try {
-        const results = await PaymentModel.getPayments();
-        res.status(200).send(results);
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching payments from the database' });
-    }
+
+const getPayments = (req, res) => {
+    PaymentModel.getPayments((error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        res.status(200).send(results); // Modify the response as per your requirement
+    });
 };
 
 const updatePaidAmount = async (req, res) => {
