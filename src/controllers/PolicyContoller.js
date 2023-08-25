@@ -82,9 +82,8 @@ const updatePolicyPayment = (req, res) => {
     const policy = {
         policy_id : policy_id,
         commition_amount:commition_amount,
-        policy_price : policy_price
+        policy_amount : policy_price
     }
-    console.log(policy)
 
     PolicyModel.getPolicyById(policy_id, (error, policies) => {
         if (error) {

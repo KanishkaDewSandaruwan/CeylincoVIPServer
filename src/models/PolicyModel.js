@@ -171,6 +171,7 @@ const PolicyModel = {
     },
 
     updatePrice(policy_id, policy_price, callback) {
+        console.log(policy_price)
         const query = 'UPDATE policy SET policy_price = ? WHERE policy_id = ?';
         const values = [policy_price, policy_id];
 
