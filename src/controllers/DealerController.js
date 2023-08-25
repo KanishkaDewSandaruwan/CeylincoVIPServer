@@ -174,6 +174,7 @@ function generateVerificationToken(email) {
 
 // Function to send verification email
 const sendVerificationEmail = (email, verificationToken) => {
+    console.log(email + verificationToken)
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
