@@ -123,7 +123,6 @@ const updatePayment = (req, res) => {
         }
 
         const { paid_amount, status } = req.body;
-        console.log(paid_amount + status);
 
         PaymentModel.updatePayment(paymentid, paid_amount, status, (error, updateResults) => {
             if (error) {
