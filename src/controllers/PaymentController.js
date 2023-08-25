@@ -79,24 +79,33 @@ const updatePaidAmount = async (req, res) => {
     }
 };
 
-const updatePayment = async (req, res) => {
-    try {
-        const { paymentid } = req.params;
-        const { paid_amount, status } = req.body;
+const updatePayment = (req, res) => {
+    const { paymentid } = req.params;
+    const { paid_amount, status } = req.body;
 
-        const results = await PaymentModel.getPaymentById(paymentid);
+    PaymentModel.getPaymentById(paymentid, (error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
 
         if (results.length === 0) {
             res.status(404).send({ error: 'Payment not found' });
-        } else {
-        const { paid_amount, status } = req.body;
-            console.log(paid_amount + status)
-            await PaymentModel.updatePayment(paymentid, paid_amount, status);
-            res.status(200).send({ message: 'Paid amount updated successfully' });
+            return;
         }
-    } catch (error) {
-        res.status(500).send({ error: 'Error updating paid amount' });
-    }
+
+        const { paid_amount, status } = req.body;
+        console.log(paid_amount + status);
+
+        PaymentModel.updatePayment(paymentid, paid_amount, status, (error, updateResults) => {
+            if (error) {
+                res.status(500).send({ error: 'Error updating paid amount' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Paid amount updated successfully' });
+        });
+    });
 };
 
 module.exports = {
