@@ -136,7 +136,6 @@ const validateDealer = async (req, res) => {
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
-            console.log(existingDealer[0])
 
             DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
                 if (updateError) {
@@ -154,12 +153,9 @@ const validateDealer = async (req, res) => {
                                     }, 2000); // Adjust the delay time as needed
                                 </script>
                             </head>
-                            <body>
-                                <p>Email verified. Redirecting to Gmail...</p>
-                            </body>
                         </html>
                     `;
-                    // return res.status(200).send(htmlResponse);
+                    return res.status(200).send(htmlResponse);
                 }
             });
         });
