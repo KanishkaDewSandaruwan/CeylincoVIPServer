@@ -125,14 +125,14 @@ const validateDealer = async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         const email = decoded.email; // Use the correct field name from the token
-        
+
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-            
+
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
@@ -141,18 +141,40 @@ const validateDealer = async (req, res) => {
                 if (updateError) {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {
-                    // Redirect back to Gmail and close the page after a delay
+                    // Prepare the HTML response
                     const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
                     const htmlResponse = `
-                        <html>
-                            <head>
-                                <script>
-                                    setTimeout(function() {
-                                        window.location.href = "${redirectUrl}";
-                                        window.close();
-                                    }, 2000); // Adjust the delay time as needed
-                                </script>
-                            </head>
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Thank You for Email Verification</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    text-align: center;
+                                    padding: 50px;
+                                }
+                                h1 {
+                                    color: #333;
+                                }
+                                p {
+                                    color: #777;
+                                    margin-top: 20px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Thank You!</h1>
+                            <p>Your email has been successfully verified.</p>
+                            <p>You will now be redirected to Gmail...</p>
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = "${redirectUrl}";
+                                }, 3000); // Adjust the delay time as needed
+                            </script>
+                        </body>
                         </html>
                     `;
                     return res.status(200).send(htmlResponse);
@@ -163,6 +185,7 @@ const validateDealer = async (req, res) => {
         return res.status(400).send({ error: 'Token is invalid or expired' });
     }
 };
+
 
 
 
