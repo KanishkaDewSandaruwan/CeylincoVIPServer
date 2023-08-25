@@ -11,7 +11,7 @@ const PolicyModel = {
         connection.query(query, [policy_id], callback);
     },
 
-                    addPolicy(policy, callback) {
+    addPolicy(policy, callback) {
         const defaultValue = 0;
         const policy_start_date = new Date();
 
@@ -93,6 +93,50 @@ const PolicyModel = {
     },
 
 
+    addPolicyPayment (policy, dealer_id, callback)  {
+        const defaultValue = 0;
+        const defaultValue1 = 1;
+        const policy_start_date = new Date();
+    
+        const {
+            policy_id,
+            policy_amount,
+            commition_amount
+        } = policy;
+    
+        const query = `INSERT INTO payment(dealerid, policyid, policy_amount, paid_amount, commition_amount, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+        const values = [
+            dealer_id,
+            policy_id,
+            policy_amount,
+            defaultValue,
+            commition_amount,
+            policy_start_date,
+            defaultValue1,
+            defaultValue
+        ];
+    
+        connection.query(query, values, (error, results) => {
+            if (error) {
+                console.error('Error inserting data:', error);
+                const insertError = new Error('Error inserting data into the database');
+                callback(insertError, null);
+                return;
+            }
+    
+            if (results.affectedRows === 0) {
+                console.error('Failed to create Payment');
+                const insertError = new Error('Failed to create payment');
+                callback(insertError, null);
+                return;
+            }
+    
+            const paymentid = results.insertId;
+            callback(null, paymentid);
+        });
+    },
+    
     updatePolicy(policy, policy_id, callback) {
         const { vehicle_type, customer_fullname, customer_address, customer_nic, customer_phone, vehicle_reg_no, engine_no, chassis_no, model, years_of_make, leasing_company, vehicle_color, horse_power, value_of_vehicle, use_perpose, cr_image, vehicle_image, previous_insurance_card_image, policy_price, policy_type, policy_status, policy_start_date } = policy;
 

@@ -76,6 +76,57 @@ const changePolicyStatus = (req, res) => {
     });
 };
 
+const updatePolicyPayment = (req, res) => {
+    const { policy } = req.body;
+
+    PolicyModel.getPolicyById(policy.policy_id, (error, policies) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!policies[0]) {
+            res.status(404).send({ error: 'Policy not found' });
+            return;
+        }
+
+        PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, (error, paymentid) => {
+            if (error) {
+                res.status(500).send({ error: 'Error adding policy payment' });
+                return;
+            }
+
+            const updatedPolicy = {
+                policy_id: policy.policy_id,
+                policy_price: policy.policy_amount
+            };
+
+            PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
+                if (updateError) {
+                    // If updating policy fails, delete the added payment
+                    PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
+                        if (deleteError) {
+                            res.status(500).send({ error: 'Error updating policy and deleting payment' });
+                        } else {
+                            res.status(500).send({ error: 'Error updating policy, payment deleted' });
+                        }
+                    });
+                } else {
+                    PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
+                        if (statusUpdateError) {
+                            res.status(500).send({ error: 'Error updating policy status' });
+                        } else {
+                            res.status(200).send({ message: 'Policy payment and status updated successfully' });
+                        }
+                    });
+                }
+            });
+        });
+    });
+};
+
+
+
 const updatePrice = (req, res) => {
     const { policy_id } = req.params;
     const { policy_price } = req.body;
@@ -203,5 +254,6 @@ module.exports = {
     deletePolicy,
     uploadFiles,
     getFiles,
+    updatePolicyPayment,
     updatePrice
 };
