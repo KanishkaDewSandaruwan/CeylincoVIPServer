@@ -33,8 +33,7 @@ const PaymentModel = {
     },
 
     getPayments(callback) {
-        const query = 'SELECT * FROM payment';
-        connection.query(query, callback);
+        connection.query('SELECT * FROM payment WHERE is_delete = 0', callback);
     },
 
     updatePaidAmount(paymentid, paid_amount, callback) {
