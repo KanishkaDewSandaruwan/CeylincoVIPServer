@@ -168,7 +168,7 @@ async function simulateEmailVerification(email) {
     return true;
 }
 
-function generateVerificationToken(email) {
+function generateVerificationToken(email, verificationToken) {
     return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' }); // Change expiresIn as needed
 }
 
@@ -182,7 +182,7 @@ const sendVerificationEmail = (email) => {
         }
     });
 
-    const verificationLink = `https://backend.policycollector.xyz/api/dealer/verify?token=${token}`;
+    const verificationLink = `https://backend.policycollector.xyz/api/dealer/verify?token=${verificationToken}`;
 
     const mailOptions = {
         from: 'ceylincodk97@gmail.com', // Sender's email address
