@@ -38,8 +38,6 @@ const DealerModel = {
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = '0'; // Convert numeric default values to strings
 
-        console.log(dealer);
-
         const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, pin_number, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             dealer_fullname,
