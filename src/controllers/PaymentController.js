@@ -79,10 +79,29 @@ const updatePaidAmount = async (req, res) => {
     }
 };
 
+const updatePayment = async (req, res) => {
+    try {
+        const { paymentid } = req.params;
+        const { paid_amount, status } = req.body;
+
+        const results = await PaymentModel.getPaymentById(paymentid);
+
+        if (results.length === 0) {
+            res.status(404).send({ error: 'Payment not found' });
+        } else {
+            await PaymentModel.updatePayment(paymentid, paid_amount, status);
+            res.status(200).send({ message: 'Paid amount updated successfully' });
+        }
+    } catch (error) {
+        res.status(500).send({ error: 'Error updating paid amount' });
+    }
+};
+
 module.exports = {
     getPaymentById,
     updatePaymentStatus,
     deletePayment,
     getPayments,
     updatePaidAmount,
+    updatePayment
 };
