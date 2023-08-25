@@ -68,6 +68,7 @@ getDealerById = (req, res) => {
     });
 }
 
+
 const findDealer = (req, res) => {
     const { dealer_id } = req.params;
     DealerModel.getDealerById(dealer_id, (error, results) => {
@@ -112,9 +113,90 @@ const addDealer = (req, res) => {
         }
 
         // Send verification email
-        sendVerificationEmail(dealer.email);
+        const verificationToken = generateVerificationToken(dealer.email);
+        sendVerificationEmail(dealer.email, verificationToken);
 
         res.status(200).send({ message: 'Dealer created successfully', dealer_id });
+    });
+};
+
+const validateDealer = (req, res) => {
+    const { dealer_id } = req.params;
+
+    DealerModel.getDealerById(dealer_id, async (error, existingDealer) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!existingDealer[0]) {
+            res.status(404).send({ error: 'Dealer not found' });
+            return;
+        }
+
+        if (!existingDealer[0].email_verified) {
+            // Check if the dealer has a verification token
+            if (!existingDealer[0].verification_token) {
+                res.status(400).send({ error: 'No verification token found' });
+                return;
+            }
+
+            try {
+                const decoded = jwt.verify(existingDealer[0].verification_token, process.env.JWT_SECRET);
+
+                // Update the dealer's status to 1 (active)
+                DealerModel.updatestatus(dealer_id, 1, (updateError, updateResult) => {
+                    if (updateError) {
+                        res.status(500).send({ error: 'Error updating dealer status' });
+                    } else {
+                        res.status(200).send({ message: 'Email verified and dealer status updated' });
+                    }
+                });
+            } catch (verifyError) {
+                res.status(400).send({ error: 'Email verification token is invalid or expired' });
+            }
+        } else {
+            res.status(400).send({ error: 'Dealer email is already verified' });
+        }
+    });
+};
+
+
+async function simulateEmailVerification(email) {
+    // Simulate the email verification process
+    // Return true if the email is verified, false otherwise
+    return true;
+}
+
+function generateVerificationToken(email) {
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' }); // Change expiresIn as needed
+}
+
+// Function to send verification email
+const sendVerificationEmail = (email) => {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
+            pass: 'fltwiuttvqaykgok' // Replace with your Gmail password or app-specific password
+        }
+    });
+
+    const verificationLink = `https://backend.policycollector.xyz/api/dealer/verify?token=${token}`;
+
+    const mailOptions = {
+        from: 'ceylincodk97@gmail.com', // Sender's email address
+        to: email, // Receiver's email address (dealer's email)
+        subject: 'Account Verification',
+        text: `Thank you for registering. Please verify your account by clicking the link: ${verificationLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
     });
 };
 
@@ -147,31 +229,7 @@ const sendMailToUsers = (req, res) => {
     });
 };
 
-// Function to send verification email
-const sendVerificationEmail = (email) => {
-    const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
-            pass: 'fltwiuttvqaykgok' // Replace with your Gmail password or app-specific password
-        }
-    });
 
-    const mailOptions = {
-        from: 'ceylincodk97@gmail.com', // Sender's email address
-        to: email, // Receiver's email address (dealer's email)
-        subject: 'Account Verification',
-        text: 'Thank you for registering. Please verify your account by clicking the link. ' // You can include HTML here for a more formatted email
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
-        } else {
-            console.log('Email sent:', info.response);
-        }
-    });
-};
 
 
 // const addDealer = (req, res) => {
@@ -245,6 +303,9 @@ const updateDealer = (req, res) => {
         });
     }
 };
+
+
+
 
 const deleteDealers = (req, res) => {
     const { dealer_ids } = req.body;
@@ -432,5 +493,6 @@ module.exports = {
     deleteDealer,
     validate,
     sendMailToUsers,
-    deleteDealers
+    deleteDealers,
+    validateDealer
 };
