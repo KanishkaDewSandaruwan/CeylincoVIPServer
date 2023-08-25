@@ -6,10 +6,7 @@ module.exports = (config) => {
     const router = express.Router();
 
     // Public APIs
-    router.get('/:paymentid', getPaymentById);
-
-    // APIs protected by dealer authentication
-    router.use(authenticateToken);
+    router.get('/:paymentid', authenticateToken, getPaymentById);
 
     // Authorized APIs for specific roles
     router.get('/all', authenticateToken, getPayments);
