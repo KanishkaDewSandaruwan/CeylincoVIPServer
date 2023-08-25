@@ -168,12 +168,12 @@ async function simulateEmailVerification(email) {
     return true;
 }
 
-function generateVerificationToken(email, verificationToken) {
+function generateVerificationToken(email) {
     return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' }); // Change expiresIn as needed
 }
 
 // Function to send verification email
-const sendVerificationEmail = (email) => {
+const sendVerificationEmail = (email, verificationToken) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
