@@ -136,7 +136,7 @@ const validateDealer = async (req, res) => {
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
-            console.log(existingDealer[0].dealer_id)
+            console.log(existingDealer[0])
 
             DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
                 if (updateError) {
