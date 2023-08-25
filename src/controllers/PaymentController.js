@@ -89,6 +89,8 @@ const updatePayment = async (req, res) => {
         if (results.length === 0) {
             res.status(404).send({ error: 'Payment not found' });
         } else {
+        const { paid_amount, status } = req.body;
+            console.log(paid_amount + status)
             await PaymentModel.updatePayment(paymentid, paid_amount, status);
             res.status(200).send({ message: 'Paid amount updated successfully' });
         }
