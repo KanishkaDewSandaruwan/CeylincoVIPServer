@@ -125,11 +125,11 @@ const validateDealer = async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded.dealer_email)
+        console.log(decoded.email)
 
-        const dealer_email = decoded.dealer_email; // Use the correct field name from the token
+        const email = decoded.email; // Use the correct field name from the token
 
-        DealerModel.getDealerByemail(dealer_email, async (error, existingDealer) => {
+        DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
