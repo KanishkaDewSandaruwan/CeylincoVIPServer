@@ -93,9 +93,10 @@ const PolicyModel = {
     },
 
 
-    addPolicyPayment (policy, dealer_id, callback)  {
+    addPolicyPayment (policy, dealer_id, filePath, callback)  {
         const defaultValue = 0;
         const defaultValue1 = 1;
+        const defaultValue2 = "";
         const policy_start_date = new Date();
     
         const {
@@ -104,13 +105,13 @@ const PolicyModel = {
             commition_amount
         } = policy;
     
-        const query = `INSERT INTO payment(dealerid, policyid, policy_amount, paid_amount, commition_amount, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `INSERT INTO payment(dealerid, policyid, policy_amount, qutation, commition_amount, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     
         const values = [
             dealer_id,
             policy_id,
             policy_amount,
-            defaultValue,
+            filePath,
             commition_amount,
             policy_start_date,
             defaultValue1,

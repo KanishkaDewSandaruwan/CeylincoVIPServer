@@ -2,7 +2,7 @@ const PolicyModel = require('../models/PolicyModel');
 const DealerModel = require('../models/DealerModel');
 const path = require('path');
 const fs = require('fs');
-const sendEmail  = require('../../config/mail');
+const sendEmail = require('../../config/mail');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -78,14 +78,25 @@ const changePolicyStatus = (req, res) => {
     });
 };
 
+
+
+
 const updatePolicyPayment = (req, res) => {
     const { commition_amount, policy_id, policy_price } = req.body;
+
+    let filePath = "";
+
+    if (req.file && req.file.filename) {
+        filePath = req.file.filename;
+    } else {
+        filePath = null; // Set filePath to null if no attachment
+    }
 
     const policy = {
         policy_id: policy_id,
         commition_amount: commition_amount,
         policy_amount: policy_price
-    }
+    };
 
     PolicyModel.getPolicyById(policy_id, (error, policies) => {
         if (error) {
@@ -109,47 +120,34 @@ const updatePolicyPayment = (req, res) => {
                 return;
             }
 
-            PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, (error, paymentid) => {
+            PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, filePath, (error, paymentid) => {
                 if (error) {
                     res.status(500).send({ error: 'Error adding policy payment' });
                     return;
                 }
 
-                const updatedPolicy = {
-                    policy_id: policy.policy_id,
-                    policy_price: policy.policy_amount
-                };
-                sendEmail(policies[0].customer_email, 'test', 'test');
+                const emailContent = `
+                    Hello,
 
-                PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
-                    if (updateError) {
-                        // If updating policy fails, delete the added payment
-                        PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
-                            if (deleteError) {
-                                res.status(500).send({ error: 'Error updating policy and deleting payment' });
-                            } else {
-                                res.status(500).send({ error: 'Error updating policy, payment deleted' });
-                            }
-                        });
-                    } else {
-                        PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
-                            if (statusUpdateError) {
-                                res.status(500).send({ error: 'Error updating policy status' });
-                            } else {
+                    Here is the payment update for policy ${policy_id}.
+                    
+                    Commission Amount: ${commition_amount}
+                    Policy Price: ${policy_price}
+                `;
 
-                                sendEmail(policies[0].customer_email, 'customer', policy.commition_amount);
-                                sendEmail(dealer[0].dealer_email, 'dealer', policy.commition_amount);
+                if (filePath) {
+                    sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
+                    sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
+                } else {
+                    sendEmail(policies[0].customer_email, 'customer', emailContent);
+                    sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
+                }
 
-                                res.status(200).send({ message: 'Policy payment and status updated successfully' });
-                            }
-                        });
-                    }
-                });
+                res.status(200).send({ message: 'Policy payment and status updated successfully' });
             });
         });
     });
 };
-
 
 
 const updatePrice = (req, res) => {
