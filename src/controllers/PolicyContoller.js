@@ -119,7 +119,7 @@ const updatePolicyPayment = (req, res) => {
                     policy_id: policy.policy_id,
                     policy_price: policy.policy_amount
                 };
-
+                console.log(policies[0].customer_email)
                 sendEmail(policies[0].customer_email, 'test', 'test');
 
                 // PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
