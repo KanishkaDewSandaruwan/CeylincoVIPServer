@@ -2,7 +2,7 @@ const PolicyModel = require('../models/PolicyModel');
 const DealerModel = require('../models/DealerModel');
 const path = require('path');
 const fs = require('fs');
-const sendEmail = require('../../config/mail');
+const {sendEmail , sendEmailWithAttachment } = require('../../config/mail');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
