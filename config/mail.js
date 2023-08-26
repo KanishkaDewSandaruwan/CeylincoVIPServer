@@ -34,6 +34,7 @@ const sendEmailWithAttachment = (to, subject, message, uploadedFile) => {
       }
   });
 
+  console.log(uploadedFile.path)
   const mailOptions = {
       from: 'ceylincodk97@gmail.com', // Sender's email address
       to: to, // Receiver's email address
