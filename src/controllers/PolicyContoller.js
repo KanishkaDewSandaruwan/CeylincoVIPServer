@@ -138,9 +138,6 @@ const updatePolicyPayment = (req, res) => {
                 if (req.file && req.file.filename) {
                     sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
                     sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
-                } else {
-                    sendEmail(policies[0].customer_email, 'customer', emailContent);
-                    sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
                 }
 
                 res.status(200).send({ message: 'Policy payment and status updated successfully' });
