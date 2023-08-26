@@ -1,7 +1,8 @@
 const PolicyModel = require('../models/PolicyModel');
+const DealerModel = require('../models/DealerModel');
 const path = require('path');
 const fs = require('fs');
-const { sendppolicyEmail } = require('../../config/mail');
+const sendEmail  = require('../../config/mail');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -81,9 +82,9 @@ const updatePolicyPayment = (req, res) => {
     const { commition_amount, policy_id, policy_price } = req.body;
 
     const policy = {
-        policy_id : policy_id,
-        commition_amount:commition_amount,
-        policy_amount : policy_price
+        policy_id: policy_id,
+        commition_amount: commition_amount,
+        policy_amount: policy_price
     }
 
     PolicyModel.getPolicyById(policy_id, (error, policies) => {
@@ -97,42 +98,54 @@ const updatePolicyPayment = (req, res) => {
             return;
         }
 
-        PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, (error, paymentid) => {
+        DealerModel.getDealerById(policies[0].dealer_id, (error, dealer) => {
             if (error) {
-                res.status(500).send({ error: 'Error adding policy payment' });
+                res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
             }
 
-            const updatedPolicy = {
-                policy_id: policy.policy_id,
-                policy_price: policy.policy_amount
-            };
+            if (!dealer[0]) {
+                res.status(404).send({ error: 'Dealer not found' });
+                return;
+            }
 
-            console.log(policies[0])
+            PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, (error, paymentid) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error adding policy payment' });
+                    return;
+                }
 
-            // PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
-            //     if (updateError) {
-            //         // If updating policy fails, delete the added payment
-            //         PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
-            //             if (deleteError) {
-            //                 res.status(500).send({ error: 'Error updating policy and deleting payment' });
-            //             } else {
-            //                 res.status(500).send({ error: 'Error updating policy, payment deleted' });
-            //             }
-            //         });
-            //     } else {
-            //         PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
-            //             if (statusUpdateError) {
-            //                 res.status(500).send({ error: 'Error updating policy status' });
-            //             } else {
+                const updatedPolicy = {
+                    policy_id: policy.policy_id,
+                    policy_price: policy.policy_amount
+                };
+
+                sendEmail(policies[0].customer_email, 'test', 'test');
+
+                // PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
+                //     if (updateError) {
+                //         // If updating policy fails, delete the added payment
+                //         PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
+                //             if (deleteError) {
+                //                 res.status(500).send({ error: 'Error updating policy and deleting payment' });
+                //             } else {
+                //                 res.status(500).send({ error: 'Error updating policy, payment deleted' });
+                //             }
+                //         });
+                //     } else {
+                //         PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
+                //             if (statusUpdateError) {
+                //                 res.status(500).send({ error: 'Error updating policy status' });
+                //             } else {
 
 
-            //                 sendppolicyEmail()
-            //                 res.status(200).send({ message: 'Policy payment and status updated successfully' });
-            //             }
-            //         });
-            //     }
-            // });
+                //                 sendppolicyEmail()
+                //                 res.status(200).send({ message: 'Policy payment and status updated successfully' });
+                //             }
+                //         });
+                //     }
+                // });
+            });
         });
     });
 };
