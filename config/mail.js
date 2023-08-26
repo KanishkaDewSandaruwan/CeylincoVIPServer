@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendppolicyEmail = (to, message) => {
+const sendEmail = (to, subject, message) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -12,7 +12,7 @@ const sendppolicyEmail = (to, message) => {
     const mailOptions = {
         from: 'ceylincodk97@gmail.com', // Sender's email address
         to: to, // Receiver's email address
-        subject: 'Notify The Payment of Policy',
+        subject: subject,
         text: message
     };
 
@@ -25,4 +25,4 @@ const sendppolicyEmail = (to, message) => {
     });
 };
 
-module.exports = sendppolicyEmail;
+module.exports = sendEmail;
