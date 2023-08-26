@@ -135,9 +135,11 @@ const updatePolicyPayment = (req, res) => {
                     Policy Price: ${policy_price}
                 `;
 
+                console.log(req.file)
+
                 if (req.file && req.file.filename) {
-                    sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
-                    sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
+                    sendEmailWithAttachment(policies[0].customer_email, 'file', emailContent, req.file);
+                    sendEmailWithAttachment(dealer[0].dealer_email, 'file', emailContent, req.file);
                 }
 
                 res.status(200).send({ message: 'Policy payment and status updated successfully' });
