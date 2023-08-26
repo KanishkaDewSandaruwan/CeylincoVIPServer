@@ -90,7 +90,7 @@ const tableInfo = [
       { name: 'dealerid', type: 'INT(255)' },
       { name: 'policyid', type: 'INT(255)' },
       { name: 'policy_amount', type: 'FLOAT' },
-      { name: 'paid_amount', type: 'FLOAT' },
+      { name: 'qutation', type: 'VARCHAR(255)' },
       { name: 'commition_amount', type: 'FLOAT' },
       { name: 'trndate', type: 'DATETIME' },
       { name: 'status', type: 'INT(5)' },
