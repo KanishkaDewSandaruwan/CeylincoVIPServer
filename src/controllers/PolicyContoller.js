@@ -127,7 +127,7 @@ const updatePolicyPayment = (req, res) => {
                     return;
                 }
 
-                if (results.length === 0) {
+                if (results.length !== 0) {
                     res.status(404).send({ error: 'Payment Already Created!' });
                     return;
                 }
