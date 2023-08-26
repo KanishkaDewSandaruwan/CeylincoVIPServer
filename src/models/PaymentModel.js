@@ -32,6 +32,11 @@ const PaymentModel = {
         connection.query(query, [paymentid], callback);
     },
 
+    getPaymentByPolicyId(policy_id, callback) {
+        const query = 'SELECT * FROM payment WHERE policyid = ?';
+        connection.query(query, [policy_id], callback);
+    },
+
     getPayments(callback) {
         connection.query('SELECT * FROM payment WHERE is_delete = 0', callback);
     },

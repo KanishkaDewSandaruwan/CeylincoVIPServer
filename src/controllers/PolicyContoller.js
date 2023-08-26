@@ -1,8 +1,9 @@
 const PolicyModel = require('../models/PolicyModel');
 const DealerModel = require('../models/DealerModel');
+const PaymentModel = require('../models/PaymentModel');
 const path = require('path');
 const fs = require('fs');
-const {sendEmail , sendEmailWithAttachment } = require('../../config/mail');
+const { sendEmail, sendEmailWithAttachment } = require('../../config/mail');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -120,13 +121,24 @@ const updatePolicyPayment = (req, res) => {
                 return;
             }
 
-            PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, filePath, (error, paymentid) => {
+            PaymentModel.getPaymentByPolicyId(policy_id, (error, results) => {
                 if (error) {
-                    res.status(500).send({ error: 'Error adding policy payment' });
+                    res.status(500).send({ error: 'Error fetching data from the database' });
                     return;
                 }
 
-                const emailContent = `
+                if (results.length === 0) {
+                    res.status(404).send({ error: 'Payment Already Created!' });
+                    return;
+                }
+
+                PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, filePath, (error, paymentid) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error adding policy payment' });
+                        return;
+                    }
+
+                    const emailContent = `
                     Hello,
 
                     Here is the payment update for policy ${policy_id}.
@@ -135,14 +147,18 @@ const updatePolicyPayment = (req, res) => {
                     Policy Price: ${policy_price}
                 `;
 
-                console.log(req.file)
+                    console.log(req.file)
 
-                if (req.file && req.file.filename) {
-                    sendEmailWithAttachment(policies[0].customer_email, 'file', emailContent, req.file);
-                    sendEmailWithAttachment(dealer[0].dealer_email, 'file', emailContent, req.file);
-                }
+                    if (req.file && req.file.filename) {
+                        sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
+                        sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
+                    } else {
+                        sendEmail(policies[0].customer_email, 'customer', emailContent);
+                        sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
+                    }
 
-                res.status(200).send({ message: 'Policy payment and status updated successfully' });
+                    res.status(200).send({ message: 'Policy payment and status updated successfully' });
+                });
             });
         });
     });
