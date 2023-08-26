@@ -1,18 +1,28 @@
-const { google } = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
+const nodemailer = require('nodemailer');
 
-const oauth2Client = new OAuth2(
-  '682606529120-flvnsdurijgors8g4dceeok3l6f6pl2k.apps.googleusercontent.com',
-  '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',
-  'www.ceylinco.lk'
-);
+const sendppolicyEmail = (to, message) => {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'ceylincodk97@gmail.com', // Replace with your Gmail email
+            pass: 'fltwiuttvqaykgok' // Replace with your Gmail password or app-specific password
+        }
+    });
 
-// Generate a URL for the user to authenticate
-const authUrl = oauth2Client.generateAuthUrl({
-  access_type: 'offline',
-  scope: ['https://mail.google.com/']
-});
+    const mailOptions = {
+        from: 'ceylincodk97@gmail.com', // Sender's email address
+        to: to, // Receiver's email address
+        subject: 'Notify The Payment of Policy',
+        text: message
+    };
 
-// Once the user grants permission, you'll get an authorization code
-// Exchange the authorization code for access and refresh tokens
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+        } else {
+            console.log('Email sent:', info.response);
+        }
+    });
+};
 
+module.exports = sendppolicyEmail;

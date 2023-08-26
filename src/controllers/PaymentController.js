@@ -130,12 +130,12 @@ const updatePayment = (req, res) => {
                 return;
             }
 
-            
-
             res.status(200).send({ message: 'Paid amount updated successfully' });
         });
     });
 };
+
+
 
 module.exports = {
     getPaymentById,

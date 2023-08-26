@@ -1,6 +1,7 @@
 const PolicyModel = require('../models/PolicyModel');
 const path = require('path');
 const fs = require('fs');
+const { sendppolicyEmail } = require('../../config/mail');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -107,26 +108,31 @@ const updatePolicyPayment = (req, res) => {
                 policy_price: policy.policy_amount
             };
 
-            PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
-                if (updateError) {
-                    // If updating policy fails, delete the added payment
-                    PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
-                        if (deleteError) {
-                            res.status(500).send({ error: 'Error updating policy and deleting payment' });
-                        } else {
-                            res.status(500).send({ error: 'Error updating policy, payment deleted' });
-                        }
-                    });
-                } else {
-                    PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
-                        if (statusUpdateError) {
-                            res.status(500).send({ error: 'Error updating policy status' });
-                        } else {
-                            res.status(200).send({ message: 'Policy payment and status updated successfully' });
-                        }
-                    });
-                }
-            });
+            console.log(policies[0])
+
+            // PolicyModel.updatePrice(policy.policy_id, policy.policy_amount, (updateError, updateResults) => {
+            //     if (updateError) {
+            //         // If updating policy fails, delete the added payment
+            //         PolicyModel.deletePayment(paymentid, (deleteError, deleteResults) => {
+            //             if (deleteError) {
+            //                 res.status(500).send({ error: 'Error updating policy and deleting payment' });
+            //             } else {
+            //                 res.status(500).send({ error: 'Error updating policy, payment deleted' });
+            //             }
+            //         });
+            //     } else {
+            //         PolicyModel.updatePolicyStatus(policy.policy_id, 2, (statusUpdateError, statusUpdateResults) => {
+            //             if (statusUpdateError) {
+            //                 res.status(500).send({ error: 'Error updating policy status' });
+            //             } else {
+
+
+            //                 sendppolicyEmail()
+            //                 res.status(200).send({ message: 'Policy payment and status updated successfully' });
+            //             }
+            //         });
+            //     }
+            // });
         });
     });
 };
