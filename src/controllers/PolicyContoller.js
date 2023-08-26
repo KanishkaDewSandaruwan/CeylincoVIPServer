@@ -135,7 +135,7 @@ const updatePolicyPayment = (req, res) => {
                     Policy Price: ${policy_price}
                 `;
 
-                if (filePath) {
+                if (req.file && req.file.filename) {
                     sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
                     sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
                 } else {
