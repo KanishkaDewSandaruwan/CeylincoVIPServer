@@ -47,6 +47,12 @@ const PaymentModel = {
     getPayments(callback) {
         connection.query('SELECT * FROM payment WHERE is_delete = 0', callback);
     },
+    getPaymentsCompleted(callback) {
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 3', callback);
+    },
+    getPaymentsPending(callback) {
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 1', callback);
+    },
 
     updatePaidAmount(paymentid, paid_amount, callback) {
         const query = 'UPDATE payment SET paid_amount = ? WHERE paymentid = ?';

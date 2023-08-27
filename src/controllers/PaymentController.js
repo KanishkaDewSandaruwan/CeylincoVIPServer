@@ -106,6 +106,27 @@ const getPayments = (req, res) => {
     });
 };
 
+const getPaymentsCompleted = (req, res) => {
+    PaymentModel.getPaymentsCompleted((error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        res.status(200).send(results); // Modify the response as per your requirement
+    });
+};
+const getPaymentsPending = (req, res) => {
+    PaymentModel.getPaymentsPending((error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        res.status(200).send(results); // Modify the response as per your requirement
+    });
+};
+
 const updatePaidAmount = (req, res) => {
     const { paymentid } = req.params;
     const { paid_amount } = req.body;
@@ -169,5 +190,7 @@ module.exports = {
     getPayments,
     updatePaidAmount,
     updatePayment,
-    updatedeletePayment
+    updatedeletePayment,
+    getPaymentsPending,
+    getPaymentsCompleted
 };

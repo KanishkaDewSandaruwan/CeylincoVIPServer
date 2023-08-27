@@ -6,7 +6,9 @@ const {
     getPayments,
     updatePayment,
     updatePaidAmount,
-    updatedeletePayment
+    updatedeletePayment,
+    getPaymentsCompleted,
+    getPaymentsPending
 } = require('../../controllers/PaymentController');
 const { authenticateToken, authorizeAccessControll } = require('../../middlewares/userAuth');
 
@@ -17,6 +19,8 @@ module.exports = (config) => {
 
     // Authorized APIs for specific roles
     router.get('/all', authenticateToken, getPayments);
+    router.get('/all/completed', authenticateToken, getPaymentsCompleted);
+    router.get('/all/pending', authenticateToken, getPaymentsPending);
     router.get('/:paymentid', authenticateToken, getPaymentById);
     router.put('/update/:paymentid', authenticateToken, updatePayment);
     router.put('/status/:paymentid', authenticateToken, updatePaymentStatus);
