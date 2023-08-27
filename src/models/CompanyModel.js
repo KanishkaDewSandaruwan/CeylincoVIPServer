@@ -56,11 +56,11 @@ const CompanyModel = {
     },
 
     updateCompany(company, company_id, callback) {
-        const { company_name, company_branch, company_address, company_phone, company_email } = company;
+        const { company_name, company_branch, company_address, company_phone, company_email, status } = company;
 
-        const query = `UPDATE finance_company SET company_name = ?, company_branch = ?, company_address = ?, company_phone = ?, company_email = ? WHERE company_id = ?`;
+        const query = `UPDATE finance_company SET company_name = ?, company_branch = ?, company_address = ?, company_phone = ?, company_email = ? , status = ? WHERE company_id = ?`;
 
-        const values = [company_name, company_branch, company_address, company_phone, company_email, company_id];
+        const values = [company_name, company_branch, company_address, company_phone, company_email, status, company_id];
 
         connection.query(query, values, (error, results) => {
             if (error) {
