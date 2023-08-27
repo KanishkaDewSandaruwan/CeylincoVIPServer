@@ -40,7 +40,7 @@ const PaymentModel = {
     },
 
     getPaymentByPolicyId(policy_id, callback) {
-        const query = 'SELECT * FROM payment WHERE policyid = ?';
+        const query = 'SELECT * FROM payment WHERE policyid = ? WHERE is_delete = 0';
         connection.query(query, [policy_id], callback);
     },
 
