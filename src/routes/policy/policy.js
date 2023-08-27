@@ -9,6 +9,7 @@ module.exports = (config) => {
 
   router.post('/createpayment',uploadPayment.single('qutation'), updatePolicyPayment);
   router.get('/verify/:token', verifyPolicy);
+  router.use('/qutation', express.static('src/uploads/qutation/'));
 
   router.post('/create', addPolicy);
   router.get('/all', getAllPolicy);
