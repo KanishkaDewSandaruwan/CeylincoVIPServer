@@ -136,8 +136,6 @@ const updatePolicyPayment = (req, res) => {
                         return;
                     }
 
-                    const { policy_id, policy_price } = req.body;
-
                     PolicyModel.updatePrice(policy_id, policy_price, (error, results) => {
                         if (error) {
                             res.status(500).send({ error: 'Error updating password in the database' });
