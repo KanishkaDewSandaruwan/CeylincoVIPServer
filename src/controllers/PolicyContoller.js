@@ -139,6 +139,14 @@ const updatePolicyPayment = (req, res) => {
                             Hello,
                             Here is the payment update for policy ${policy_id}.
                             
+                            Policy Price: ${policy_price}
+                            Verification Link: ${verificationLink}
+                        `;
+                        
+                        const emailContentDealer = `
+                            Hello,
+                            Here is the payment update for policy ${policy_id}.
+                            
                             Commission Amount: ${commition_amount}
                             Policy Price: ${policy_price}
                             Verification Link: ${verificationLink}
@@ -146,10 +154,10 @@ const updatePolicyPayment = (req, res) => {
 
                         if (req.file && req.file.filename) {
                             sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
-                            sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
+                            sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContentDealer, req.file);
                         } else {
                             sendEmail(policies[0].customer_email, 'customer', emailContent);
-                            sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
+                            sendEmail(dealer[0].dealer_email, 'dealer', emailContentDealer);
                         }
 
                         res.status(200).send({ message: 'Policy payment and status updated successfully' });
@@ -186,6 +194,18 @@ const verifyPolicy = async (req, res) => {
                 if (updateError) {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {
+
+                    const emailContent = `
+                            Thank You! ,
+                            ${policy_id} Policy Was Confirmed.
+                            
+                            Your Policy Amount is ${policy_price}.
+
+                            Confirmed by Ceylinco Pvt ltd.
+                        `;
+
+                    sendEmail(policies[0].customer_email, 'customer', emailContent);
+                    sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
                     // Prepare the HTML response
                     const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
                     const htmlResponse = `
