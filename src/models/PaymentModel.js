@@ -22,6 +22,13 @@ const PaymentModel = {
         connection.query(query, values, callback);
     },
 
+    updatedeletePayment(paymentid, callback) {
+        const query = 'UPDATE payment SET is_delete = 1 WHERE paymentid = ?';
+        const values = [ paymentid];
+
+        connection.query(query, values, callback);
+    },
+
     deletePayment(paymentid, callback) {
         const query = 'DELETE FROM payment WHERE paymentid = ?';
         connection.query(query, [paymentid], callback);
@@ -55,9 +62,9 @@ const PaymentModel = {
         connection.query(query, values, callback);
     },
 
-    updatePayment(paymentid, paid_amount, status, callback) {
-        const query = 'UPDATE payment SET paid_amount = ?, status = ? WHERE paymentid = ?';
-        const values = [paid_amount, status, paymentid];
+    updatePayment(paymentid, commition_amount, callback) {
+        const query = 'UPDATE payment SET commition_amount = ? WHERE paymentid = ?';
+        const values = [commition_amount, paymentid];
 
         connection.query(query, values, callback);
     },

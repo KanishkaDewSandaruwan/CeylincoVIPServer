@@ -69,6 +69,31 @@ const deletePayment = (req, res) => {
     });
 };
 
+const updatedeletePayment = (req, res) => {
+    const { paymentid } = req.params;
+
+    PaymentModel.getPaymentById(paymentid, (error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching payment data' });
+            return;
+        }
+
+        if (results.length === 0) {
+            res.status(404).send({ error: 'Payment not found' });
+            return;
+        }
+
+        PaymentModel.updatedeletePayment(paymentid, (error) => {
+            if (error) {
+                res.status(500).send({ error: 'Error deleting payment' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Payment deleted successfully' });
+        });
+    });
+};
+
 
 const getPayments = (req, res) => {
     PaymentModel.getPayments((error, results) => {
@@ -109,7 +134,7 @@ const updatePaidAmount = (req, res) => {
 
 const updatePayment = (req, res) => {
     const { paymentid } = req.params;
-    const { paid_amount, status } = req.body;
+    const { commition_amount } = req.body;
 
     PaymentModel.getPaymentById(paymentid, (error, results) => {
         if (error) {
@@ -122,15 +147,15 @@ const updatePayment = (req, res) => {
             return;
         }
 
-        const { paid_amount, status } = req.body;
+        const { commition_amount } = req.body;
 
-        PaymentModel.updatePayment(paymentid, paid_amount, status, (error, updateResults) => {
+        PaymentModel.updatePayment(paymentid, commition_amount, (error, updateResults) => {
             if (error) {
                 res.status(500).send({ error: 'Error updating paid amount' });
                 return;
             }
 
-            res.status(200).send({ message: 'Paid amount updated successfully' });
+            res.status(200).send({ message: 'Update successfully Completed!' });
         });
     });
 };
@@ -143,5 +168,6 @@ module.exports = {
     deletePayment,
     getPayments,
     updatePaidAmount,
-    updatePayment
+    updatePayment,
+    updatedeletePayment
 };

@@ -5,7 +5,8 @@ const {
     deletePayment,
     getPayments,
     updatePayment,
-    updatePaidAmount
+    updatePaidAmount,
+    updatedeletePayment
 } = require('../../controllers/PaymentController');
 const { authenticateToken, authorizeAccessControll } = require('../../middlewares/userAuth');
 
@@ -19,7 +20,7 @@ module.exports = (config) => {
     router.get('/:paymentid', authenticateToken, getPaymentById);
     router.put('/update/:paymentid', authenticateToken, updatePayment);
     router.put('/status/:paymentid', authenticateToken, updatePaymentStatus);
-    router.delete('/delete/:paymentid', authorizeAccessControll, deletePayment);
+    router.delete('/delete/:paymentid', authorizeAccessControll, updatedeletePayment);
     router.put('/updatePaidAmount/:paymentid', authenticateToken, updatePaidAmount);
 
     return router;
