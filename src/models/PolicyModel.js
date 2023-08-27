@@ -2,12 +2,12 @@ const { connection } = require('../../config/connection');
 
 const PolicyModel = {
     getAllPolicies(callback) {
-        const query = 'SELECT * FROM policy';
+        const query = 'SELECT * FROM policy WHERE is_delete = 0';
         connection.query(query, callback);
     },
 
     getPolicyById(policy_id, callback) {
-        const query = 'SELECT * FROM policy WHERE policy_id = ?';
+        const query = 'SELECT * FROM policy WHERE is_delete = 0 AND policy_id = ?';
         connection.query(query, [policy_id], callback);
     },
 
