@@ -3,12 +3,12 @@ const { connection } = require('../../config/connection');
 
 const CompanyModel = {
     getAllCompanies(callback) {
-        const query = 'SELECT * FROM finance_company';
+        const query = 'SELECT * FROM finance_company WHERE is_delete = 0';
         connection.query(query, callback);
     },
 
     getCompanyById(company_id, callback) {
-        const query = 'SELECT * FROM finance_company WHERE company_id = ?';
+        const query = 'SELECT * FROM finance_company WHERE is_delete = 0 AND company_id = ?';
         connection.query(query, [company_id], callback);
     },
 
@@ -82,7 +82,7 @@ const CompanyModel = {
     },
 
     deleteCompany(company_id, callback) {
-        const query = 'DELETE FROM finance_company WHERE company_id = ?';
+        const query = 'UPDATE finance_company SET is_delete = 0  WHERE company_id = ?';
         const values = [company_id];
 
         connection.query(query, values, callback);
