@@ -4,7 +4,6 @@ const PaymentModel = require('../models/PaymentModel');
 const path = require('path');
 const fs = require('fs');
 const { sendEmail, sendEmailWithAttachment } = require('../../config/mail');
-const  generateVerificationToken  = require('../../config/token');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -81,7 +80,9 @@ const changePolicyStatus = (req, res) => {
 };
 
 
-
+function generateVerificationToken(email, paymentid) {
+    return jwt.sign({ email, paymentid }, process.env.JWT_SECRET);
+}
 
 const updatePolicyPayment = (req, res) => {
     const { commition_amount, policy_id, policy_price } = req.body;
@@ -167,6 +168,7 @@ const updatePolicyPayment = (req, res) => {
         });
     });
 };
+
 
 const verifyPolicy = async (req, res) => {
     const { token } = req.params;
