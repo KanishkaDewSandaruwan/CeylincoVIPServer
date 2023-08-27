@@ -4,6 +4,7 @@ const PaymentModel = require('../models/PaymentModel');
 const path = require('path');
 const fs = require('fs');
 const { sendEmail, sendEmailWithAttachment } = require('../../config/mail');
+const  generateVerificationToken  = require('../../config/token');
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -138,6 +139,10 @@ const updatePolicyPayment = (req, res) => {
                         return;
                     }
 
+                    const verificationToken = generateVerificationToken(dealer[0].dealer_email)
+
+                    const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
+
                     const emailContent = `
                     Hello,
 
@@ -145,9 +150,8 @@ const updatePolicyPayment = (req, res) => {
                     
                     Commission Amount: ${commition_amount}
                     Policy Price: ${policy_price}
+                    Policy Price: ${verificationLink}
                 `;
-
-                    console.log(req.file)
 
                     if (req.file && req.file.filename) {
                         sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
@@ -162,6 +166,71 @@ const updatePolicyPayment = (req, res) => {
             });
         });
     });
+};
+
+const verifyPolicy = async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const email = decoded.email; // Use the correct field name from the token
+
+        DealerModel.getDealerByemail(email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Dealer not found' });
+            }
+
+            DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
+                if (updateError) {
+                    return res.status(500).send({ error: 'Error updating dealer status' });
+                } else {
+                    // Prepare the HTML response
+                    const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                    const htmlResponse = `
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Thank You for Email Verification</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    text-align: center;
+                                    padding: 50px;
+                                }
+                                h1 {
+                                    color: #333;
+                                }
+                                p {
+                                    color: #777;
+                                    margin-top: 20px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Thank You!</h1>
+                            <p>Your Policy has been confirmed.</p>
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = "${redirectUrl}";
+                                }, 1000); // Adjust the delay time as needed
+                            </script>
+                        </body>
+                        </html>
+                    `;
+                    return res.status(200).send(htmlResponse);
+                }
+            });
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
 };
 
 
@@ -293,5 +362,6 @@ module.exports = {
     uploadFiles,
     getFiles,
     updatePolicyPayment,
-    updatePrice
+    updatePrice,
+    verifyPolicy
 };

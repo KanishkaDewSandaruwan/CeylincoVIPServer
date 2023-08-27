@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllPolicy, findPolicy, addPolicy, updatePolicyPayment, changePolicyStatus, deletePolicy, uploadFiles, getFiles, updatePrice } = require('../../controllers/PolicyContoller');
+const { getAllPolicy, findPolicy, verifyPolicy, addPolicy, updatePolicyPayment, changePolicyStatus, deletePolicy, uploadFiles, getFiles, updatePrice } = require('../../controllers/PolicyContoller');
 const { authenticateToken } = require('../../middlewares/userAuth');
 
 const { uploadPolicyFiles, uploadPayment } = require('../../../config/fileUpload');
@@ -8,6 +8,7 @@ module.exports = (config) => {
   const router = express.Router();
 
   router.post('/createpayment',uploadPayment.single('qutation'), updatePolicyPayment);
+  router.get('/verify/:token', verifyPolicy);
 
   router.post('/create', addPolicy);
   router.get('/all', getAllPolicy);
