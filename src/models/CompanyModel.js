@@ -82,7 +82,7 @@ const CompanyModel = {
     },
 
     deleteCompany(company_id, callback) {
-        const query = 'UPDATE finance_company SET is_delete = 0  WHERE company_id = ?';
+        const query = 'UPDATE finance_company SET is_delete = 1  WHERE company_id = ?';
         const values = [company_id];
 
         connection.query(query, values, callback);
