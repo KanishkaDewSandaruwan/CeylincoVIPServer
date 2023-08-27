@@ -48,6 +48,13 @@ const PaymentModel = {
         connection.query(query, values, callback);
     },
 
+    updatePaymentStatus(paymentid, status, callback) {
+        const query = 'UPDATE payment SET status = ? WHERE paymentid = ?';
+        const values = [status, paymentid];
+
+        connection.query(query, values, callback);
+    },
+
     updatePayment(paymentid, paid_amount, status, callback) {
         const query = 'UPDATE payment SET paid_amount = ?, status = ? WHERE paymentid = ?';
         const values = [paid_amount, status, paymentid];

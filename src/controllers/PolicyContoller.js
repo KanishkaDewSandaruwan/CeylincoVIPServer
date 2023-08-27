@@ -139,7 +139,7 @@ const updatePolicyPayment = (req, res) => {
                         return;
                     }
 
-                    const verificationToken = generateVerificationToken(dealer[0].dealer_email)
+                    const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid)
 
                     const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
 
@@ -175,6 +175,7 @@ const verifyPolicy = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const email = decoded.email; // Use the correct field name from the token
+        const paymentid = decoded.paymentid; // Use the correct field name from the token
 
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
@@ -185,7 +186,7 @@ const verifyPolicy = async (req, res) => {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
 
-            DealerModel.updatestatus(existingDealer[0].dealer_id, 1, (updateError, updateResult) => {
+            PaymentModel.updatePaymentStatus(paymentid, 2, (updateError, updateResult) => {
                 if (updateError) {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {

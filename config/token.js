@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-function generateVerificationToken(email) {
-    return jwt.sign({ email }, process.env.JWT_SECRET);
+function generateVerificationToken(email, paymentid) {
+    return jwt.sign({ email, paymentid }, process.env.JWT_SECRET);
 }
 
 module.exports = generateVerificationToken;
