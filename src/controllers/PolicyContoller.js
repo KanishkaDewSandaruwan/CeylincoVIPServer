@@ -82,7 +82,6 @@ const changePolicyStatus = (req, res) => {
 
 const updatePolicyPayment = (req, res) => {
     const { commition_amount, policy_id, policy_price } = req.body;
-
     let filePath = "";
 
     if (req.file && req.file.filename) {
@@ -99,62 +98,51 @@ const updatePolicyPayment = (req, res) => {
 
     PolicyModel.getPolicyById(policy_id, (error, policies) => {
         if (error) {
-            res.status(500).send({ error: 'Error fetching data from the database' });
-            return;
+            return res.status(500).send({ error: 'Error fetching data from the database' });
         }
 
         if (!policies[0]) {
-            res.status(404).send({ error: 'Policy not found' });
-            return;
+            return res.status(404).send({ error: 'Policy not found' });
         }
 
         DealerModel.getDealerById(policies[0].dealer_id, (error, dealer) => {
             if (error) {
-                res.status(500).send({ error: 'Error fetching data from the database' });
-                return;
+                return res.status(500).send({ error: 'Error fetching data from the database' });
             }
 
             if (!dealer[0]) {
-                res.status(404).send({ error: 'Dealer not found' });
-                return;
+                return res.status(404).send({ error: 'Dealer not found' });
             }
 
             PaymentModel.getPaymentByPolicyId(policy_id, (error, results) => {
                 if (error) {
-                    res.status(500).send({ error: 'Error fetching data from the database' });
-                    return;
+                    return res.status(500).send({ error: 'Error fetching data from the database' });
                 }
 
                 if (results.length !== 0) {
-                    res.status(404).send({ error: 'Payment Already Created!' });
-                    return;
+                    return res.status(400).send({ error: 'Payment Already Created!' });
                 }
 
                 PolicyModel.addPolicyPayment(policy, policies[0].dealer_id, filePath, (error, paymentid) => {
                     if (error) {
-                        res.status(500).send({ error: 'Error adding policy payment' });
-                        return;
+                        return res.status(500).send({ error: 'Error adding policy payment' });
                     }
 
                     PolicyModel.updatePrice(policy_id, policy_price, (error, results) => {
                         if (error) {
-                            res.status(500).send({ error: 'Error updating password in the database' });
-                            return;
+                            return res.status(500).send({ error: 'Error updating policy price in the database' });
                         }
 
-                        const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid)
-
+                        const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid);
                         const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
-
                         const emailContent = `
-                        Hello,
-    
-                        Here is the payment update for policy ${policy_id}.
-                        
-                        Commission Amount: ${commition_amount}
-                        Policy Price: ${policy_price}
-                        Policy Price: ${verificationLink}
-                    `;
+                            Hello,
+                            Here is the payment update for policy ${policy_id}.
+                            
+                            Commission Amount: ${commition_amount}
+                            Policy Price: ${policy_price}
+                            Verification Link: ${verificationLink}
+                        `;
 
                         if (req.file && req.file.filename) {
                             sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
@@ -165,15 +153,12 @@ const updatePolicyPayment = (req, res) => {
                         }
 
                         res.status(200).send({ message: 'Policy payment and status updated successfully' });
-
-                        res.status(200).send({ success: true, policy_id });
                     });
                 });
             });
         });
     });
 };
-
 
 function generateVerificationToken(email, paymentid) {
     return jwt.sign({ email, paymentid }, process.env.JWT_SECRET);
