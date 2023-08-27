@@ -25,7 +25,7 @@ module.exports = (config) => {
 
   router.get('/:policy_id', authenticateToken, findPolicy);
   router.put('/status/:policy_id', authenticateToken, changePolicyStatus);
-  router.put('/delete/:policy_id', authenticateToken, deletePolicy);
+  router.delete('/delete/:policy_id', authenticateToken, deletePolicy);
 
   return router;
 };
