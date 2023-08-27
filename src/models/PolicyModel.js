@@ -194,6 +194,13 @@ const PolicyModel = {
         connection.query(query, values, callback);
     },
 
+    deletePolicyUpdate(policy_id, callback) {
+        const query = 'UPDATE policy SET is_delete = 1 WHERE policy_id = ?';
+        const values = [policy_id];
+
+        connection.query(query, values, callback);
+    },
+
     updateUpload(field, policy_id, filePath, callback) {
         const query = `UPDATE policy SET ${field} = ? WHERE policy_id = ?`;
         const values = [filePath, policy_id];

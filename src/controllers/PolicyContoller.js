@@ -271,7 +271,7 @@ const deletePolicy = (req, res) => {
             return;
         }
 
-        PolicyModel.deletePolicy(policy_id, (error, results) => {
+        PolicyModel.deletePolicyUpdate(policy_id, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error deleting policy from the database' });
                 return;
