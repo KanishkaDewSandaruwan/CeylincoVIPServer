@@ -18,6 +18,7 @@ const {
 const {
     authenticateTokenDealer,
     authorizeValidateDealer,
+    authenticateToken,
     authorizeAccessControll
 } = require('../../middlewares/userAuth');
 
@@ -38,7 +39,7 @@ module.exports = (config) => {
     
     router.get('/verify/:token', validateDealer);
     
-    router.get('/dash/all', authorizeAccessControll, getAll);
+    router.get('/dash/all', authenticateToken, getAll);
     router.get('/dash/:dealer_id', authorizeAccessControll, getDealerById);
     router.put('/dash/status/:dealer_id', authorizeAccessControll, changeStatus);
     router.put('/dash/delete/:dealer_id', authorizeAccessControll, deleteDealer);
