@@ -50,6 +50,9 @@ const PaymentModel = {
     getPaymentsCompleted(callback) {
         connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 3', callback);
     },
+    getPaymentsConfirmed(callback) {
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 2', callback);
+    },
     getPaymentsPending(callback) {
         connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 1', callback);
     },
