@@ -136,29 +136,38 @@ const updatePolicyPayment = (req, res) => {
                         return;
                     }
 
-                    const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid)
+                    PolicyModel.updatePrice(policy_id, policy_price, (error, results) => {
+                        if (error) {
+                            res.status(500).send({ error: 'Error updating password in the database' });
+                            return;
+                        }
 
-                    const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
+                        const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid)
 
-                    const emailContent = `
-                    Hello,
+                        const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
 
-                    Here is the payment update for policy ${policy_id}.
-                    
-                    Commission Amount: ${commition_amount}
-                    Policy Price: ${policy_price}
-                    Policy Price: ${verificationLink}
-                `;
+                        const emailContent = `
+                        Hello,
+    
+                        Here is the payment update for policy ${policy_id}.
+                        
+                        Commission Amount: ${commition_amount}
+                        Policy Price: ${policy_price}
+                        Policy Price: ${verificationLink}
+                    `;
 
-                    if (req.file && req.file.filename) {
-                        sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
-                        sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
-                    } else {
-                        sendEmail(policies[0].customer_email, 'customer', emailContent);
-                        sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
-                    }
+                        if (req.file && req.file.filename) {
+                            sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
+                            sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContent, req.file);
+                        } else {
+                            sendEmail(policies[0].customer_email, 'customer', emailContent);
+                            sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
+                        }
 
-                    res.status(200).send({ message: 'Policy payment and status updated successfully' });
+                        res.status(200).send({ message: 'Policy payment and status updated successfully' });
+
+                        res.status(200).send({ success: true, policy_id });
+                    });
                 });
             });
         });

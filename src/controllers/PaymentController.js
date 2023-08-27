@@ -1,4 +1,5 @@
 const PaymentModel = require('../models/PaymentModel');
+const PolicyModel = require('../models/PolicyModel');
 
 const getPaymentById = (req, res) => {
     const { paymentid } = req.params;
@@ -72,13 +73,13 @@ const deletePayment = (req, res) => {
 const updatedeletePayment = (req, res) => {
     const { paymentid } = req.params;
 
-    PaymentModel.getPaymentById(paymentid, (error, results) => {
+    PaymentModel.getPaymentById(paymentid, (error, resultss) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching payment data' });
             return;
         }
 
-        if (results.length === 0) {
+        if (resultss.length === 0) {
             res.status(404).send({ error: 'Payment not found' });
             return;
         }
@@ -89,7 +90,14 @@ const updatedeletePayment = (req, res) => {
                 return;
             }
 
-            res.status(200).send({ message: 'Payment deleted successfully' });
+            PolicyModel.updatePrice(resultss[0].policyid, 0, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error updating password in the database' });
+                    return;
+                }
+                res.status(200).send({ message: 'Payment deleted successfully' });
+            });
+
         });
     });
 };
