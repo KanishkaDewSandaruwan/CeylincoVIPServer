@@ -178,6 +178,7 @@ const verifyPolicy = async (req, res) => {
 
         const email = decoded.email; // Use the correct field name from the token
         const paymentid = decoded.paymentid; // Use the correct field name from the token
+        console.log(paymentid)
 
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
@@ -188,7 +189,7 @@ const verifyPolicy = async (req, res) => {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
 
-            console.log(paymentid)
+            console.log(decoded)
 
             PaymentModel.updatePaymentStatus(paymentid, 2, (updateError, updateResult) => {
                 if (updateError) {
