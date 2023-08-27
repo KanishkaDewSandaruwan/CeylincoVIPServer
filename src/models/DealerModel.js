@@ -14,7 +14,7 @@ const DealerModel = {
     },
 
     getDealerById(dealer_id, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_id = ? AND is_delete = 0', [dealer_id], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_id = ?', [dealer_id], callback);
     },
 
     getDealerByemail(email, callback) {

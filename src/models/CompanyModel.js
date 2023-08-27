@@ -8,7 +8,7 @@ const CompanyModel = {
     },
 
     getCompanyById(company_id, callback) {
-        const query = 'SELECT * FROM finance_company WHERE is_delete = 0 AND company_id = ?';
+        const query = 'SELECT * FROM finance_company WHERE company_id = ?';
         connection.query(query, [company_id], callback);
     },
 
