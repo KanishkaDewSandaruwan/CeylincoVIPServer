@@ -9,7 +9,7 @@ module.exports = (config) => {
     //no token authontication
     router.post('/login', login);
     router.post('/forget-password', fogetPassword);
-    router.post('/verify', restPassword);
+    router.get('/verify', restPassword);
 
     //user role permission authontication
     router.post('/create', authorizeAccessControll, addUser);
