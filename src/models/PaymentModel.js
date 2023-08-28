@@ -102,7 +102,7 @@ const PaymentModel = {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
     
             console.log(today)
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate = ?';
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE DATE(trndate) = ?';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
