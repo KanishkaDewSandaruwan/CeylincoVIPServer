@@ -3,8 +3,8 @@ const PolicyModel = require('../models/PolicyModel');
 
 const getPaymentCount = async (req, res) => {
     try {
-        const results = await PaymentModel.getPaymentCount();
-        res.status(200).send(results);
+        const count = await PaymentModel.getPaymentCount();
+        res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count' });
     }
