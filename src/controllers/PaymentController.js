@@ -7,7 +7,7 @@ const getPaymentCounts = async (req, res) => {
             PaymentModel.getPaymentCount(),
             PaymentModel.getTodayPayments(),
             PaymentModel.getThisMonthPayments(),
-            PaymentModel.getPaymentsForYear(new Date().getFullYear())
+            PaymentModel.getPaymentsForYear()
         ]);
 
         res.status(200).send({
