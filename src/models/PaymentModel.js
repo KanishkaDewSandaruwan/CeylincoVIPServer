@@ -120,7 +120,7 @@ const PaymentModel = {
         
             console.log(currentYear + ' ' + currentMonth)
 
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? AND MONTH(trndate) = ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? AND MONTH(trndate) = ?';
             connection.query(query, [currentYear, currentMonth], (error, results) => {
                 if (error) {
                     reject(error);
@@ -133,7 +133,7 @@ const PaymentModel = {
 
     getPaymentsForYearSum(year) {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? ';
             connection.query(query, [year], (error, results) => {
                 if (error) {
                     reject(error);
