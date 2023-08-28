@@ -195,8 +195,9 @@ const updateUser = (req, res) => {
 const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
     const {fullname , phonenumber, address, email} = req.body;
+    const user = req.body;
 
-    console.log(req.body)
+    console.log(user)
 
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
