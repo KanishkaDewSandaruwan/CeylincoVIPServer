@@ -6,8 +6,8 @@ require('dotenv').config(); // Load environment variables
 
 const getDealerCount = async (req, res) => {
     try {
-        const results = await DealerModel.getDealerCount();
-        res.status(200).send(results);
+        const count = await DealerModel.getDealerCount();
+        res.status(200).send({count : count});
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count' });
     }
