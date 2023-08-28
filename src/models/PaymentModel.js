@@ -106,6 +106,7 @@ const PaymentModel = {
                 if (error) {
                     reject(error);
                 } else {
+                    console.log(results[0].sum)
                     resolve(results[0].sum);
                 }
             });
