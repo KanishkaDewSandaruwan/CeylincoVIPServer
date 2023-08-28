@@ -126,7 +126,7 @@ const restPassword = async (req, res) => {
                 <style>
                     body {
                         font-family: Arial, sans-serif;
-                        text-align: center;
+                        text-align: left;
                         padding: 50px;
                         background-color: #f5f5f5;
                     }
@@ -191,6 +191,30 @@ const restPassword = async (req, res) => {
         return res.status(400).send({ error: 'Token is invalid or expired' });
     }
 };
+
+const newPassword = (req, res) => {
+    const { token } = req.params;
+    const { newPassword, confirmPassword } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const email = decoded.email; // Use the correct field name from the token
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).send({ error: 'Passwords do not match' });
+        }
+
+        // Update the user's password in the database
+        UserModel.updatePasswordByEmail(email, newPassword);
+
+        // Redirect the user to a success page
+        const redirectUrl = 'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com';
+        return res.redirect(redirectUrl);
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
+}
 
 const findUser = (req, res) => {
     const { userid } = req.params;
@@ -653,5 +677,6 @@ module.exports = {
     deleteusers,
     updateUserProfiles,
     fogetPassword,
-    restPassword
+    restPassword,
+    newPassword
 };                                                                                                                                            

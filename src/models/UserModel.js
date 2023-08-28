@@ -72,6 +72,13 @@ const UserModel = {
     connection.query(query, values, callback);
   },
 
+  updatePasswordByEmail(email, newPassword, callback) {
+    const query = 'UPDATE user SET password = ? WHERE email = ?';
+    const values = [newPassword, email];
+
+    connection.query(query, values, callback);
+  },
+
   changeEmail(userid, newEmail, callback) {
     const query = 'UPDATE user SET email = ? WHERE userid = ?';
     const values = [newEmail, userid];
