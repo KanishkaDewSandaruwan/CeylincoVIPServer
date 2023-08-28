@@ -22,12 +22,12 @@ const PolicyModel = {
     getTodayPolicies() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT * FROM policy WHERE policy_start_date = ? AND is_delete = 0 AND policy_status = 3';
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE policy_start_date = ? AND is_delete = 0 AND policy_status = 3';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
@@ -42,12 +42,12 @@ const PolicyModel = {
             const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
             const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
     
-            const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
             connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
@@ -58,12 +58,12 @@ const PolicyModel = {
             const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
             const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
     
-            const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
             connection.query(query, [startOfYear, endOfYear], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
