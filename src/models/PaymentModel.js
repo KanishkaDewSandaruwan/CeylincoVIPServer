@@ -15,10 +15,10 @@ const PaymentModel = {
         });
     },
 
-    //statistics
+    //statistics count
     getPaymentCount() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 2';
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
@@ -32,7 +32,7 @@ const PaymentModel = {
     getTodayPayments() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 2';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
@@ -81,6 +81,72 @@ const PaymentModel = {
             });
         });
     },
+
+
+    //statistics sum
+    getPaymentSum() {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE is_delete = 0 AND status = 2';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    getTodayPaymentsSum() {
+        return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 2';
+            connection.query(query, [today], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    getThisMonthPaymentsSum() {
+        return new Promise((resolve, reject) => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // JavaScript months are zero-based
+
+            const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
+            const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
+            connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    getPaymentsForYearSum(year) {
+        return new Promise((resolve, reject) => {
+            const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
+            const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
+
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
+            connection.query(query, [startOfYear, endOfYear], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
 
     updatePaymentStatus(paymentid, status, callback) {
         const query = 'UPDATE payment SET status = ? WHERE paymentid = ?';

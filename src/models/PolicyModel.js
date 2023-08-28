@@ -18,7 +18,7 @@ const PolicyModel = {
             });
         });
     },
-
+    
     getTodayPolicies() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
@@ -32,16 +32,16 @@ const PolicyModel = {
             });
         });
     },
-
+    
     getThisMonthPolicies() {
         return new Promise((resolve, reject) => {
             const now = new Date();
             const year = now.getFullYear();
             const month = now.getMonth() + 1; // JavaScript months are zero-based
-
+    
             const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
             const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-
+    
             const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
             connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
                 if (error) {
@@ -52,12 +52,12 @@ const PolicyModel = {
             });
         });
     },
-
+    
     getPoliciesForYear(year) {
         return new Promise((resolve, reject) => {
             const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
             const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
-
+    
             const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
             connection.query(query, [startOfYear, endOfYear], (error, results) => {
                 if (error) {
@@ -68,8 +68,7 @@ const PolicyModel = {
             });
         });
     },
-
-
+    
     getPolicyById(policy_id, callback) {
         const query = 'SELECT * FROM policy WHERE is_delete = 0 AND policy_id = ?';
         connection.query(query, [policy_id], callback);

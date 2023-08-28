@@ -15,42 +15,26 @@ const getPolicyCart = async (req, res) => {
     }
 };
 
-const getPolicyCount = async (req, res) => {
+const getPolicyStatistics = async (req, res) => {
     try {
-        const results = await PolicyModel.getPolicyCount();
-        res.status(200).send(results);
+        const policyCount = await PolicyModel.getPolicyCount();
+        const todayPolicies = await PolicyModel.getTodayPolicies();
+        const thisMonthPolicies = await PolicyModel.getThisMonthPolicies();
+        const thisYearPolicies = await PolicyModel.getPoliciesForYear(new Date().getFullYear());
+
+        const policyStatistics = {
+            policyCount: policyCount,
+            todayPolicies: todayPolicies,
+            thisMonthPolicies: thisMonthPolicies,
+            thisYearPolicies: thisYearPolicies
+        };
+
+        res.status(200).send(policyStatistics);
     } catch (error) {
-        res.status(500).send({ error: 'Error fetching policy count' });
+        res.status(500).send({ error: 'Error fetching policy statistics' });
     }
 };
 
-const getPolicyCountToday = async (req, res) => {
-    try {
-        const results = await PolicyModel.getTodayPolicies();
-        res.status(200).send(results);
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching policy count for today' });
-    }
-};
-
-const getPolicyCountThisMonth = async (req, res) => {
-    try {
-        const results = await PolicyModel.getThisMonthPolicies();
-        res.status(200).send(results);
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching policy count for this month' });
-    }
-};
-
-const getPolicyCountThisYear = async (req, res) => {
-    try {
-        const year = req.params.year; // Assuming you pass the year as a URL parameter
-        const results = await PolicyModel.getPoliciesForYear(year);
-        res.status(200).send(results);
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching policy count for this year' });
-    }
-};
 
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
@@ -427,9 +411,6 @@ module.exports = {
     updatePolicyPayment,
     updatePrice,
     verifyPolicy,
-    getPolicyCount,
-    getPolicyCountToday,
-    getPolicyCountThisMonth,
-    getPolicyCountThisYear,
+    getPolicyStatistics,
     getPolicyCart
 };

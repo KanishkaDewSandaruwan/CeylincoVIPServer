@@ -1,41 +1,47 @@
 const PaymentModel = require('../models/PaymentModel');
 const PolicyModel = require('../models/PolicyModel');
 
-const getPaymentCount = async (req, res) => {
+const getPaymentCounts = async (req, res) => {
     try {
-        const count = await PaymentModel.getPaymentCount();
-        res.status(200).send({ count: count });
+        const [count, todayCount, monthCount, yearCount] = await Promise.all([
+            PaymentModel.getPaymentCount(),
+            PaymentModel.getTodayPayments(),
+            PaymentModel.getThisMonthPayments(),
+            PaymentModel.getPaymentsForYear(new Date().getFullYear())
+        ]);
+
+        res.status(200).send({
+            totalCount: count,
+            todayCount: todayCount,
+            thisMonthCount: monthCount,
+            thisYearCount: yearCount
+        });
     } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment count' });
+        res.status(500).send({ error: 'Error fetching payment counts' });
     }
 };
 
-const getPaymentCountToday = async (req, res) => {
+const getAllPaymentSums = async (req, res) => {
     try {
-        const count = await PaymentModel.getTodayPayments();
-        res.status(200).send({ count: count });
+        const [totalSum, todaySum, thisMonthSum, thisYearSum] = await Promise.all([
+            PaymentModel.getPaymentSum(),
+            PaymentModel.getTodayPaymentsSum(),
+            PaymentModel.getThisMonthPaymentsSum(),
+            PaymentModel.getPaymentsForYearSum()
+        ]);
+
+        res.status(200).send({
+            totalSum: totalSum,
+            todaySum: todaySum,
+            thisMonthSum: thisMonthSum,
+            thisYearSum: thisYearSum
+        });
     } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment count for today' });
+        res.status(500).send({ error: 'Error fetching payment sums' });
     }
 };
 
-const getPaymentCountThisMonth = async (req, res) => {
-    try {
-        const count = await PaymentModel.getThisMonthPayments();
-        res.status(200).send({ count: count });
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment count for this month' });
-    }
-};
 
-const getPaymentCountThisYear = async (req, res) => {
-    try {
-        const count = await PaymentModel.getPaymentsForYear();
-        res.status(200).send({ count: count });
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment count for this year' });
-    }
-};
 
 const getPaymentById = (req, res) => {
     const { paymentid } = req.params;
@@ -248,8 +254,6 @@ module.exports = {
     getPaymentsPending,
     getPaymentsCompleted,
     getPaymentsConfiemed,
-    getPaymentCountThisYear,
-    getPaymentCountThisMonth,
-    getPaymentCountToday,
-    getPaymentCount
+    getPaymentCounts,
+    getAllPaymentSums
 };
