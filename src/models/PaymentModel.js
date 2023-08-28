@@ -100,10 +100,9 @@ const PaymentModel = {
     getTodayPaymentsSum() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const formattedToday = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format for 'YYYY-MM-DD HH:mm:ss'
-
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 2';
-            connection.query(query, [formattedToday], (error, results) => {
+    
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE DATE(trndate) = ? AND is_delete = 0 AND status = 2';
+            connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -116,18 +115,15 @@ const PaymentModel = {
     getThisMonthPaymentsSum() {
         return new Promise((resolve, reject) => {
             const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1; // JavaScript months are zero-based
-
-            const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
-            const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
-            connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1; // Months are 0-indexed, so add 1
+    
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? AND MONTH(trndate) = ? AND is_delete = 0 AND status = 3';
+            connection.query(query, [currentYear, currentMonth], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results[0].sum);
+                    resolve(results[0].sum || 0); // Ensure a default value if sum is null
                 }
             });
         });
@@ -135,11 +131,8 @@ const PaymentModel = {
 
     getPaymentsForYearSum(year) {
         return new Promise((resolve, reject) => {
-            const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
-            const endOfYear = new Date(year, 11, 31, 23, 59, 59).toISOString().split('T')[0]; // Adjusted for the end of the year
-
-            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
-            connection.query(query, [startOfYear, endOfYear], (error, results) => {
+            const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE YEAR(trndate) = ? AND is_delete = 0 AND status = 3';
+            connection.query(query, [year], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
