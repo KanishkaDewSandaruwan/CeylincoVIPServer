@@ -1,6 +1,7 @@
 const UserModel = require('../models/UserModel');
 const userView = require('../views/userView');
 const jwt = require('jsonwebtoken');
+const { sendEmail } = require('../../config/mail');
 require('dotenv').config(); // Load environment variables
 
 const login = (req, res) => {
@@ -65,6 +66,80 @@ getUserById = (req, res) => {
         res.status(200).send(results);
     });
 }
+
+const fogetPassword = (req, res) => {
+    const { email } = req.body;
+
+    UserModel.getUserByEmail(email, (error, user) => {
+        if (error) {
+            return res.status(500).send({ error: 'Error fetching data from the database' });
+        }
+
+        if (!user[0]) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        const verificationToken = generateVerificationToken(email);
+        const verificationLink = `https://backend.policycollector.xyz/api/user/verify/${verificationToken}`;
+        const emailContent = `
+        Hi, ${user[0].fullname}
+        
+        Your Password reset link is ${verificationLink}. click here to reset password
+        `;
+
+        sendEmail(email, 'Reset Password', emailContent);
+        res.status(200).send({ message: 'Policy payment and status updated successfully' });
+
+
+    });
+};
+
+function generateVerificationToken(email) {
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' }); // Change expiresIn as needed
+}
+
+const restPassword = async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const email = decoded.email; // Use the correct field name from the token
+
+        UserModel.getUserByEmail(email, async (error, existingUser) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
+            if (!existingUser[0]) {
+                return res.status(404).send({ error: 'User not found' });
+            }
+
+            const redirectUrl = 'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com/new-password'; // Replace with the Gmail URL you want to redirect to
+
+            const formHtml = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Reset Password</title>
+                </head>
+                <body>
+                    <h1>Reset Your Password</h1>
+                    <script>
+                        window.location.href = "${redirectUrl}";
+                    </script>
+                </body>
+                </html>
+            `;
+
+            return res.status(200).send(formHtml);
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
+};
 
 const findUser = (req, res) => {
     const { userid } = req.params;
@@ -194,8 +269,8 @@ const updateUser = (req, res) => {
 
 const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
-    const {fullname , phonenumber, address, email} = req.body;
-    
+    const { fullname, phonenumber, address, email } = req.body;
+
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -220,15 +295,15 @@ const updateUserProfiles = (req, res) => {
                     return;
                 }
 
-                updateExistingUserProfile(fullname , phonenumber, address, email, userid);
+                updateExistingUserProfile(fullname, phonenumber, address, email, userid);
             });
         } else {
-            updateExistingUserProfile(fullname , phonenumber, address, email, userid);
+            updateExistingUserProfile(fullname, phonenumber, address, email, userid);
         }
     });
 
-    function updateExistingUserProfile(fullname , phonenumber, address, email, userid) {
-        UserModel.updateUserProfile(fullname , phonenumber, address, email, userid, (error, results) => {
+    function updateExistingUserProfile(fullname, phonenumber, address, email, userid) {
+        UserModel.updateUserProfile(fullname, phonenumber, address, email, userid, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
@@ -525,5 +600,7 @@ module.exports = {
     deleteuser,
     changeUsername,
     deleteusers,
-    updateUserProfiles
+    updateUserProfiles,
+    fogetPassword,
+    restPassword
 };                                                                                                                                            

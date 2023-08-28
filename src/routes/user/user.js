@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { login, getAll, getUserById, updateUserProfiles, addUser, updateUser, findUser, changePassword, changeStatus, deleteuser, changeUsername , deleteusers } = require('../../controllers/UserController');
+const { login, getAll, getUserById, fogetPassword, restPassword, updateUserProfiles, addUser, updateUser, findUser, changePassword, changeStatus, deleteuser, changeUsername , deleteusers } = require('../../controllers/UserController');
 const { authenticateToken, authorizeValidateUser, authorizeAccessControll } = require('../../middlewares/userAuth');
 
 module.exports = (config) => {
@@ -8,6 +8,8 @@ module.exports = (config) => {
 
     //no token authontication
     router.post('/login', login);
+    router.post('/forget-password', fogetPassword);
+    router.post('/verify', restPassword);
 
     //user role permission authontication
     router.post('/create', authorizeAccessControll, addUser);
