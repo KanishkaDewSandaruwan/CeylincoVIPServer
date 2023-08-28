@@ -24,7 +24,7 @@ module.exports = (config) => {
     router.put('/me/changePassword/:userid', authorizeValidateUser, changePassword);
     router.put('/me/changeusername/:userid', authorizeValidateUser, changeUsername);
     router.put('/me/changeEmail/:userid', authorizeValidateUser, updateUser);
-    router.put('/me/delete/:userid', authorizeValidateUser, deleteuser);
+    router.delete('/me/delete/:userid', authorizeValidateUser, deleteuser);
 
     return router;
 };

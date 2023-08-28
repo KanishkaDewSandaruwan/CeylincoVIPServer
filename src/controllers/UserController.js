@@ -195,12 +195,7 @@ const updateUser = (req, res) => {
 const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
     const {fullname , phonenumber, address, email} = req.body;
-    const user = req.body;
-
-    console.log(fullname)
-    console.log(user)
-
-
+    
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
