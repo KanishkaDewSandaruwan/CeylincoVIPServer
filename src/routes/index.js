@@ -6,6 +6,7 @@ const policyRoute = require('./policy/policy');
 const dealerRoute = require('./dealer/dealer');
 const companyRoute = require('./company/company');
 const paymentRoute = require('./payment/payment');
+const getUserrole = require('./statistics/statistics');
 
 module.exports = (config) => {
   const router = express.Router();
@@ -15,6 +16,7 @@ module.exports = (config) => {
   router.use('/dealer', dealerRoute(config));
   router.use('/company', companyRoute(config));
   router.use('/payment', paymentRoute(config));
+  router.use('/statistics', getUserrole(config));
 
   return router;
 };

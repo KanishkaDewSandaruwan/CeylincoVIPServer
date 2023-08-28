@@ -1,6 +1,83 @@
 const { connection } = require('../../config/connection');
 
 const DealerModel = {
+
+    getPaymentCount() { 
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE is_delete = 0 AND policy_status = 3';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].count);
+                }
+            });
+        });
+    },
+
+    getTodayPayments() {
+        return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date < DATE_ADD(?, INTERVAL 1 DAY) AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [today, today], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+    getThisMonthPayments() {
+        return new Promise((resolve, reject) => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // JavaScript months are zero-based
+    
+            const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
+            const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+    
+            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date <= ? AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+    getPaymentsForYear(year) {
+        return new Promise((resolve, reject) => {
+            const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
+            const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
+    
+            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date <= ? AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [startOfYear, endOfYear], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+    getDealerCount() { 
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT COUNT(*) as count FROM dealer WHERE is_delete = 0';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].count); // Assuming you want to return the count value
+                }
+            });
+        });
+    },
+    
     getDealerUserByUsernameAndPassword(dealer_email, dealer_password, callback) {
         connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND dealer_password = ? AND is_delete = 0', [dealer_email, dealer_password], callback);
     },

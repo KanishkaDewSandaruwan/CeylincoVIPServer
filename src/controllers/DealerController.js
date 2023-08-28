@@ -4,6 +4,15 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config(); // Load environment variables
 
+const getDealerCount = async (req, res) => {
+    try {
+        const results = await DealerModel.getDealerCount();
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching payment count' });
+    }
+};
+
 const login = (req, res) => {
     const { dealer_email, dealer_password } = req.body;
     console.log(dealer_email + ' ' + dealer_password);
@@ -523,5 +532,6 @@ module.exports = {
     validate,
     sendMailToUsers,
     deleteDealers,
-    validateDealer
+    validateDealer,
+    getDealerCount
 };

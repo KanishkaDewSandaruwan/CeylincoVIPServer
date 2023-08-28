@@ -6,6 +6,52 @@ const fs = require('fs');
 const { sendEmail, sendEmailWithAttachment } = require('../../config/mail');
 const jwt = require('jsonwebtoken');
 
+const getPolicyCart = async (req, res) => {
+    try {
+        const results = await PolicyModel.getVehicleTypeCounts();
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching policy count' });
+    }
+};
+
+const getPolicyCount = async (req, res) => {
+    try {
+        const results = await PolicyModel.getPolicyCount();
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching policy count' });
+    }
+};
+
+const getPolicyCountToday = async (req, res) => {
+    try {
+        const results = await PolicyModel.getTodayPolicies();
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching policy count for today' });
+    }
+};
+
+const getPolicyCountThisMonth = async (req, res) => {
+    try {
+        const results = await PolicyModel.getThisMonthPolicies();
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching policy count for this month' });
+    }
+};
+
+const getPolicyCountThisYear = async (req, res) => {
+    try {
+        const year = req.params.year; // Assuming you pass the year as a URL parameter
+        const results = await PolicyModel.getPoliciesForYear(year);
+        res.status(200).send(results);
+    } catch (error) {
+        res.status(500).send({ error: 'Error fetching policy count for this year' });
+    }
+};
+
 const getAllPolicy = (req, res) => {
     PolicyModel.getAllPolicies((error, results) => {
         if (error) {
@@ -142,7 +188,7 @@ const updatePolicyPayment = (req, res) => {
                             Policy Price: ${policy_price}
                             Verification Link: ${verificationLink}
                         `;
-                        
+
                         const emailContentDealer = `
                             Hello,
                             Here is the payment update for policy ${policy_id}.
@@ -380,5 +426,10 @@ module.exports = {
     getFiles,
     updatePolicyPayment,
     updatePrice,
-    verifyPolicy
+    verifyPolicy,
+    getPolicyCount,
+    getPolicyCountToday,
+    getPolicyCountThisMonth,
+    getPolicyCountThisYear,
+    getPolicyCart
 };

@@ -6,6 +6,70 @@ const PolicyModel = {
         connection.query(query, callback);
     },
 
+    getPolicyCount() {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE is_delete = 0 AND policy_status = 3';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].count); // Assuming you want to return the count value
+                }
+            });
+        });
+    },
+
+    getTodayPolicies() {
+        return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const query = 'SELECT * FROM policy WHERE policy_start_date = ? AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [today], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+    getThisMonthPolicies() {
+        return new Promise((resolve, reject) => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // JavaScript months are zero-based
+
+            const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
+            const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
+
+            const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+    getPoliciesForYear(year) {
+        return new Promise((resolve, reject) => {
+            const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
+            const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
+
+            const query = 'SELECT * FROM policy WHERE policy_start_date BETWEEN ? AND ? AND is_delete = 0 AND policy_status = 3';
+            connection.query(query, [startOfYear, endOfYear], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
+
+
     getPolicyById(policy_id, callback) {
         const query = 'SELECT * FROM policy WHERE is_delete = 0 AND policy_id = ?';
         connection.query(query, [policy_id], callback);
@@ -93,20 +157,20 @@ const PolicyModel = {
     },
 
 
-    addPolicyPayment (policy, dealer_id, filePath, callback)  {
+    addPolicyPayment(policy, dealer_id, filePath, callback) {
         const defaultValue = 0;
         const defaultValue1 = 1;
         const defaultValue2 = "";
         const policy_start_date = new Date();
-    
+
         const {
             policy_id,
             policy_amount,
             commition_amount
         } = policy;
-    
+
         const query = `INSERT INTO payment(dealerid, policyid, policy_amount, qutation, commition_amount, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    
+
         const values = [
             dealer_id,
             policy_id,
@@ -117,7 +181,7 @@ const PolicyModel = {
             defaultValue1,
             defaultValue
         ];
-    
+
         connection.query(query, values, (error, results) => {
             if (error) {
                 console.error('Error inserting data:', error);
@@ -125,19 +189,19 @@ const PolicyModel = {
                 callback(insertError, null);
                 return;
             }
-    
+
             if (results.affectedRows === 0) {
                 console.error('Failed to create Payment');
                 const insertError = new Error('Failed to create payment');
                 callback(insertError, null);
                 return;
             }
-    
+
             const paymentid = results.insertId;
             callback(null, paymentid);
         });
     },
-    
+
     updatePolicy(policy, policy_id, callback) {
         const { vehicle_type, customer_fullname, customer_address, customer_nic, customer_phone, vehicle_reg_no, engine_no, chassis_no, model, years_of_make, leasing_company, vehicle_color, horse_power, value_of_vehicle, use_perpose, cr_image, vehicle_image, previous_insurance_card_image, policy_price, policy_type, policy_status, policy_start_date } = policy;
 
@@ -206,6 +270,30 @@ const PolicyModel = {
         const values = [filePath, policy_id];
 
         connection.query(query, values, callback);
+    },
+
+    getVehicleTypeCounts() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT vehicle_type,
+                       COUNT(*) as policy_count
+                FROM policy
+                WHERE is_delete = 0
+                GROUP BY vehicle_type
+            `;
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const countsWithLabels = results.map((item) => ({
+                        vehicleType: item.vehicle_type,
+                        vehicleTypeLabel: getVehicleTypeLabel(item.vehicle_type),
+                        policyCount: item.policy_count,
+                    }));
+                    resolve(countsWithLabels);
+                }
+            });
+        });
     }
 };
 
