@@ -194,10 +194,7 @@ const updateUser = (req, res) => {
 
 const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
-    const {fullname , phonenumber, address, email} = req.body;
     const user = req.body;
-
-    console.log(user)
 
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
@@ -211,7 +208,7 @@ const updateUserProfiles = (req, res) => {
         }
 
         // Check if the provided phone number is already associated with another user
-        if (phonenumber && phonenumber !== existingUser[0].phonenumber) {
+        if (user.phonenumber && user.phonenumber !== existingUser[0].phonenumber) {
             UserModel.getUserByPhonenumber(user.phonenumber, (error, results) => {
                 if (error) {
                     res.status(500).send({ error: 'Error fetching data from the database' });
@@ -223,15 +220,15 @@ const updateUserProfiles = (req, res) => {
                     return;
                 }
 
-                updateExistingUserProfile(fullname , phonenumber, address, email, userid);
+                updateExistingUserProfile(user, userid);
             });
         } else {
-            updateExistingUserProfile(fullname , phonenumber, address, email, userid);
+            updateExistingUserProfile(user, userid);
         }
     });
 
-    function updateExistingUserProfile(fullname , phonenumber, address, email, userid) {
-        UserModel.updateUserProfile(fullname , phonenumber, address, email, userid, (error, results) => {
+    function updateExistingUserProfile(user, userid) {
+        UserModel.updateUserProfile(user, userid, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;

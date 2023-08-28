@@ -57,8 +57,9 @@ const UserModel = {
     connection.query(query, values, callback);
   },
 
-  updateUserProfile(fullname , phonenumber, address, email, userid, callback) {
-
+  updateUserProfile(user, userid, callback) {
+    const { fullname, phonenumber, address, email } = user;
+    console.log(fullname)
     const query = 'UPDATE user SET fullname = ?, phonenumber = ?, address = ?, email = ? WHERE userid = ?';
     const values = [fullname, phonenumber, address, email,  userid];
 
