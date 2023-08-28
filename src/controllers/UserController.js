@@ -192,7 +192,7 @@ const updateUser = (req, res) => {
     }
 };
 
-const updateUserProfile = (req, res) => {
+const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
     const user = req.body;
 
@@ -525,5 +525,5 @@ module.exports = {
     deleteuser,
     changeUsername,
     deleteusers,
-    updateUserProfile
+    updateUserProfiles
 };                                                                                                                                            
