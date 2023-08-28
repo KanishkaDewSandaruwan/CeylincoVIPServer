@@ -12,7 +12,7 @@ const getPaymentCount = async (req, res) => {
 
 const getPaymentCountToday = async (req, res) => {
     try {
-        const results = await PaymentModel.getTodayPayments();
+        const count = await PaymentModel.getTodayPayments();
         res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count for today' });
@@ -21,7 +21,7 @@ const getPaymentCountToday = async (req, res) => {
 
 const getPaymentCountThisMonth = async (req, res) => {
     try {
-        const results = await PaymentModel.getThisMonthPayments();
+        const count = await PaymentModel.getThisMonthPayments();
         res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count for this month' });
@@ -30,7 +30,7 @@ const getPaymentCountThisMonth = async (req, res) => {
 
 const getPaymentCountThisYear = async (req, res) => {
     try {
-        const results = await PaymentModel.getPaymentsForYear();
+        const count = await PaymentModel.getPaymentsForYear();
         res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count for this year' });
