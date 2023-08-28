@@ -50,6 +50,7 @@ const UserModel = {
 
   updateUser(user, userid, callback) {
     const { fullname, phonenumber, address, userrole, status } = user;
+    console.log(fullname)
     const query = 'UPDATE user SET fullname = ?, phonenumber = ?, address = ?, userrole = ?, status = ? WHERE userid = ?';
     const values = [fullname, phonenumber, address, userrole, status, userid];
 
