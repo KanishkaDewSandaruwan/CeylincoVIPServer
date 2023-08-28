@@ -32,12 +32,12 @@ const PaymentModel = {
     getTodayPayments() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT * FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 3';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
@@ -52,12 +52,12 @@ const PaymentModel = {
             const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
             const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
     
-            const query = 'SELECT * FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
             connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
@@ -68,12 +68,12 @@ const PaymentModel = {
             const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
             const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
     
-            const query = 'SELECT * FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
             connection.query(query, [startOfYear, endOfYear], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
+                    resolve(results[0].count);
                 }
             });
         });
