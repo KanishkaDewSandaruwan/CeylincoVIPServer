@@ -16,14 +16,14 @@ const PaymentModel = {
     },
 
     //statistics
-    getPaymentCount() { 
+    getPaymentCount(){
         return new Promise((resolve, reject) => {
-            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 3';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0';
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results[0].count); // Assuming you want to return the count value
+                    resolve(results[0].count);
                 }
             });
         });
