@@ -221,14 +221,14 @@ const updateUserProfiles = (req, res) => {
                     return;
                 }
 
-                updateExistingUserProfile(user, userid);
+                updateExistingUserProfile(fullname , phonenumber, address, email, userid);
             });
         } else {
-            updateExistingUserProfile(user, userid);
+            updateExistingUserProfile(fullname , phonenumber, address, email, userid);
         }
     });
 
-    function updateExistingUserProfile(user, userid) {
+    function updateExistingUserProfile(fullname , phonenumber, address, email, userid) {
         UserModel.updateUserProfile(fullname , phonenumber, address, email, userid, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
