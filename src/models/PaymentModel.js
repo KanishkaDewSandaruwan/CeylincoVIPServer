@@ -101,12 +101,12 @@ const PaymentModel = {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
     
+            console.log(today)
             const query = 'SELECT SUM(policy_amount) as sum FROM payment WHERE DATE(trndate) = ? AND is_delete = 0 AND status = 2';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    console.log(results[0].sum)
                     resolve(results[0].sum);
                 }
             });
