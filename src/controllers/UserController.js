@@ -194,7 +194,8 @@ const updateUser = (req, res) => {
 
 const updateUserProfiles = (req, res) => {
     const { userid } = req.params;
-    const user = req.body;
+    const {fullname , phonenumber, address, email} = req.body;
+
 
     UserModel.getUserById(userid, (error, existingUser) => {
         if (error) {
@@ -220,15 +221,15 @@ const updateUserProfiles = (req, res) => {
                     return;
                 }
 
-                updateExistingUser(user, userid);
+                updateExistingUserProfile(user, userid);
             });
         } else {
-            updateExistingUser(user, userid);
+            updateExistingUserProfile(user, userid);
         }
     });
 
-    function updateExistingUser(user, userid) {
-        UserModel.updateUserProfile(user, userid, (error, results) => {
+    function updateExistingUserProfile(user, userid) {
+        UserModel.updateUserProfile(fullname , phonenumber, address, email, userid, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
