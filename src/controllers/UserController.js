@@ -115,8 +115,7 @@ const restPassword = async (req, res) => {
                 return res.status(404).send({ error: 'User not found' });
             }
 
-            const redirectUrl = 'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com/new-password'; // Replace with the Gmail URL you want to redirect to
-
+            // Render a form for the user to reset the password
             const formHtml = `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -127,9 +126,15 @@ const restPassword = async (req, res) => {
                 </head>
                 <body>
                     <h1>Reset Your Password</h1>
-                    <script>
-                        window.location.href = "${redirectUrl}";
-                    </script>
+                    <form action="/reset-password/${token}" method="post">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                        <br>
+                        <label for="confirmPassword">Confirm Password:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <br>
+                        <button type="submit">Reset Password</button>
+                    </form>
                 </body>
                 </html>
             `;
