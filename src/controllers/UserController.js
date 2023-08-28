@@ -192,6 +192,58 @@ const updateUser = (req, res) => {
     }
 };
 
+const updateUserProfile = (req, res) => {
+    const { userid } = req.params;
+    const user = req.body;
+
+    UserModel.getUserById(userid, (error, existingUser) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!existingUser[0]) {
+            res.status(404).send({ error: 'User not found' });
+            return;
+        }
+
+        // Check if the provided phone number is already associated with another user
+        if (user.phonenumber && user.phonenumber !== existingUser[0].phonenumber) {
+            UserModel.getUserByPhonenumber(user.phonenumber, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error fetching data from the database' });
+                    return;
+                }
+
+                if (results.length > 0) {
+                    res.status(409).send({ error: 'Phone number already exists' });
+                    return;
+                }
+
+                updateExistingUser(user, userid);
+            });
+        } else {
+            updateExistingUser(user, userid);
+        }
+    });
+
+    function updateExistingUser(user, userid) {
+        UserModel.updateUserProfile(user, userid, (error, results) => {
+            if (error) {
+                res.status(500).send({ error: 'Error fetching data from the database' });
+                return;
+            }
+
+            if (results.affectedRows === 0) {
+                res.status(404).send({ error: 'User not found or no changes made' });
+                return;
+            }
+
+            res.status(200).send({ message: 'User updated successfully' });
+        });
+    }
+};
+
 
 const changePassword = (req, res) => {
     const { userid } = req.params;
@@ -472,5 +524,6 @@ module.exports = {
     changeStatus,
     deleteuser,
     changeUsername,
-    deleteusers
+    deleteusers,
+    updateUserProfile
 };                                                                                                                                            

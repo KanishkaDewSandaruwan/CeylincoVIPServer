@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { login, getAll, getUserById, addUser, updateUser, findUser, changePassword, changeStatus, deleteuser, changeUsername , deleteusers } = require('../../controllers/UserController');
-const { authenticateToken, authorizeValidateUser, authorizeAccessControll } = require('../../middlewares/userAuth');
+const { authenticateToken, updateUserProfile, authorizeValidateUser, authorizeAccessControll } = require('../../middlewares/userAuth');
 
 module.exports = (config) => {
     const router = express.Router();
@@ -20,7 +20,7 @@ module.exports = (config) => {
 
     //same user authontication
     router.get('/me/:userid', authorizeValidateUser, getUserById);
-    router.put('/me/update/:userid', authorizeValidateUser, updateUser);
+    router.put('/me/update/:userid', authorizeValidateUser, updateUserProfile);
     router.put('/me/changePassword/:userid', authorizeValidateUser, changePassword);
     router.put('/me/changeusername/:userid', authorizeValidateUser, changeUsername);
     router.put('/me/changeEmail/:userid', authorizeValidateUser, updateUser);
