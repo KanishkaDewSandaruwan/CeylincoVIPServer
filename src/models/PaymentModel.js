@@ -16,7 +16,7 @@ const PaymentModel = {
     },
 
     //statistics
-    getPaymentCount(){
+    getPaymentCount() {
         return new Promise((resolve, reject) => {
             const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0';
             connection.query(query, (error, results) => {
@@ -48,10 +48,10 @@ const PaymentModel = {
             const now = new Date();
             const year = now.getFullYear();
             const month = now.getMonth() + 1; // JavaScript months are zero-based
-    
+
             const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
             const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-    
+
             const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
             connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
                 if (error) {
@@ -63,11 +63,14 @@ const PaymentModel = {
         });
     },
 
-    getPaymentsForYear(year) {
+    getPaymentsForYear() {
         return new Promise((resolve, reject) => {
+            const now = new Date();
+            const year = now.getFullYear();
+
             const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
             const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
-    
+
             const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate BETWEEN ? AND ? AND is_delete = 0 AND status = 3';
             connection.query(query, [startOfYear, endOfYear], (error, results) => {
                 if (error) {
@@ -88,7 +91,7 @@ const PaymentModel = {
 
     updatedeletePayment(paymentid, callback) {
         const query = 'UPDATE payment SET is_delete = 1 WHERE paymentid = ?';
-        const values = [ paymentid];
+        const values = [paymentid];
 
         connection.query(query, values, callback);
     },
