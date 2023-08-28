@@ -126,7 +126,7 @@ const restPassword = async (req, res) => {
                 <style>
                     body {
                         font-family: Arial, sans-serif;
-                        text-align: left;
+                        text-align: center;
                         padding: 50px;
                         background-color: #f5f5f5;
                     }
@@ -145,6 +145,7 @@ const restPassword = async (req, res) => {
                         display: block;
                         margin-bottom: 6px;
                         font-weight: bold;
+                        text-align: left;
                     }
                     input[type="password"] {
                         width: 100%;
@@ -171,7 +172,7 @@ const restPassword = async (req, res) => {
             </head>
             <body>
                 <h1>Reset Your Password</h1>
-                <form action="/reset-password/${token}" method="post">
+                <form action="/api/user/reset-password/${token}" method="post">
                     <label for="newPassword">New Password:</label>
                     <input type="password" id="newPassword" name="newPassword" required>
                     <br>
