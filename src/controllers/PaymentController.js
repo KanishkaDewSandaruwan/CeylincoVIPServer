@@ -27,7 +27,7 @@ const getAllPaymentSums = async (req, res) => {
             PaymentModel.getPaymentSum(),
             PaymentModel.getTodayPaymentsSum(),
             PaymentModel.getThisMonthPaymentsSum(),
-            PaymentModel.getPaymentsForYearSum()
+            PaymentModel.getPaymentsForYearSum(new Date().getFullYear())
         ]);
 
         res.status(200).send({
