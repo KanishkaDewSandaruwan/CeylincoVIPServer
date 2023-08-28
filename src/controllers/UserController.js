@@ -117,26 +117,72 @@ const restPassword = async (req, res) => {
 
             // Render a form for the user to reset the password
             const formHtml = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Reset Password</title>
-                </head>
-                <body>
-                    <h1>Reset Your Password</h1>
-                    <form action="/reset-password/${token}" method="post">
-                        <label for="newPassword">New Password:</label>
-                        <input type="password" id="newPassword" name="newPassword" required>
-                        <br>
-                        <label for="confirmPassword">Confirm Password:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required>
-                        <br>
-                        <button type="submit">Reset Password</button>
-                    </form>
-                </body>
-                </html>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Reset Password</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        padding: 50px;
+                        background-color: #f5f5f5;
+                    }
+                    h1 {
+                        color: #333;
+                    }
+                    form {
+                        max-width: 400px;
+                        margin: 0 auto;
+                        background-color: #fff;
+                        border-radius: 8px;
+                        padding: 20px;
+                        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                    }
+                    label {
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: bold;
+                    }
+                    input[type="password"] {
+                        width: 100%;
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        margin-bottom: 12px;
+                    }
+                    button {
+                        background-color: #007bff;
+                        color: #fff;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                    }
+                    a {
+                        color: #007bff;
+                        text-decoration: none;
+                        margin-top: 15px;
+                        display: inline-block;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Reset Your Password</h1>
+                <form action="/reset-password/${token}" method="post">
+                    <label for="newPassword">New Password:</label>
+                    <input type="password" id="newPassword" name="newPassword" required>
+                    <br>
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <br>
+                    <button type="submit">Reset Password</button>
+                </form>
+                <a href="http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com">Back to Site</a>
+            </body>
+            </html>
             `;
 
             return res.status(200).send(formHtml);
