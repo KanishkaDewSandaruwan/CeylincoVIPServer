@@ -202,12 +202,14 @@ const updatePolicyPayment = (req, res) => {
                         Email : ceylincodk97@gmail.com
                         `;
 
+                        const emailSubject = `Your policy details have been received`
+
                         if (req.file && req.file.filename) {
-                            sendEmailWithAttachment(policies[0].customer_email, 'customer', emailContent, req.file);
-                            sendEmailWithAttachment(dealer[0].dealer_email, 'dealer', emailContentDealer, req.file);
+                            sendEmailWithAttachment(policies[0].customer_email, emailSubject, emailContent, req.file);
+                            sendEmailWithAttachment(dealer[0].dealer_email, emailSubject, emailContentDealer, req.file);
                         } else {
-                            sendEmail(policies[0].customer_email, 'customer', emailContent);
-                            sendEmail(dealer[0].dealer_email, 'dealer', emailContentDealer);
+                            sendEmail(policies[0].customer_email, emailSubject, emailContent);
+                            sendEmail(dealer[0].dealer_email, emailSubject, emailContentDealer);
                         }
 
                         res.status(200).send({ message: 'Policy payment and status updated successfully' });
@@ -299,8 +301,10 @@ const verifyPolicy = async (req, res) => {
                             Email : ceylincodk97@gmail.com
                         `;
 
-                        sendEmail(policies[0].customer_email, 'customer', emailContent);
-                        sendEmail(existingDealer[0].dealer_email, 'dealer', emailContent);
+                        const emailSubject = `Insurence Was Confirmed`
+
+                        sendEmail(policies[0].customer_email, emailSubject, emailContent);
+                        sendEmail(existingDealer[0].dealer_email, emailSubject, emailContent);
                         // Prepare the HTML response
                         const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
                         const htmlResponse = `
