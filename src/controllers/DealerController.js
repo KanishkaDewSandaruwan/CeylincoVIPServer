@@ -646,7 +646,9 @@ const forgetPassword = (req, res) => {
 
 
 const restPassword = async (req, res) => {
-    const { token, otp, insertedId } = req.params;
+    const { token, otp, insertedId } = req.body;
+
+    console.log(token)
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
