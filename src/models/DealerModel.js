@@ -103,12 +103,11 @@ const DealerModel = {
         const accept = 0;
         const status = 0;
         const is_delete = 0;
-
+    
         const query = `INSERT INTO resetRequest (email, token, otp, trndate, accept, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const values = [email, token, otp, trndate, accept, status, is_delete];
-
+    
         return new Promise((resolve, reject) => {
-            // Assuming 'executeQueryWithInsertId' is your query execution function
             executeQueryWithInsertId(query, values, (error, insertId) => {
                 if (error) {
                     reject(error);
