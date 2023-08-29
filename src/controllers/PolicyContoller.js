@@ -226,11 +226,7 @@ const verifyPolicy = async (req, res) => {
                 } else {
 
                     const emailContent = `
-                            Thank You! ,
-                            ${policy_id} Policy Was Confirmed.
-                            
-                            Your Policy Amount is ${policy_price}.
-
+                            Thank You!, Insurence Was Confirmed.
                             Confirmed by Ceylinco Pvt ltd.
                         `;
 
