@@ -98,7 +98,7 @@ const DealerModel = {
         connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0', [email], callback);
     },
     
-    insertResetRequest(email, token, otp) {
+    insertResetRequest(email, token, otp, callback) {
         const trndate = new Date();
         const accept = 0;
         const status = 0;
@@ -107,14 +107,14 @@ const DealerModel = {
         const query = `INSERT INTO resetRequest (email, token, otp, trndate, accept, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const values = [email, token, otp, trndate, accept, status, is_delete];
     
-        return new Promise((resolve, reject) => {
-            executeQueryWithInsertId(query, values, (error, insertId) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(insertId);
-                }
-            });
+        connection.query(query, values, (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+
+            const resetRequest_id = results.insertId;
+            callback(null, resetRequest_id);
         });
     },
 

@@ -585,8 +585,6 @@ function generateToken(email) {
 const forgetPassword = (req, res) => {
     const { email } = req.body;
 
-    console.log(email)
-
     DealerModel.getDealerByemail(email, (error, dealer) => {
         if (error) {
             return res.status(500).send({ error: 'Error fetching data from the database' });
@@ -612,11 +610,17 @@ const forgetPassword = (req, res) => {
         const verificationCode = generateOTP();
         const verificationToken = generateVerificationTokenQuick(email); // Make sure this function is defined
 
-        DealerModel.insertResetRequest(email, verificationToken, verificationCode, (insertError, insertId) => {
-            if (insertError) {
-                return res.status(500).send({ error: 'Error inserting reset request into the database' });
+        DealerModel.insertResetRequest(email, verificationToken, verificationCode, (error, resetRequest_id) => {
+            if (error) {
+                res.status(500).send({ error: 'Error fetching data from the database' });
+                return;
             }
-
+    
+            if (!resetRequest_id) {
+                res.status(404).send({ error: 'Failed to create user' });
+                return;
+            }
+    
             const emailContent = `
                 Hi, ${dealer[0].fullname}
                 
@@ -633,6 +637,7 @@ const forgetPassword = (req, res) => {
                 token: verificationToken,
                 insertedId: insertId
             });
+            
         });
     });
 };
