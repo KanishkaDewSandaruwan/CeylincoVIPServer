@@ -652,16 +652,16 @@ const restPassword = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email; // Use the correct field name from the token
-        console.log(decoded)
-
+        
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-
+            
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
+            console.log(existingDealer)
 
             DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
                 if (error) {
