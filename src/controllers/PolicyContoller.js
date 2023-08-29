@@ -163,7 +163,7 @@ const updatePolicyPayment = (req, res) => {
                             return res.status(500).send({ error: 'Error updating policy price in the database' });
                         }
 
-                        const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid);
+                        const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid, policy_id);
                         const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
                         const emailContent = `
                             Hello,
@@ -198,8 +198,8 @@ const updatePolicyPayment = (req, res) => {
     });
 };
 
-function generateVerificationToken(email, paymentid) {
-    return jwt.sign({ email, paymentid }, process.env.JWT_SECRET);
+function generateVerificationToken(email, paymentid, policy_id) {
+    return jwt.sign({ email, paymentid, policy_id }, process.env.JWT_SECRET);
 }
 
 const verifyPolicy = async (req, res) => {
@@ -225,16 +225,26 @@ const verifyPolicy = async (req, res) => {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {
 
-                    const emailContent = `
+
+                    PolicyModel.getPolicyById(decoded.policy_id, (error, policies) => {
+                        if (error) {
+                            return res.status(500).send({ error: 'Error fetching data from the database' });
+                        }
+
+                        if (!policies[0]) {
+                            return res.status(404).send({ error: 'Policy not found' });
+                        }
+                        const emailContent = `
                             Thank You!, Insurence Was Confirmed.
+                            Your payment ${policies[0].policy_price}.
                             Confirmed by Ceylinco Pvt ltd.
                         `;
 
-                    sendEmail(policies[0].customer_email, 'customer', emailContent);
-                    sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
-                    // Prepare the HTML response
-                    const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
-                    const htmlResponse = `
+                        sendEmail(policies[0].customer_email, 'customer', emailContent);
+                        sendEmail(existingDealer[0].dealer_email, 'dealer', emailContent);
+                        // Prepare the HTML response
+                        const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                        const htmlResponse = `
                         <!DOCTYPE html>
                         <html lang="en">
                         <head>
@@ -267,7 +277,8 @@ const verifyPolicy = async (req, res) => {
                         </body>
                         </html>
                     `;
-                    return res.status(200).send(htmlResponse);
+                        return res.status(200).send(htmlResponse);
+                    });
                 }
             });
         });
