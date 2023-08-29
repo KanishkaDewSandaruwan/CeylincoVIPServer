@@ -616,12 +616,12 @@ const forgetPassword = (req, res) => {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
             }
-    
+
             if (!resetRequest_id) {
                 res.status(404).send({ error: 'Failed to create user' });
                 return;
             }
-    
+
             const emailContent = `
                 Hi, ${dealer[0].fullname}
                 
@@ -638,7 +638,7 @@ const forgetPassword = (req, res) => {
                 token: verificationToken,
                 insertedId: resetRequest_id
             });
-            
+
         });
     });
 };
@@ -652,16 +652,16 @@ const restPassword = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email; // Use the correct field name from the token
-        
+
         DealerModel.getDealerByemail(email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-            
+
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
-            
+
             DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
                 if (error) {
                     return res.status(500).send({ error: 'Error fetching data from the database' });
@@ -679,7 +679,7 @@ const restPassword = async (req, res) => {
                         message: 'Verification success. Now you can add new password.',
                         token: token,
                     });
-                }else{
+                } else {
                     return res.status(404).send({ error: 'Password reset fail try again' });
                 }
 
@@ -717,7 +717,15 @@ const newPassword = (req, res) => {
                     return;
                 }
 
-                res.status(200).send({ message: 'Password Reset successfully Completed' });
+                DealerModel.deleteIsertRequest(decoded.email, (error, results) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error updating Deleteing in the database' });
+                        return;
+                    }
+
+                    res.status(200).send({ message: 'Password Reset successfully Completed' });
+
+                });
             });
         });
     } catch (tokenError) {

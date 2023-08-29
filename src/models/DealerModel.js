@@ -122,6 +122,10 @@ const DealerModel = {
         connection.query('SELECT * FROM resetRequest WHERE resetRequest_id = ?', [resetRequest_id], callback);
     },
 
+    deleteIsertRequest(email, callback) {
+        connection.query('DELETE FROM resetRequest WHERE email = ?', [email], callback);
+    },
+
     updateDealerPasswordByEmail(email, newPassword, callback) {
         const query = 'UPDATE dealer SET dealer_password = ? WHERE email = ?';
         const values = [newPassword, email];
