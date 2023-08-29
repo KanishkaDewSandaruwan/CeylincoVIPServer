@@ -636,7 +636,7 @@ const forgetPassword = (req, res) => {
             res.status(200).send({
                 message: 'Verification code sent successfully. Please check your email.',
                 token: verificationToken,
-                insertedId: insertId
+                insertedId: resetRequest_id
             });
             
         });
