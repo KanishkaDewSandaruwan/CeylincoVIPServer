@@ -97,6 +97,19 @@ const tableInfo = [
       { name: 'is_delete', type: 'INT(5)' },
     ],
   },
+  {
+    tableName: 'resetRequest',
+    fields: [
+      { name: 'resetRequest_id', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
+      { name: 'email', type: 'VARCHAR(255)' },
+      { name: 'token', type: 'VARCHAR(255)' },
+      { name: 'otp', type: 'VARCHAR(255)' },
+      { name: 'trndate', type: 'DATETIME' },
+      { name: 'accept', type: 'INT(5)' },
+      { name: 'status', type: 'INT(5)' },
+      { name: 'is_delete', type: 'INT(5)' },
+    ],
+  },
 ];
 
 

@@ -14,14 +14,16 @@ const {
     validate,
     changeStatus,
     deleteDealer,
-    getCommisionByID
+    getCommisionByID,
+    fogetPassword,
+    restPassword
 } = require('../../controllers/DealerController');
 
 const {
     authenticateTokenDealer,
     authorizeValidateDealer,
     authenticateToken,
-    authorizeAccessControll
+    authorizeAccessControll,
 } = require('../../middlewares/userAuth');
 
 const { uploadDealer } = require('../../../config/fileUpload');
@@ -34,8 +36,10 @@ module.exports = (config) => {
     // Public routes
     router.post('/create', addDealer);
     router.post('/mail', sendMailToUsers);
+    router.post('/forget-password', fogetPassword);
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
+    router.get('/verifypassword/:token', restPassword);
 
     // Private routes (require authentication)
     router.get('/all', authenticateTokenDealer, getAll);

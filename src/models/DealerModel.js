@@ -97,6 +97,38 @@ const DealerModel = {
     getDealerByemail(email, callback) {
         connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0', [email], callback);
     },
+    
+    insertResetRequest(email, token, otp) {
+        const trndate = new Date();
+        const accept = 0;
+        const status = 0;
+        const is_delete = 0;
+
+        const query = `INSERT INTO resetRequest (email, token, otp, trndate, accept, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const values = [email, token, otp, trndate, accept, status, is_delete];
+
+        return new Promise((resolve, reject) => {
+            // Assuming 'executeQueryWithInsertId' is your query execution function
+            executeQueryWithInsertId(query, values, (error, insertId) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(insertId);
+                }
+            });
+        });
+    },
+
+    getIsertRequest(resetRequest_id, callback) {
+        connection.query('SELECT * FROM resetRequest WHERE resetRequest_id = ?', [resetRequest_id], callback);
+    },
+
+    updateDealerPasswordByEmail(email, newPassword, callback) {
+        const query = 'UPDATE dealer SET dealer_password = ? WHERE email = ?';
+        const values = [newPassword, email];
+    
+        connection.query(query, values, callback);
+      },
 
     validate(field, value, callback) {
         const query = 'SELECT COUNT(*) AS count FROM dealer WHERE ?? = ? AND is_delete = 0';
@@ -115,11 +147,11 @@ const DealerModel = {
 
 
     addDealers(dealer, callback) {
-        const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, pin_number, company_id } = dealer;
+        const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, company_id } = dealer;
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = '0'; // Convert numeric default values to strings
 
-        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, pin_number, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             dealer_fullname,
             dealer_address,
@@ -130,7 +162,6 @@ const DealerModel = {
             dealer_password,
             defaultvalues,
             defaultvalues,
-            pin_number,
             trndate,
             company_id
         ];

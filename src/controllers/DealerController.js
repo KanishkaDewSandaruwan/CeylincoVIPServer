@@ -14,6 +14,7 @@ const getDealerCount = async (req, res) => {
     }
 };
 
+
 const getCommisionByID = async (req, res) => {
     const { dealer_id } = req.params;
 
@@ -140,6 +141,40 @@ const validate = (req, res) => {
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
 
+    DealerModel.getDealerByemail(dealer.dealer_email, async (error, existingDealer) => {
+        if (error) {
+            return res.status(500).send({ error: 'Error fetching data from the database' });
+        }
+
+        if (existingDealer[0]) {
+            return res.status(404).send({ error: 'This Email is already exist' });
+        }
+
+        if (dealer.phonenumber && dealer.phonenumber !== existingDealer[0].phonenumber) {
+
+
+            DealerModel.getUserByPhonenumber(dealer.phonenumber, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error fetching data from the database' });
+                    return;
+                }
+
+                if (results.length > 0) {
+                    res.status(409).send({ error: 'Phone number already exists' });
+                    return;
+                }
+
+                addDealerReg(dealer);
+            });
+        } else {
+            addDealerReg(dealer);
+        }
+
+    });
+};
+
+const addDealerReg = (dealer) => {
+
     DealerModel.addDealers(dealer, (error, dealer_id) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -151,13 +186,13 @@ const addDealer = (req, res) => {
             return;
         }
 
-        // Send verification email
         const verificationToken = generateVerificationToken(dealer.dealer_email);
         sendVerificationEmail(dealer.dealer_email, verificationToken);
 
         res.status(200).send({ message: 'Dealer created successfully', dealer_id });
     });
-};
+}
+
 
 const validateDealer = async (req, res) => {
     const { token } = req.params;
@@ -521,7 +556,7 @@ const deleteDealer = (req, res) => {
         }
 
         if (!user[0]) {
-            res.status(404).send({ error: 'User not found' });
+            res.status(404).send({ error: 'Dealer not found' });
             return;
         }
 
@@ -547,6 +582,142 @@ function generateToken(email) {
     return token;
 }
 
+const fogetPassword = (req, res) => {
+    const { email } = req.body;
+
+    DealerModel.getDealerByemail(email, (error, dealer) => {
+        if (error) {
+            return res.status(500).send({ error: 'Error fetching data from the database' });
+        }
+
+        if (!dealer[0]) {
+            return res.status(404).send({ error: 'Email not Found.. please check your email and try again!' });
+        }
+
+        // Generate a random OTP
+        function generateOTP() {
+            const otpLength = 6;
+            const digits = '0123456789';
+            let OTP = '';
+
+            for (let i = 0; i < otpLength; i++) {
+                OTP += digits[Math.floor(Math.random() * 10)];
+            }
+
+            return OTP;
+        }
+
+        const verificationCode = generateOTP();
+        const verificationToken = generateVerificationTokenQuick(email);
+
+        DealerModel.insertResetRequest(email, verificationToken, verificationCode, (insertError, insertId) => {
+            if (insertError) {
+                return res.status(500).send({ error: 'Error inserting reset request into the database' });
+            }
+
+            const emailContent = `
+                Hi, ${dealer[0].fullname}
+                
+                Your verification code is: ${verificationCode}
+                You have 15 minutes to reset your password.
+            `;
+
+            // Assuming you have a sendEmail function
+            sendEmail(email, 'Reset Password', emailContent);
+
+            // Send response back with token, message, and inserted ID
+            res.status(200).send({
+                message: 'Verification code sent successfully. Please check your email.',
+                token: verificationToken,
+                insertedId: insertId // Send the inserted ID
+            });
+        });
+    });
+};
+
+
+
+const restPassword = async (req, res) => {
+    const { token, otp, insertedId } = req.params;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email; // Use the correct field name from the token
+
+        DealerModel.getDealerByemail(email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Password reset fail try again' });
+            }
+
+            DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
+                if (error) {
+                    return res.status(500).send({ error: 'Error fetching data from the database' });
+                }
+
+                if (!existingRequest[0]) {
+                    return res.status(404).send({ error: 'Password reset fail try again' });
+                }
+
+                if (existingRequest[0].otp === otp) {
+                    const token = generateToken(existingRequest[0].email);
+
+                    res.status(200).send({
+                        message: 'Verification success. Now you can add new password.',
+                        token: token,
+                    });
+                }
+
+            });
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
+};
+
+const newPassword = (req, res) => {
+    const { token } = req.params;
+    const { newPassword, confirmPassword } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const email = decoded.email; // Use the correct field name from the token
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).send({ error: 'Passwords do not match' });
+        }
+
+        DealerModel.getDealerByemail(decoded.email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Password reset fail try again' });
+            }
+
+            DealerModel.updateDealerPasswordByEmail(decoded.email, newPassword, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error updating email in the database' });
+                    return;
+                }
+    
+                res.status(200).send({ message: 'Password Reset successfully Completed' });
+            }); 
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
+}
+
+function generateVerificationTokenQuick(email) {
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' }); // Change expiresIn as needed
+}
+
 module.exports = {
     login,
     getAll,
@@ -563,5 +734,7 @@ module.exports = {
     deleteDealers,
     validateDealer,
     getDealerCount,
-    getCommisionByID
+    getCommisionByID,
+    fogetPassword,
+    restPassword
 };
