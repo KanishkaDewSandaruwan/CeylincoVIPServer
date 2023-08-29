@@ -648,7 +648,6 @@ const forgetPassword = (req, res) => {
 const restPassword = async (req, res) => {
     const { token, otp, insertedId } = req.body;
 
-    console.log(insertedId)
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const email = decoded.email; // Use the correct field name from the token
@@ -666,7 +665,6 @@ const restPassword = async (req, res) => {
                 if (error) {
                     return res.status(500).send({ error: 'Error fetching data from the database' });
                 }
-                console.log(existingDealer)
 
                 if (!existingRequest[0]) {
                     return res.status(404).send({ error: 'Password reset fail try again' });
@@ -692,6 +690,9 @@ const restPassword = async (req, res) => {
 
 const newPassword = (req, res) => {
     const { token, newPassword, confirmPassword } = req.body;
+
+    
+    console.log(token)
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
