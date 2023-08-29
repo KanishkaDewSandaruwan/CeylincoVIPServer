@@ -585,6 +585,8 @@ function generateToken(email) {
 const forgetPassword = (req, res) => {
     const { email } = req.body;
 
+    console.log(email)
+
     DealerModel.getDealerByemail(email, (error, dealer) => {
         if (error) {
             return res.status(500).send({ error: 'Error fetching data from the database' });
