@@ -13,8 +13,10 @@ const {
     changeEmail,
     validate,
     changeStatus,
-    deleteDealer
+    deleteDealer,
+    getCommisionByID
 } = require('../../controllers/DealerController');
+
 const {
     authenticateTokenDealer,
     authorizeValidateDealer,
@@ -26,6 +28,8 @@ const { uploadDealer } = require('../../../config/fileUpload');
 
 module.exports = (config) => {
     const router = express.Router();
+
+    router.get('/commision/:dealer_id', authenticateTokenDealer, getCommisionByID);
 
     // Public routes
     router.post('/create', addDealer);

@@ -1,4 +1,5 @@
 const DealerModel = require('../models/DealerModel');
+const PaymentModel = require('../models/PaymentModel');
 const dealerView = require('../views/dealerView');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
@@ -10,6 +11,35 @@ const getDealerCount = async (req, res) => {
         res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count' });
+    }
+};
+
+const getCommisionByID = async (req, res) => {
+    const { dealer_id } = req.params;
+
+    try {
+        const existingDealer = DealerModel.getDealerById(dealer_id);
+
+        if (!existingDealer[0]) {
+            return res.status(404).send({ error: 'Dealer not found' });
+        }
+
+        try {
+            const [pendingCommision, paidCommision] = await Promise.all([
+                PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
+                PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
+            ]);
+
+            return res.status(200).send({
+                pendingCommision: pendingCommision,
+                paidCommision: paidCommision,
+                dealerName: existingDealer[0].dealer_fullname
+            });
+        } catch (error) {
+            return res.status(500).send({ error: 'Error fetching payment sums' });
+        }
+    } catch (error) {
+        return res.status(500).send({ error: 'Error fetching data from the database' });
     }
 };
 
@@ -532,5 +562,6 @@ module.exports = {
     sendMailToUsers,
     deleteDealers,
     validateDealer,
-    getDealerCount
+    getDealerCount,
+    getCommisionByID
 };

@@ -18,7 +18,7 @@ const PaymentModel = {
     //statistics count
     getPaymentCount() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 2';
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0';
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
@@ -29,11 +29,38 @@ const PaymentModel = {
         });
     },
 
-    getTodayPayments() {
+    getPendingPayments() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT COUNT(*) as count FROM payment WHERE trndate = ? AND is_delete = 0 AND status = 2';
-            connection.query(query, [today], (error, results) => {
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 1';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].count);
+                }
+            });
+        });
+    },
+    getConfirmPayments() {
+        return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 2';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].count);
+                }
+            });
+        });
+    },
+    
+    getCompletedPayments() {
+        return new Promise((resolve, reject) => {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+            const query = 'SELECT COUNT(*) as count FROM payment WHERE is_delete = 0 AND status = 3';
+            connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -77,6 +104,61 @@ const PaymentModel = {
                     reject(error);
                 } else {
                     resolve(results[0].count);
+                }
+            });
+        });
+    },
+
+    //single dealer
+
+    getDealerCommitionCompletedPaymentSum(dealerid) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 3 AND dealerid = ?';
+            connection.query(query, [dealerid] ,(error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    getDealerCommitionPendingPaymentSum(dealerid) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 2 AND dealerid = ?';
+            connection.query(query, [dealerid], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    //dealer all
+    getDealerCommitionCompletedPaymentSum() {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 3';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
+                }
+            });
+        });
+    },
+
+    getDealerCommitionPendingPaymentSum() {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 2';
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0].sum);
                 }
             });
         });

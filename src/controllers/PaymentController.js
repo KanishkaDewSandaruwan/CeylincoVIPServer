@@ -3,18 +3,18 @@ const PolicyModel = require('../models/PolicyModel');
 
 const getPaymentCounts = async (req, res) => {
     try {
-        const [count, todayCount, monthCount, yearCount] = await Promise.all([
+        const [count, pendingCount, confirmedCount, completedCount] = await Promise.all([
             PaymentModel.getPaymentCount(),
-            PaymentModel.getTodayPayments(),
-            PaymentModel.getThisMonthPayments(),
-            PaymentModel.getPaymentsForYear()
+            PaymentModel.getPendingPayments(),
+            PaymentModel.getConfirmPayments(),
+            PaymentModel.getCompletedPayments()
         ]);
 
         res.status(200).send({
             totalCount: count,
-            todayCount: todayCount,
-            thisMonthCount: monthCount,
-            thisYearCount: yearCount
+            pendingCount: pendingCount,
+            confirmedCount: confirmedCount,
+            completedCount: completedCount
         });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment counts' });
@@ -23,25 +23,27 @@ const getPaymentCounts = async (req, res) => {
 
 const getAllPaymentSums = async (req, res) => {
     try {
-        const [totalSum, todaySum, thisMonthSum, thisYearSum] = await Promise.all([
+        const [totalSum, todaySum, thisMonthSum, thisYearSum, dealerPendingCommition, dealerCompletedCommition] = await Promise.all([
             PaymentModel.getPaymentSum(),
             PaymentModel.getTodayPaymentsSum(),
             PaymentModel.getThisMonthPaymentsSum(),
-            PaymentModel.getPaymentsForYearSum(new Date().getFullYear())
+            PaymentModel.getPaymentsForYearSum(new Date().getFullYear()),
+            PaymentModel.getDealerCommitionPendingPaymentSum(),
+            PaymentModel.getDealerCommitionCompletedPaymentSum()
         ]);
 
         res.status(200).send({
             totalSum: totalSum,
             todaySum: todaySum,
             thisMonthSum: thisMonthSum,
-            thisYearSum: thisYearSum
+            thisYearSum: thisYearSum,
+            dealerPendingCommition: dealerPendingCommition,
+            dealerCompletedCommition: dealerCompletedCommition
         });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment sums' });
     }
 };
-
-
 
 const getPaymentById = (req, res) => {
     const { paymentid } = req.params;
@@ -255,5 +257,5 @@ module.exports = {
     getPaymentsCompleted,
     getPaymentsConfiemed,
     getPaymentCounts,
-    getAllPaymentSums
+    getAllPaymentSums,
 };
