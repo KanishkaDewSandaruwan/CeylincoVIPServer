@@ -7,7 +7,7 @@ module.exports = (config) => {
 
   router.get('/all', authenticateToken, getAllCompanies);
   router.get('/:company_id', authenticateToken,  findCompany);
-  router.post('/create', authenticateToken,  addCompany);
+  router.post('/create', addCompany);
   router.put('/update/:company_id', authenticateToken, updateCompany);
   router.delete('/delete/:company_id', authenticateToken, deleteCompany);
   
