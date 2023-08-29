@@ -40,7 +40,7 @@ module.exports = (config) => {
     router.post('/forget-password', forgetPassword);
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
-    router.get('/verifypassword/:token', restPassword);
+    router.post('/check-otp', restPassword);
     router.get('/new-password/:token', newPassword);
 
     // Private routes (require authentication)
