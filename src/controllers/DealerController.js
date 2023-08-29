@@ -691,8 +691,6 @@ const restPassword = async (req, res) => {
 const newPassword = (req, res) => {
     const { token, newPassword, confirmPassword } = req.body;
 
-    
-    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
@@ -711,12 +709,13 @@ const newPassword = (req, res) => {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
             
+            console.log(newPassword)
+            
             DealerModel.updateDealerPasswordByEmail(decoded.email, newPassword, (error, results) => {
                 if (error) {
                     res.status(500).send({ error: 'Error updating email in the database' });
                     return;
                 }
-                console.log(results)
 
                 DealerModel.deleteIsertRequest(decoded.email, (error, results) => {
                     if (error) {
