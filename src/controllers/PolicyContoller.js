@@ -225,6 +225,8 @@ const verifyPolicy = async (req, res) => {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {
 
+                    console.log(decoded.policy_id)
+
 
                     PolicyModel.getPolicyById(decoded.policy_id, (error, policies) => {
                         if (error) {
