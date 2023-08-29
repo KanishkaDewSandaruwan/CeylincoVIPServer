@@ -582,7 +582,7 @@ function generateToken(email) {
     return token;
 }
 
-const fogetPassword = (req, res) => {
+const forgetPassword = (req, res) => {
     const { email } = req.body;
 
     DealerModel.getDealerByemail(email, (error, dealer) => {
@@ -591,7 +591,7 @@ const fogetPassword = (req, res) => {
         }
 
         if (!dealer[0]) {
-            return res.status(404).send({ error: 'Email not Found.. please check your email and try again!' });
+            return res.status(404).send({ error: 'Email not found. Please check your email and try again!' });
         }
 
         // Generate a random OTP
@@ -608,7 +608,7 @@ const fogetPassword = (req, res) => {
         }
 
         const verificationCode = generateOTP();
-        const verificationToken = generateVerificationTokenQuick(email);
+        const verificationToken = generateVerificationTokenQuick(email); // Make sure this function is defined
 
         DealerModel.insertResetRequest(email, verificationToken, verificationCode, (insertError, insertId) => {
             if (insertError) {
@@ -629,7 +629,7 @@ const fogetPassword = (req, res) => {
             res.status(200).send({
                 message: 'Verification code sent successfully. Please check your email.',
                 token: verificationToken,
-                insertedId: insertId // Send the inserted ID
+                insertedId: insertId
             });
         });
     });
@@ -705,9 +705,9 @@ const newPassword = (req, res) => {
                     res.status(500).send({ error: 'Error updating email in the database' });
                     return;
                 }
-    
+
                 res.status(200).send({ message: 'Password Reset successfully Completed' });
-            }); 
+            });
         });
     } catch (tokenError) {
         return res.status(400).send({ error: 'Token is invalid or expired' });
@@ -715,7 +715,7 @@ const newPassword = (req, res) => {
 }
 
 function generateVerificationTokenQuick(email) {
-    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' }); // Change expiresIn as needed
+    return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' });
 }
 
 module.exports = {
@@ -735,6 +735,7 @@ module.exports = {
     validateDealer,
     getDealerCount,
     getCommisionByID,
-    fogetPassword,
-    restPassword
+    forgetPassword,
+    restPassword,
+    newPassword
 };

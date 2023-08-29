@@ -15,8 +15,9 @@ const {
     changeStatus,
     deleteDealer,
     getCommisionByID,
-    fogetPassword,
-    restPassword
+    forgetPassword,
+    restPassword,
+    newPassword
 } = require('../../controllers/DealerController');
 
 const {
@@ -36,10 +37,11 @@ module.exports = (config) => {
     // Public routes
     router.post('/create', addDealer);
     router.post('/mail', sendMailToUsers);
-    router.post('/forget-password', fogetPassword);
+    router.post('/forget-password', forgetPassword);
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
     router.get('/verifypassword/:token', restPassword);
+    router.get('/new-password/:token', newPassword);
 
     // Private routes (require authentication)
     router.get('/all', authenticateTokenDealer, getAll);
