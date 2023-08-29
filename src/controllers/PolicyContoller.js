@@ -208,77 +208,73 @@ const verifyPolicy = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const email = decoded.email;
-        const paymentid = decoded.paymentid;
+        const email = decoded.email; // Use the correct field name from the token
+        const paymentid = decoded.paymentid; // Use the correct field name from the token
 
-        // Use async/await to handle database operations
-        try {
-            const existingDealer = await DealerModel.getDealerByemail(email);
-            
+        DealerModel.getDealerByemail(email, (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
-            console.log(existingDealer[0])
 
-            // Use async/await to handle database operations
-            try {
-                const updateResult = await PaymentModel.updatePaymentStatus(paymentid, 2);
+            PaymentModel.updatePaymentStatus(decoded.paymentid, 2, (updateError, updateResult) => {
+                if (updateError) {
+                    return res.status(500).send({ error: 'Error updating dealer status' });
+                } else {
 
-                const emailContent = `
-                    Thank You! ,
-                    ${updateResult.policy_id} Policy Was Confirmed.
-                    
-                    Your Policy Amount is ${updateResult.policy_price}.
+                    const emailContent = `
+                            Thank You! ,
+                            ${policy_id} Policy Was Confirmed.
+                            
+                            Your Policy Amount is ${policy_price}.
 
-                    Confirmed by Ceylinco Pvt ltd.
-                `;
+                            Confirmed by Ceylinco Pvt ltd.
+                        `;
 
-                console.log(updateResult)
-
-                sendEmail(updateResult.customer_email, 'customer', emailContent);
-                sendEmail(updateResult.dealer_email, 'dealer', emailContent);
-
-                const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
-                const htmlResponse = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Thank You for Email Verification</title>
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                text-align: center;
-                                padding: 50px;
-                            }
-                            h1 {
-                                color: #333;
-                            }
-                            p {
-                                color: #777;
-                                margin-top: 20px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <h1>Thank You!</h1>
-                        <p>Your Policy has been confirmed.</p>
-                        <script>
-                            setTimeout(function() {
-                                window.location.href = "${redirectUrl}";
-                            }, 1000); // Adjust the delay time as needed
-                        </script>
-                    </body>
-                    </html>
-                `;
-                return res.status(200).send(htmlResponse);
-            } catch (updateError) {
-                return res.status(500).send({ error: 'Error updating dealer status' });
-            }
-        } catch (error) {
-            return res.status(500).send({ error: 'Error fetching data from the database' });
-        }
+                    sendEmail(policies[0].customer_email, 'customer', emailContent);
+                    sendEmail(dealer[0].dealer_email, 'dealer', emailContent);
+                    // Prepare the HTML response
+                    const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                    const htmlResponse = `
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Thank You for Email Verification</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    text-align: center;
+                                    padding: 50px;
+                                }
+                                h1 {
+                                    color: #333;
+                                }
+                                p {
+                                    color: #777;
+                                    margin-top: 20px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Thank You!</h1>
+                            <p>Your Policy has been confirmed.</p>
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = "${redirectUrl}";
+                                }, 1000); // Adjust the delay time as needed
+                            </script>
+                        </body>
+                        </html>
+                    `;
+                    return res.status(200).send(htmlResponse);
+                }
+            });
+        });
     } catch (tokenError) {
         return res.status(400).send({ error: 'Token is invalid or expired' });
     }
