@@ -672,7 +672,7 @@ const restPassword = async (req, res) => {
                     return res.status(404).send({ error: 'Password reset fail try again' });
                 }
 
-                if (existingRequest[0].otp === otp && token === existingRequest[0].token) {
+                if (existingRequest[0].otp == otp) {
                     const token = generateToken(existingRequest[0].email);
 
                     res.status(200).send({
