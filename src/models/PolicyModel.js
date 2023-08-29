@@ -250,6 +250,13 @@ const PolicyModel = {
         connection.query(query, values, callback);
     },
 
+    updatePolicyCompleteStatus(policy_id, policy_status, callback) {
+        const query = 'UPDATE policy SET policy_status = ? WHERE policy_id = ?';
+        const values = [policy_status, policy_id];
+
+        connection.query(query, values, callback);
+    },
+
     deletePolicy(policy_id, callback) {
         const query = 'DELETE FROM policy WHERE policy_id = ?';
         const values = [policy_id];

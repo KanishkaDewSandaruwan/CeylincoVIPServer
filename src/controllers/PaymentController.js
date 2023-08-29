@@ -84,7 +84,14 @@ const updatePaymentStatus = (req, res) => {
                 return;
             }
 
-            res.status(200).send({ message: 'Payment status updated successfully' });
+            PolicyModel.updatePolicyCompleteStatus(results[0].policyid, 1, (error) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error updating payment status' });
+                    return;
+                }
+
+                res.status(200).send({ message: 'Payment status updated successfully' });
+            });
         });
     });
 };
