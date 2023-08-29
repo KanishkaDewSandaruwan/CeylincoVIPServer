@@ -710,13 +710,13 @@ const newPassword = (req, res) => {
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
-            console.log(existingDealer)
-
+            
             DealerModel.updateDealerPasswordByEmail(decoded.email, newPassword, (error, results) => {
                 if (error) {
                     res.status(500).send({ error: 'Error updating email in the database' });
                     return;
                 }
+                console.log(results)
 
                 DealerModel.deleteIsertRequest(decoded.email, (error, results) => {
                     if (error) {
