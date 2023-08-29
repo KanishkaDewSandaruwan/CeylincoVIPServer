@@ -688,38 +688,50 @@ const restPassword = async (req, res) => {
     }
 };
 
-const newPassword = async (req, res) => {
+const newPassword = (req, res) => {
     const { token, newPassword, confirmPassword } = req.body;
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
         const email = decoded.email; // Use the correct field name from the token
         
         if (newPassword !== confirmPassword) {
             return res.status(400).send({ error: 'Passwords do not match' });
         }
         
-        try {
-            const existingDealer = DealerModel.getDealerByemail(email);
-
-            if (!existingDealer[0]) {
-                return res.status(404).send({ error: 'Password reset failed. User not found' });
+        DealerModel.getDealerByemail(decoded.email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-
-            console.log('New password:', newPassword);
             
-            DealerModel.updateDealerPasswordByEmail(email, newPassword);
-            DealerModel.deleteIsertRequest(email);
-
-            res.status(200).send({ message: 'Password reset successfully completed' });
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Password reset fail try again' });
+            }
             
-        } catch (error) {
-            res.status(500).send({ error: 'Error fetching or updating data in the database' });
-        }
+            console.log(newPassword)
+            
+            DealerModel.updateDealerPasswordByEmail(email, newPassword, (updateError, updateResults) => {
+                if (updateError) {
+                    res.status(500).send({ error: 'Error updating password in the database' });
+                    return;
+                }
+            
+                DealerModel.deleteIsertRequest(email, (deleteError, deleteResults) => {
+                    if (deleteError) {
+                        res.status(500).send({ error: 'Error deleting reset request from the database' });
+                        return;
+                    }
+            
+                    res.status(200).send({ message: 'Password reset successfully completed' });
+                });
+            });
+            
+        });
     } catch (tokenError) {
-        res.status(400).send({ error: 'Token is invalid or expired' });
+        return res.status(400).send({ error: 'Token is invalid or expired' });
     }
-};
+}
 
 function generateVerificationTokenQuick(email) {
     return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' });
