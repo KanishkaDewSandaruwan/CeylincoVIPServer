@@ -692,25 +692,25 @@ const newPassword = (req, res) => {
     const { token, newPassword, confirmPassword } = req.body;
 
     
-    console.log(token)
-
+    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+        
         const email = decoded.email; // Use the correct field name from the token
-
+        
         if (newPassword !== confirmPassword) {
             return res.status(400).send({ error: 'Passwords do not match' });
         }
-
+        
         DealerModel.getDealerByemail(decoded.email, async (error, existingDealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-
+            
             if (!existingDealer[0]) {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
+            console.log(existingDealer)
 
             DealerModel.updateDealerPasswordByEmail(decoded.email, newPassword, (error, results) => {
                 if (error) {
