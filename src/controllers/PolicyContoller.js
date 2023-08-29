@@ -211,6 +211,7 @@ const verifyPolicy = async (req, res) => {
         const email = decoded.email;
         const paymentid = decoded.paymentid;
 
+        console.log(email)
         // Use async/await to handle database operations
         try {
             const existingDealer = await DealerModel.getDealerByemail(email);
