@@ -7,7 +7,7 @@ require('dotenv').config(); // Load environment variables
 const getDealerCount = async (req, res) => {
     try {
         const count = await DealerModel.getDealerCount();
-        res.status(200).send({count : count});
+        res.status(200).send({ count: count });
     } catch (error) {
         res.status(500).send({ error: 'Error fetching payment count' });
     }
@@ -158,7 +158,7 @@ const validateDealer = async (req, res) => {
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Thank You for Email Verification</title>
+                            <title>Thank You for Join with Us</title>
                             <style>
                                 body {
                                     font-family: Arial, sans-serif;
@@ -176,12 +176,11 @@ const validateDealer = async (req, res) => {
                         </head>
                         <body>
                             <h1>Thank You!</h1>
-                            <p>Your email has been successfully verified.</p>
-                            <p>You will now be redirected to Gmail...</p>
+                            <p>Your Account has been successfully verified.</p>
                             <script>
                                 setTimeout(function() {
                                     window.location.href = "${redirectUrl}";
-                                }, 3000); // Adjust the delay time as needed
+                                }, 2000); // Adjust the delay time as needed
                             </script>
                         </body>
                         </html>
@@ -226,7 +225,7 @@ const sendVerificationEmail = (email, verificationToken) => {
         from: 'ceylincodk97@gmail.com', // Sender's email address
         to: email, // Receiver's email address (dealer's email)
         subject: 'Account Verification',
-        text: `Thank you for registering. Please verify your account by clicking the link: ${verificationLink}`
+        text: `Thank you for register as a dealer with ceylinco genaral insurance.please verify your account by clicking the link ${verificationLink}. please contact us for any problem  or more information 0766 910710`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

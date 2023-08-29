@@ -19,10 +19,10 @@ const PolicyModel = {
         });
     },
     
-    getTodayPolicies() {
+    getPolicies() {
         return new Promise((resolve, reject) => {
             const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT COUNT(*) as count FROM policy WHERE policy_start_date = ? AND is_delete = 0 AND policy_status = 3';
+            const query = 'SELECT COUNT(*) as count FROM policy WHERE policy_start_date = ? AND is_delete = 0 AND policy_status = 2';
             connection.query(query, [today], (error, results) => {
                 if (error) {
                     reject(error);

@@ -166,20 +166,40 @@ const updatePolicyPayment = (req, res) => {
                         const verificationToken = generateVerificationToken(dealer[0].dealer_email, paymentid, policy_id);
                         const verificationLink = `https://backend.policycollector.xyz/api/policy/verify/${verificationToken}`;
                         const emailContent = `
-                            Hello,
-                            Here is the payment update for policy ${policy_id}.
-                            
-                            Policy Price: ${policy_price}
-                            Verification Link: ${verificationLink}
+                        Welcome
+                        To - ${policies[0].customer_fullname}
+                        Policy ID - ${policy_id}
+                        Your policy details have been received 
+
+                        if You wish to get Ceylinco Genaral Insurance from US. Please click the link below to confirm your Ceylinco Genaral Insurance policy.
+                        ${verificationLink} 
+
+                        Vehicle Number - ${policies[0].vehicle_reg_no}
+                        Premium        - ${policy_price}
+
+                        Thank you for join with Ceylinco Genaral Ceylinco Genaral Insurance 
+                        Please contact us for more information 
+                        Phone : 0766 910 710
+                        Email : ceylincodk97@gmail.com
                         `;
 
                         const emailContentDealer = `
-                            Hello,
-                            Here is the payment update for policy ${policy_id}.
-                            
-                            Commission Amount: ${commition_amount}
-                            Policy Price: ${policy_price}
-                            Verification Link: ${verificationLink}
+                        Welcome
+                        To - ${dealer[0].dealer_fullname}
+                        Policy ID - ${policy_id}
+                        Your policy details have been received 
+
+                        if You wish to get Ceylinco Genaral Insurance from US. Please click the link below to confirm your Ceylinco Genaral Insurance policy.
+                        ${verificationLink} 
+
+                        Vehicle Number - ${policies[0].vehicle_reg_no}
+                        Premium        - ${policy_price}
+                        Your commission - ${commition_amount}
+
+                        Thank you for join with Ceylinco Genaral Ceylinco Genaral Insurance 
+                        Please contact us for more information 
+                        Phone : 0766 910 710
+                        Email : ceylincodk97@gmail.com
                         `;
 
                         if (req.file && req.file.filename) {
@@ -225,8 +245,6 @@ const verifyPolicy = async (req, res) => {
                     return res.status(500).send({ error: 'Error updating dealer status' });
                 } else {
 
-                    console.log(decoded.policy_id)
-
 
                     PolicyModel.getPolicyById(decoded.policy_id, (error, policies) => {
                         if (error) {
@@ -234,12 +252,51 @@ const verifyPolicy = async (req, res) => {
                         }
 
                         if (!policies[0]) {
-                            return res.status(404).send({ error: 'Policy not found' });
+
+                            const redirectUrl = 'https://mail.google.com'; // Replace with the Gmail URL you want to redirect to
+                            const htmlResponse = `
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Thank You for Join with Us</title>
+                            <style>
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    text-align: center;
+                                    padding: 50px;
+                                }
+                                h1 {
+                                    color: #333;
+                                }
+                                p {
+                                    color: #777;
+                                    margin-top: 20px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Thank You!</h1>
+                            <p>There is Some Issue. try again. please contact us for any problem  or more information 0766 910710</p>
+                            <script>
+                                setTimeout(function() {
+                                    window.location.href = "${redirectUrl}";
+                                }, 2000); // Adjust the delay time as needed
+                            </script>
+                        </body>
+                        </html>
+                    `;
+                            return res.status(404).send(htmlResponse);
                         }
                         const emailContent = `
                             Thank You!, Insurence Was Confirmed.
                             Your payment ${policies[0].policy_price}.
                             Confirmed by Ceylinco Pvt ltd.
+
+                            Contact ....
+                            Phone : 0766910710
+                            Email : ceylincodk97@gmail.com
                         `;
 
                         sendEmail(policies[0].customer_email, 'customer', emailContent);
@@ -252,7 +309,7 @@ const verifyPolicy = async (req, res) => {
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Thank You for Email Verification</title>
+                            <title>Thank You for Your Insurence Confirmation</title>
                             <style>
                                 body {
                                     font-family: Arial, sans-serif;
@@ -271,10 +328,12 @@ const verifyPolicy = async (req, res) => {
                         <body>
                             <h1>Thank You!</h1>
                             <p>Your Policy has been confirmed.</p>
+                            <p>Phone : 0766910710</p>
+                            <p>Email : ceylincodk97@gmail.com</p>
                             <script>
                                 setTimeout(function() {
                                     window.location.href = "${redirectUrl}";
-                                }, 1000); // Adjust the delay time as needed
+                                }, 2000); // Adjust the delay time as needed
                             </script>
                         </body>
                         </html>
