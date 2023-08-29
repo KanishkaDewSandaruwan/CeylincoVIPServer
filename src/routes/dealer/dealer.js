@@ -41,7 +41,7 @@ module.exports = (config) => {
     router.post('/login', login);
     router.get('/validate/:field/:value', validate);
     router.post('/check-otp', restPassword);
-    router.get('/new-password/:token', newPassword);
+    router.post('/new-password', newPassword);
 
     // Private routes (require authentication)
     router.get('/all', authenticateTokenDealer, getAll);

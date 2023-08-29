@@ -691,8 +691,7 @@ const restPassword = async (req, res) => {
 };
 
 const newPassword = (req, res) => {
-    const { token } = req.params;
-    const { newPassword, confirmPassword } = req.body;
+    const { token, newPassword, confirmPassword } = req.body;
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
