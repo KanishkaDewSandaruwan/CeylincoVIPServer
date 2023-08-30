@@ -710,12 +710,12 @@ const newPassword = (req, res) => {
             }
 
             
+            console.log(newPassword)
             DealerModel.updateDealerPasswordByEmail(email, newPassword, (updateError, updateResults) => {
                 if (updateError) {
                     res.status(500).send({ error: 'Error updating password in the database' });
                     return;
                 }
-                console.log(newPassword)
 
                 DealerModel.deleteIsertRequest(email, (deleteError, deleteResults) => {
                     if (deleteError) {
