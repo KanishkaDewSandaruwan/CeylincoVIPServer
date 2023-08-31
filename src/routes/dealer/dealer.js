@@ -17,7 +17,15 @@ const {
     getCommisionByID,
     forgetPassword,
     restPassword,
-    newPassword
+    newPassword,
+    updateDealerProfile,
+    addaccount,
+    //account
+    addaccount,
+    updateDealerProfile,
+    updateaccount,
+    getAllAccounts,
+    getAccountById
 } = require('../../controllers/DealerController');
 
 const {
@@ -58,10 +66,15 @@ module.exports = (config) => {
 
     // Authorized and validated routes
     router.get('/me/:dealer_id', authorizeValidateDealer, getDealerById);
-    router.put('/me/update/:dealer_id', authorizeValidateDealer, updateDealer);
+    router.put('/me/update/:dealer_id', authorizeValidateDealer, updateDealerProfile);
     router.put('/me/changePassword/:dealer_id', authorizeValidateDealer, changePassword);
     router.put('/me/changeEmail/:dealer_id', authorizeValidateDealer, changeEmail);
     router.put('/me/delete/:dealer_id', authorizeValidateDealer, deleteDealer);
+
+    router.post('/me/account/create/:dealer_id', authorizeValidateDealer, addaccount);
+    router.put('/me/account/update/:account_id', authorizeValidateDealer, updateaccount);
+    router.get('/me/account/:account_id', authorizeValidateDealer, getAccountById);
+    router.get('/me/account/all', authorizeValidateDealer, getAllAccounts);
 
     return router;
 };

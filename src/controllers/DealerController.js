@@ -409,6 +409,184 @@ const updateDealer = (req, res) => {
 
 
 
+const updateDealerProfile = (req, res) => {
+    const { dealer_id } = req.params;
+    const dealer = req.body;
+
+    DealerModel.getDealerById(dealer_id, (error, existingDealer) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!existingDealer[0]) {
+            res.status(404).send({ error: 'Dealer not found' });
+            return;
+        }
+
+        if (dealer.phonenumber && dealer.phonenumber !== existingDealer[0].phonenumber) {
+
+
+            DealerModel.getUserByPhonenumber(dealer.phonenumber, (error, results) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error fetching data from the database' });
+                    return;
+                }
+
+                if (results.length > 0) {
+                    res.status(409).send({ error: 'Phone number already exists' });
+                    return;
+                }
+
+                existupdateDealerProfile(dealer, dealer_id);
+            });
+        } else {
+            existupdateDealerProfile(dealer, dealer_id);
+        }
+    });
+
+    function existupdateDealerProfile(dealer, dealerid) {
+        DealerModel.updateDealerProfile(dealer, dealerid, (error, results) => {
+            if (error) {
+                res.status(500).send({ error: 'Error fetching data from the database' });
+                return;
+            }
+
+            if (results.affectedRows === 0) {
+                res.status(404).send({ error: 'Dealer not found or no changes made' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Dealer updated successfully' });
+        });
+    }
+};
+
+
+//bank account
+const addaccount = (req, res) => {
+    const { dealer_id } = req.params;
+    const account = req.body;
+
+    DealerModel.getDealerById(dealer_id, (error, existingDealer) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!existingDealer[0]) {
+            res.status(404).send({ error: 'Dealer not found' });
+            return;
+        }
+
+        DealerModel.addDealerAccount(account, (error, account_id) => {
+            if (error) {
+                res.status(500).send({ error: 'Error fetching data from the database' });
+                return;
+            }
+
+            if (!account_id) {
+                res.status(404).send({ error: 'Failed to create user' });
+                return;
+            }
+
+            res.status(200).send({ message: 'Dealer Payment Account created successfully', account_id });
+        });
+
+    });
+};
+
+const updateaccount = (req, res) => {
+    const { account_id } = req.params;
+    const updatedAccount = req.body;
+
+    DealerModel.getAccountById(account_id, (error, existingAccount) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!existingAccount) {
+            res.status(404).send({ error: 'Payment account not found' });
+            return;
+        }
+
+        // Check if the dealer associated with the payment account exists
+        DealerModel.getDealerById(existingAccount.dealerid, (dealerError, existingDealer) => {
+            if (dealerError) {
+                res.status(500).send({ error: 'Error fetching dealer data from the database' });
+                return;
+            }
+
+            if (!existingDealer[0]) {
+                res.status(404).send({ error: 'Associated dealer not found' });
+                return;
+            }
+
+            // Now proceed with updating the payment account
+            DealerModel.updatePaymentAccount(account_id, updatedAccount, (updateError, rowsAffected) => {
+                if (updateError) {
+                    res.status(500).send({ error: 'Error updating data in the database' });
+                    return;
+                }
+
+                if (rowsAffected === 0) {
+                    res.status(404).send({ error: 'Payment account not found' });
+                    return;
+                }
+
+                res.status(200).send({ message: 'Payment account updated successfully' });
+            });
+        });
+    });
+};
+
+
+const getAllAccounts = (req, res) => {
+    DealerModel.getAllPaymentAccounts((error, accounts) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        res.status(200).send(accounts);
+    });
+};
+
+const getAccountById = (req, res) => {
+    const { account_id } = req.params;
+
+    DealerModel.getAccountById(account_id, (error, account) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
+
+        if (!account) {
+            res.status(404).send({ error: 'Payment account not found' });
+            return;
+        }
+
+        // Check if the dealer associated with the payment account exists
+        DealerModel.getDealerById(account.dealerid, (dealerError, existingDealer) => {
+            if (dealerError) {
+                res.status(500).send({ error: 'Error fetching dealer data from the database' });
+                return;
+            }
+
+            if (!existingDealer[0]) {
+                res.status(404).send({ error: 'Associated dealer not found' });
+                return;
+            }
+
+            res.status(200).send(account);
+        });
+    });
+};
+
+
+
+
 
 const deleteDealers = (req, res) => {
     const { dealer_ids } = req.body;
@@ -709,7 +887,7 @@ const newPassword = (req, res) => {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
 
-            
+
             console.log(newPassword)
             DealerModel.updateDealerPasswordByEmail(email, newPassword, (updateError, updateResults) => {
                 if (updateError) {
@@ -756,5 +934,11 @@ module.exports = {
     getCommisionByID,
     forgetPassword,
     restPassword,
-    newPassword
+    newPassword,
+    //account
+    addaccount,
+    updateDealerProfile,
+    updateaccount,
+    getAllAccounts,
+    getAccountById
 };

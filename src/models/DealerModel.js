@@ -2,72 +2,9 @@ const { connection } = require('../../config/connection');
 
 const DealerModel = {
 
-    getPaymentCount() { 
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT COUNT(*) as count FROM policy WHERE is_delete = 0 AND policy_status = 3';
-            connection.query(query, (error, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results[0].count);
-                }
-            });
-        });
-    },
-
-    getTodayPayments() {
-        return new Promise((resolve, reject) => {
-            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date < DATE_ADD(?, INTERVAL 1 DAY) AND is_delete = 0 AND policy_status = 3';
-            connection.query(query, [today, today], (error, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    },
-
-    getThisMonthPayments() {
-        return new Promise((resolve, reject) => {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1; // JavaScript months are zero-based
-    
-            const startOfMonth = new Date(year, month - 1, 1).toISOString().split('T')[0];
-            const endOfMonth = new Date(year, month, 0).toISOString().split('T')[0];
-    
-            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date <= ? AND is_delete = 0 AND policy_status = 3';
-            connection.query(query, [startOfMonth, endOfMonth], (error, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    },
-
-    getPaymentsForYear(year) {
-        return new Promise((resolve, reject) => {
-            const startOfYear = new Date(year, 0, 1).toISOString().split('T')[0];
-            const endOfYear = new Date(year, 11, 31).toISOString().split('T')[0];
-    
-            const query = 'SELECT * FROM policy WHERE policy_start_date >= ? AND policy_start_date <= ? AND is_delete = 0 AND policy_status = 3';
-            connection.query(query, [startOfYear, endOfYear], (error, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    },
-
     getDealerCount() { 
         return new Promise((resolve, reject) => {
-            const query = 'SELECT COUNT(*) as count FROM dealer WHERE is_delete = 0';
+            const query = 'SELECT COUNT(*) as count FROM dealer WHERE is_delete = 0 AND status = 1';
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
@@ -79,7 +16,7 @@ const DealerModel = {
     },
     
     getDealerUserByUsernameAndPassword(dealer_email, dealer_password, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND dealer_password = ? AND is_delete = 0', [dealer_email, dealer_password], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND dealer_password = ? AND is_delete = 0 AND status = 1', [dealer_email, dealer_password], callback);
     },
 
     saveDealerToken(dealer_id, token, callback) {
@@ -87,15 +24,15 @@ const DealerModel = {
     },
 
     getAllDealer(callback) {
-        connection.query('SELECT * FROM dealer WHERE is_delete = 0', callback);
+        connection.query('SELECT * FROM dealer WHERE is_delete = 0 AND status = 1', callback);
     },
 
     getDealerById(dealer_id, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_id = ?', [dealer_id], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_id = ? AND status = 1', [dealer_id], callback);
     },
 
     getDealerByemail(email, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0', [email], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0 AND status = 1', [email], callback);
     },
     
     insertResetRequest(email, token, otp, callback) {
@@ -181,11 +118,97 @@ const DealerModel = {
         });
     },
 
+    //bank
+    addDealerAccount(account, callback) {
+        const { dealerid, account_name, account_number, account_bank, account_bank_branch } = account;
+        const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const defaultValues = 0; // Convert numeric default values to numbers
+    
+        const query = 'INSERT INTO paymentaccount (dealerid, account_name, account_number, account_bank, account_bank_branch, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [
+            dealerid,
+            account_name,
+            account_number,
+            account_bank,
+            account_bank_branch,
+            trndate,
+            defaultValues,
+            defaultValues
+        ];
+    
+        connection.query(query, values, (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+    
+            console.log(results.insertId);
+            const account_id = results.insertId;
+            callback(null, account_id);
+        });
+    },    
 
-    updateDealer(user, dealer_id, callback) {
-        const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status } = user;
+    updatePaymentAccount(accountId, updatedAccount, callback) {
+        const { account_name, account_number, account_bank, account_bank_branch } = updatedAccount;
+    
+        const query = 'UPDATE paymentaccount SET account_name = ?, account_number = ?, account_bank = ?, account_bank_branch = ? WHERE account_id = ?';
+        const values = [account_name, account_number, account_bank, account_bank_branch, accountId];
+    
+        connection.query(query, values, (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+    
+            callback(null, results.affectedRows);
+        });
+    },
+    
+    getAllPaymentAccounts(callback) {
+        const query = 'SELECT * FROM paymentaccount WHERE is_delete = 0 AND status = 1';
+        connection.query(query, (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+    
+            callback(null, results);
+        });
+    },
+
+    getPaymentAccountById(accountId, callback) {
+        const query = 'SELECT * FROM paymentaccount WHERE account_id = ? AND is_delete = 0 AND status = 1';
+        connection.query(query, [accountId], (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+    
+            if (results.length === 0) {
+                callback('Payment account not found', null);
+                return;
+            }
+    
+            callback(null, results[0]);
+        });
+    },
+    
+    
+
+    //dealer
+
+    updateDealer(dealer, dealer_id, callback) {
+        const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status } = dealer;
         const query = 'UPDATE dealer SET dealer_fullname = ?, dealer_phone = ?, dealer_address = ?, dealer_nic = ?, dealer_whatsapp_number = ?, company_id = ?, status = ? WHERE dealer_id = ?';
         const values = [dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, company_id, status, dealer_id];
+
+        connection.query(query, values, callback);
+    },
+
+    updateDealerProfile(dealer, dealer_id, callback) {
+        const { dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number } = dealer;
+        const query = 'UPDATE dealer SET dealer_fullname = ?, dealer_phone = ?, dealer_address = ?, dealer_nic = ?, dealer_whatsapp_number = ? WHERE dealer_id = ?';
+        const values = [dealer_fullname, dealer_phone, dealer_address, dealer_nic, dealer_whatsapp_number, dealer_id];
 
         connection.query(query, values, callback);
     },

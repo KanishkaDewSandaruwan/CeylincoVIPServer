@@ -110,6 +110,20 @@ const tableInfo = [
       { name: 'is_delete', type: 'INT(5)' },
     ],
   },
+  {
+    tableName: 'paymentaccount',
+    fields: [
+      { name: 'account_id', type: 'INT AUTO_INCREMENT PRIMARY KEY' },
+      { name: 'dealerid', type: 'VARCHAR(255)' },
+      { name: 'account_name', type: 'VARCHAR(255)' },
+      { name: 'account_number', type: 'VARCHAR(255)' },
+      { name: 'account_bank', type: 'VARCHAR(255)' },
+      { name: 'account_bank_branch', type: 'VARCHAR(255)' },
+      { name: 'trndate', type: 'DATETIME' },
+      { name: 'status', type: 'INT' },
+      { name: 'is_delete', type: 'INT' },
+    ],
+  },
 ];
 
 
