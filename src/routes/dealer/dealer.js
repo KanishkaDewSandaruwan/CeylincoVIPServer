@@ -21,7 +21,6 @@ const {
     updateDealerProfile,
     //account
     addaccount,
-    updateDealerProfile,
     updateaccount,
     getAllAccounts,
     getAccountById
