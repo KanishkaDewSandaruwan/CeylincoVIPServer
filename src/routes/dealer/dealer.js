@@ -19,7 +19,6 @@ const {
     restPassword,
     newPassword,
     updateDealerProfile,
-    addaccount,
     //account
     addaccount,
     updateDealerProfile,
