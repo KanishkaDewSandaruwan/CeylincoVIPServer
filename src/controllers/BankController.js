@@ -89,6 +89,7 @@ const createPaymentAccount = (req, res) => {
         }
 
         console.log(accountData.account_bank)
+        console.log(accountData)
 
         PaymentAccountModel.getPaymentAccountByAccountNumber(accountData.account_bank, (error, existingAccount) => {
             if (error) {
