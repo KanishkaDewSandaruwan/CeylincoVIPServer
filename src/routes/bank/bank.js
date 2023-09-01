@@ -1,24 +1,32 @@
 const express = require('express');
-const { getAllBanks, findBank, addBank, updateBank, deleteBank } = require('../../controllers/BankController');
-const { authorizeAccessControll } = require('../../middlewares/userAuth');
+const { 
+    getAllPaymentAccounts,
+    createPaymentAccount,
+    updatePaymentAccount,
+    getPaymentAccountByDealerId,
+    deletePaymentAccount,
+    updateIsDeleteFlag,
+    updatePaymentAccountField,
+    getPaymentAccountById
+ } = require('../../controllers/BankController');
+const { authorizeAccessControll, authenticateToken } = require('../../middlewares/userAuth');
 
 module.exports = (config) => {
     const router = express.Router();
 
     // Create a new bank
-    router.post('/create', authorizeAccessControll, addBank);
-
-    // Get all banks
-    router.get('/all', authorizeAccessControll, getAllBanks);
-
-    // Get bank by ID
-    router.get('/:bank_id', authorizeAccessControll, findBank);
-
-    // Update bank by ID
-    router.put('/:bank_id', authorizeAccessControll, updateBank);
-
-    // Delete bank by ID
-    router.delete('/:bank_id', authorizeAccessControll, deleteBank);
+    router.post('/create', authorizeAccessControll, createPaymentAccount);
+    router.get('/all', authorizeAccessControll, getAllPaymentAccounts);
+    router.get('/:account_id', authorizeAccessControll, getPaymentAccountById);
+    router.get('/dealer/:dealerid', authorizeAccessControll, getPaymentAccountByDealerId);
+    router.put('/update/:account_id', authorizeAccessControll, updatePaymentAccount);
+    router.put('/update/single/:account_id/:field', authorizeAccessControll, updatePaymentAccountField);
+    router.delete('/delete/:account_id', authorizeAccessControll, updateIsDeleteFlag);
+    
+    router.get('/dash/all', authenticateToken, getAllPaymentAccounts);
+    router.get('/dash/:account_id', authenticateToken, getPaymentAccountById);
+    router.get('/dash/dealer/:dealerid', authenticateToken, getPaymentAccountByDealerId);
+    router.delete('/dash/delete/:account_id', authorizeAccessControll, updateIsDeleteFlag);
 
     return router;
 };

@@ -6,6 +6,36 @@ const PaymentAccountModel = {
         connection.query(query, callback);
     },
 
+    createPaymentAccount(accountData, callback) {
+        const {
+            dealerid,
+            account_name,
+            account_number,
+            account_bank,
+            account_bank_branch,
+            trndate,
+            status,
+            is_delete
+        } = accountData;
+
+        const query = `INSERT INTO paymentaccount 
+                       (dealerid, account_name, account_number, account_bank, account_bank_branch, trndate, status, is_delete) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const values = [
+            dealerid,
+            account_name,
+            account_number,
+            account_bank,
+            account_bank_branch,
+            trndate,
+            status,
+            is_delete
+        ];
+
+        connection.query(query, values, callback);
+    },
+
     updatePaymentAccount(account_id, accountData, callback) {
         const {
             dealerid,
@@ -48,6 +78,12 @@ const PaymentAccountModel = {
         const query = 'SELECT * FROM paymentaccount WHERE dealerid = ?';
         connection.query(query, [dealerid], callback);
     },
+
+    getPaymentAccountById(account_id, callback) {
+        const query = 'SELECT * FROM paymentaccount WHERE account_id = ?';
+        connection.query(query, [dealerid], callback);
+    },
+
 
     deletePaymentAccount(account_id, callback) {
         const query = 'DELETE FROM paymentaccount WHERE account_id = ?';
