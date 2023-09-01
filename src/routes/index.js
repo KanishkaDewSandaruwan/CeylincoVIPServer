@@ -7,6 +7,7 @@ const dealerRoute = require('./dealer/dealer');
 const companyRoute = require('./company/company');
 const paymentRoute = require('./payment/payment');
 const getUserrole = require('./statistics/statistics');
+const getBank = require('./bank/bank');
 
 module.exports = (config) => {
   const router = express.Router();
@@ -17,6 +18,7 @@ module.exports = (config) => {
   router.use('/company', companyRoute(config));
   router.use('/payment', paymentRoute(config));
   router.use('/statistics', getUserrole(config));
+  router.use('/bank', getBank(config));
 
   return router;
 };
