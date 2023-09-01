@@ -88,15 +88,10 @@ const createPaymentAccount = (req, res) => {
             return res.status(404).send({ error: 'Dealer not found' });
         }
 
-        console.log(accountData.account_bank)
-        console.log(accountData)
-
-        PaymentAccountModel.getPaymentAccountByAccountNumber(accountData.account_bank, (error, existingAccount) => {
+        PaymentAccountModel.getPaymentAccountByAccountNumber(accountData.account_number, (error, existingAccount) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
-
-            
 
             if (existingAccount.length !== 0) {
                 return res.status(400).send({ error: 'Bank Account Already Created, please try again or contact us' });
