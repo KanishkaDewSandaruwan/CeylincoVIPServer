@@ -19,47 +19,37 @@ const getDealerCount = async (req, res) => {
 const getCommisionByID = async (req, res) => {
     const { dealer_id } = req.params;
 
-    // try {
-    //     const existingDealer = DealerModel.getDealerById(dealer_id);
-    //     console.log(existingDealer[0]);
-    //     if (!existingDealer[0]) {
-    //         return res.status(404).send({ error: 'Dealer not found' });
-    //     }
+    DealerModel.getDealerById(dealer_id, async (error, results) => {
+        if (error) {
+            res.status(500).send({ error: 'Error fetching data from the database' });
+            return;
+        }
 
-    //     try {
-    //         const [pendingCommision, paidCommision] = await Promise.all([
-    //             PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
-    //             PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
-    //         ]);
+        if (results.length === 0) {
+            res.status(404).send({ error: 'Dealer not found' });
+            return;
+        }
 
-    //         console.log(pendingCommision);
+        try {
+            const [pendingCommision, paidCommision] = await Promise.all([
+                PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
+                PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
+            ]);
+    
+            return res.status(200).send({
+                pendingCommision: pendingCommision,
+                paidCommision: paidCommision
+            });
+    
+        } catch (error) {
+            res.status(500).send({ error: 'Error fetching payment sums' });
+        }
 
-    //         return res.status(200).send({
-    //             pendingCommision: pendingCommision,
-    //             paidCommision: paidCommision
-    //         });
-    //     } catch (error) {
-    //         return res.status(500).send({ error: 'Error fetching payment sums' });
-    //     }
-    // } catch (error) {
-    //     return res.status(500).send({ error: 'Error fetching data from the database' });
-    // }
+        res.status(200).send(results);
+    });
 
-    try {
-        const [pendingCommision, paidCommision] = await Promise.all([
-            PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
-            PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
-        ]);
-
-        return res.status(200).send({
-            pendingCommision: pendingCommision,
-            paidCommision: paidCommision
-        });
-
-    } catch (error) {
-        res.status(500).send({ error: 'Error fetching payment sums' });
-    }
 };
+
 
 
 const login = (req, res) => {
