@@ -741,9 +741,8 @@ const requestChangeEmail = (req, res) => {
         }
 
         const verificationCode = generateOTP();
-        const verificationToken = generateVerificationTokenQuick(dealer[0].dealer_email); // Make sure this function is defined
 
-        DealerModel.insertResetRequest(dealer[0].dealer_email, verificationToken, verificationCode, (error, resetRequest_id) => {
+        DealerModel.insertResetRequest(dealer[0].dealer_email, "", verificationCode, (error, resetRequest_id) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
