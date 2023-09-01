@@ -694,7 +694,15 @@ const changeEmail = (req, res) => {
                         return;
                     }
 
-                    res.status(200).send({ message: 'Email changed successfully' });
+                    DealerModel.deleteIsertRequest(email, (deleteError, deleteResults) => {
+                        if (deleteError) {
+                            res.status(500).send({ error: 'Error deleting reset request from the database' });
+                            return;
+                        }
+
+                        res.status(200).send({ message: 'Email changed successfully Completed' });
+                    });
+
                 });
 
             } else {
