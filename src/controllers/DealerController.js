@@ -694,7 +694,7 @@ const changeEmail = (req, res) => {
                         return;
                     }
 
-                    DealerModel.deleteIsertRequest(email, (deleteError, deleteResults) => {
+                    DealerModel.deleteIsertRequest_id(existingRequest[0].resetRequest_id, (deleteError, deleteResults) => {
                         if (deleteError) {
                             res.status(500).send({ error: 'Error deleting reset request from the database' });
                             return;
