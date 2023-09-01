@@ -90,16 +90,28 @@ const createPaymentAccount = (req, res) => {
             return;
         }
 
-        PaymentAccountModel.createPaymentAccount(accountData, (error, result) => {
+        PaymentAccountModel.PaymentAccountModel(accountData.account_bank, (error, existingAccount) => {
             if (error) {
-                res.status(500).send({ error: 'Error creating payment account' });
+                res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
             }
 
-            // Assuming that 'result' contains the ID of the newly created payment account
-            const accountId = result.insertId;
+            if (existingAccount[0]) {
+                res.status(404).send({ error: 'Bank Account Already Create please try again or contact us' });
+                return;
+            }
 
-            res.status(200).send({ success: true, accountId });
+            PaymentAccountModel.createPaymentAccount(accountData, (error, result) => {
+                if (error) {
+                    res.status(500).send({ error: 'Error creating payment account' });
+                    return;
+                }
+
+                // Assuming that 'result' contains the ID of the newly created payment account
+                const accountId = result.insertId;
+
+                res.status(200).send({ success: true, accountId });
+            });
         });
     });
 };

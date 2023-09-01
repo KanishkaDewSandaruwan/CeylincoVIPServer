@@ -2,7 +2,7 @@ const { connection } = require('../../config/connection');
 
 const PaymentAccountModel = {
     getAllPaymentAccounts(callback) {
-        const query = 'SELECT * FROM paymentaccount';
+        const query = 'SELECT * FROM paymentaccount WHERE is_delete = 0';
         connection.query(query, callback);
     },
 
@@ -78,12 +78,17 @@ const PaymentAccountModel = {
     },
 
     getPaymentAccountByDealerId(dealerid, callback) {
-        const query = 'SELECT * FROM paymentaccount WHERE dealerid = ?';
+        const query = 'SELECT * FROM paymentaccount WHERE dealerid = ? AND is_delete = 0';
         connection.query(query, [dealerid], callback);
     },
 
+    getPaymentAccountByAccountNumber(account_number, callback) {
+        const query = 'SELECT * FROM paymentaccount WHERE account_number = ? AND is_delete = 0';
+        connection.query(query, [account_number], callback);
+    },
+
     getPaymentAccountById(account_id, callback) {
-        const query = 'SELECT * FROM paymentaccount WHERE account_id = ?';
+        const query = 'SELECT * FROM paymentaccount WHERE account_id = ? AND is_delete = 0';
         connection.query(query, [dealerid], callback);
     },
 
