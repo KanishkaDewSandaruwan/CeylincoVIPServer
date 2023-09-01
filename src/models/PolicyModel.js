@@ -2,7 +2,7 @@ const { connection } = require('../../config/connection');
 
 const PolicyModel = {
     getAllPolicies(callback) {
-        const query = 'SELECT * FROM policy WHERE is_delete = 0';
+        const query = 'SELECT * FROM policy WHERE is_delete = 0 ORDER BY policy_start_date DESC';
         connection.query(query, callback);
     },
 
