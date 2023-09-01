@@ -101,16 +101,28 @@ const createPaymentAccount = (req, res) => {
                 return;
             }
 
-            PaymentAccountModel.createPaymentAccount(accountData, (error, result) => {
+            PaymentAccountModel.getPaymentAccountByDealerId(accountData.dealerid, (error, existingDealerBankAccount) => {
                 if (error) {
-                    res.status(500).send({ error: 'Error creating payment account' });
+                    res.status(500).send({ error: 'Error fetching data from the database' });
                     return;
                 }
 
-                // Assuming that 'result' contains the ID of the newly created payment account
-                const accountId = result.insertId;
+                if (existingDealerBankAccount[0]) {
+                    res.status(404).send({ error: 'Bank Account Already Create please try again or contact us' });
+                    return;
+                }
 
-                res.status(200).send({ success: true, accountId });
+                PaymentAccountModel.createPaymentAccount(accountData, (error, result) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error creating payment account' });
+                        return;
+                    }
+
+                    // Assuming that 'result' contains the ID of the newly created payment account
+                    const accountId = result.insertId;
+
+                    res.status(200).send({ success: true, accountId });
+                });
             });
         });
     });
