@@ -7,15 +7,18 @@ const PaymentAccountModel = {
     },
 
     createPaymentAccount(accountData, callback) {
+
+        const trndate = new Date();
+        const status = 0;
+        const is_delete = 0;
+
+
         const {
             dealerid,
             account_name,
             account_number,
             account_bank,
             account_bank_branch,
-            trndate,
-            status,
-            is_delete
         } = accountData;
 
         const query = `INSERT INTO paymentaccount 
