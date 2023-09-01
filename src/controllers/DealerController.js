@@ -19,30 +19,45 @@ const getDealerCount = async (req, res) => {
 const getCommisionByID = async (req, res) => {
     const { dealer_id } = req.params;
 
+    // try {
+    //     const existingDealer = DealerModel.getDealerById(dealer_id);
+    //     console.log(existingDealer[0]);
+    //     if (!existingDealer[0]) {
+    //         return res.status(404).send({ error: 'Dealer not found' });
+    //     }
+
+    //     try {
+    //         const [pendingCommision, paidCommision] = await Promise.all([
+    //             PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
+    //             PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
+    //         ]);
+
+    //         console.log(pendingCommision);
+
+    //         return res.status(200).send({
+    //             pendingCommision: pendingCommision,
+    //             paidCommision: paidCommision
+    //         });
+    //     } catch (error) {
+    //         return res.status(500).send({ error: 'Error fetching payment sums' });
+    //     }
+    // } catch (error) {
+    //     return res.status(500).send({ error: 'Error fetching data from the database' });
+    // }
+
     try {
-        const existingDealer = DealerModel.getDealerById(dealer_id);
-        console.log(existingDealer[0]);
-        if (!existingDealer[0]) {
-            return res.status(404).send({ error: 'Dealer not found' });
-        }
+        const [pendingCommision, paidCommision] = await Promise.all([
+            PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
+            PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
+        ]);
 
-        try {
-            const [pendingCommision, paidCommision] = await Promise.all([
-                PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
-                PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
-            ]);
+        return res.status(200).send({
+            pendingCommision: pendingCommision,
+            paidCommision: paidCommision
+        });
 
-            console.log(pendingCommision);
-
-            return res.status(200).send({
-                pendingCommision: pendingCommision,
-                paidCommision: paidCommision
-            });
-        } catch (error) {
-            return res.status(500).send({ error: 'Error fetching payment sums' });
-        }
     } catch (error) {
-        return res.status(500).send({ error: 'Error fetching data from the database' });
+        res.status(500).send({ error: 'Error fetching payment sums' });
     }
 };
 
