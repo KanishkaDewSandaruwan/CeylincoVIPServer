@@ -672,6 +672,8 @@ const changeEmail = (req, res) => {
 
     const { otp, insertedId, newEmail } = req.body;
 
+    console.log(insertedId)
+
     try {
 
         DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
