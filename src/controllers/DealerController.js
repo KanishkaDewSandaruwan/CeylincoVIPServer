@@ -641,6 +641,8 @@ const changePassword = (req, res) => {
     const { dealer_id } = req.params;
     const { currentPassword, newPassword } = req.body;
 
+    console.log(currentPassword + newPassword)
+
     DealerModel.getDealerById(dealer_id, (error, dealer) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
