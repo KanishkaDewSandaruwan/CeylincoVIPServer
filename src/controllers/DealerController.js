@@ -670,7 +670,7 @@ const changePassword = (req, res) => {
 
 const changeEmail = (req, res) => {
 
-    const { otp, insertedId, newEmail } = req.body;
+    const { otp, insertedId, newEmail, dealer_id } = req.body;
 
     console.log(insertedId)
 
@@ -688,7 +688,7 @@ const changeEmail = (req, res) => {
             if (existingRequest[0].otp == otp) {
 
 
-                DealerModel.changeEmail(existingDealer[0].dealer_id, newEmail, (error, results) => {
+                DealerModel.changeEmail(dealer_id, newEmail, (error, results) => {
                     if (error) {
                         res.status(500).send({ error: 'Error updating email in the database' });
                         return;
