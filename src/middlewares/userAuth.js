@@ -74,7 +74,7 @@ async function authorizeAccessControll(req, res, next) {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.decoded = decoded; // Save the decoded payload for further use
-    
+
     const user = await UserModel.userByEmail(req.decoded.email);
 
     if (!user[0]) {
@@ -84,7 +84,7 @@ async function authorizeAccessControll(req, res, next) {
     if (user[0].email !== req.decoded.email) {
       return res.status(401).json({ error: 'Invalid user' });
     }
-    
+
     if (user[0].userrole !== req.decoded.userrole) {
       return res.status(401).json({ error: 'Invalid User Access' });
     }
@@ -132,26 +132,25 @@ function authenticateTokenDealer(req, res, next) {
 async function authorizeValidateDealer(req, res, next) {
   try {
     const token = req.headers['x-token-dealer'];
-    const dealerIdFromBody = req.params.dealer_id;
 
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.decoded = decoded; // Save the decoded payload for further use
+    const email = decoded.email; // Use the correct field name from the token
 
-    const dealer = await DealerModel.dealerById(dealerIdFromBody);
+    DealerModel.getDealerByemail(email, async (error, existingDealer) => {
+      if (error) {
+        return res.status(500).send({ error: 'Error fetching data from the database' });
+      }
 
-    if (!dealer[0]) {
-      return res.status(401).json({ error: 'Unauthorized access' });
-    }
+      if (!existingDealer[0]) {
+        return res.status(404).send({ error: 'Unauthorized access' });
+      }
 
-    if (dealer[0].dealer_email !== req.decoded.email) {
-      return res.status(401).json({ error: 'Invalid dealer ID' });
-    }
-
-    next();
+      next();
+    });
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ error: 'Token expired' });
