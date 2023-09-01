@@ -138,10 +138,6 @@ async function authorizeValidateDealer(req, res, next) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    if (!dealerIdFromBody) {
-      return res.status(400).json({ error: 'Dealer ID is a required field' });
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.decoded = decoded; // Save the decoded payload for further use
 
