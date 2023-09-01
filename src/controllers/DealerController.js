@@ -22,7 +22,7 @@ const getCommisionByID = async (req, res) => {
     try {
         const existingDealer = DealerModel.getDealerById(dealer_id);
 
-        if (!existingDealer[0]) {
+        if (!existingDealer) {
             return res.status(404).send({ error: 'Dealer not found' });
         }
 
@@ -32,12 +32,11 @@ const getCommisionByID = async (req, res) => {
                 PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
             ]);
 
-            console.log(pendingCommision)
+            console.log(pendingCommision);
 
             return res.status(200).send({
                 pendingCommision: pendingCommision,
-                paidCommision: paidCommision,
-                dealerName: existingDealer[0].dealer_fullname
+                paidCommision: paidCommision
             });
         } catch (error) {
             return res.status(500).send({ error: 'Error fetching payment sums' });
@@ -46,6 +45,7 @@ const getCommisionByID = async (req, res) => {
         return res.status(500).send({ error: 'Error fetching data from the database' });
     }
 };
+
 
 const login = (req, res) => {
     const { dealer_email, dealer_password } = req.body;
