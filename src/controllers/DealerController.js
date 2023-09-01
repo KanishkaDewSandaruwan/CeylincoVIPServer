@@ -670,48 +670,37 @@ const changePassword = (req, res) => {
 
 const changeEmail = (req, res) => {
 
-    const { token, otp, insertedId, newEmail } = req.body;
+    const { otp, insertedId, newEmail } = req.body;
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const email = decoded.email; // Use the correct field name from the token
 
-        DealerModel.getDealerByemail(email, async (error, existingDealer) => {
+        DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
             }
 
-            if (!existingDealer[0]) {
+            if (!existingRequest[0]) {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
 
-            DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
-                if (error) {
-                    return res.status(500).send({ error: 'Error fetching data from the database' });
-                }
-
-                if (!existingRequest[0]) {
-                    return res.status(404).send({ error: 'Password reset fail try again' });
-                }
-
-                if (existingRequest[0].otp == otp) {
+            if (existingRequest[0].otp == otp) {
 
 
-                    DealerModel.changeEmail(existingDealer[0].dealer_id, newEmail, (error, results) => {
-                        if (error) {
-                            res.status(500).send({ error: 'Error updating email in the database' });
-                            return;
-                        }
+                DealerModel.changeEmail(existingDealer[0].dealer_id, newEmail, (error, results) => {
+                    if (error) {
+                        res.status(500).send({ error: 'Error updating email in the database' });
+                        return;
+                    }
 
-                        res.status(200).send({ message: 'Email changed successfully' });
-                    });
+                    res.status(200).send({ message: 'Email changed successfully' });
+                });
 
-                } else {
-                    return res.status(404).send({ error: 'Password reset fail try again' });
-                }
+            } else {
+                return res.status(404).send({ error: 'Password reset fail try again' });
+            }
 
-            });
         });
+
     } catch (tokenError) {
         return res.status(400).send({ error: 'Token is invalid or expired' });
     }
@@ -779,7 +768,6 @@ const requestChangeEmail = (req, res) => {
             // Send response back with token, message, and inserted ID
             res.status(200).send({
                 message: 'Verification code sent successfully. Please check your new email.',
-                s: verificationToken,
                 insertedId: resetRequest_id
             });
 
