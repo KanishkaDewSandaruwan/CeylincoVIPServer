@@ -652,7 +652,7 @@ const changePassword = (req, res) => {
             return;
         }
 
-        if (dealer[0].password !== currentPassword) {
+        if (dealer[0].dealer_password !== currentPassword) {
             res.status(400).send({ error: 'Current password is incorrect' });
             return;
         }
