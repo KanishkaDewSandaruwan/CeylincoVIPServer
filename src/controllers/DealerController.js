@@ -779,7 +779,7 @@ const requestChangeEmail = (req, res) => {
             // Send response back with token, message, and inserted ID
             res.status(200).send({
                 message: 'Verification code sent successfully. Please check your new email.',
-                token: verificationToken,
+                s: verificationToken,
                 insertedId: resetRequest_id
             });
 
