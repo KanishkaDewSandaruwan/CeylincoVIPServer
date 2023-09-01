@@ -20,6 +20,7 @@ const {
     newPassword,
     updateDealerProfile,
     //account
+    requestChangeEmail,
     addaccount,
     updateaccount,
     getAllAccounts,
@@ -66,8 +67,10 @@ module.exports = (config) => {
     router.get('/me/:dealer_id', authorizeValidateDealer, getDealerById);
     router.put('/me/update/:dealer_id', authorizeValidateDealer, updateDealerProfile);
     router.put('/me/changePassword/:dealer_id', authorizeValidateDealer, changePassword);
-    router.put('/me/changeEmail/:dealer_id', authorizeValidateDealer, changeEmail);
     router.put('/me/delete/:dealer_id', authorizeValidateDealer, deleteDealer);
+
+    router.put('/me/requestemailchange/:dealer_id', authorizeValidateDealer, requestChangeEmail);
+    router.post('/me/changeEmail', authorizeValidateDealer, changeEmail);
 
     router.post('/me/account/create/:dealer_id', authorizeValidateDealer, addaccount);
     router.put('/me/account/update/:account_id', authorizeValidateDealer, updateaccount);

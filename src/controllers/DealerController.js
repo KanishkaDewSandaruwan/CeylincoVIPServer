@@ -641,8 +641,6 @@ const changePassword = (req, res) => {
     const { dealer_id } = req.params;
     const { currentPassword, newPassword } = req.body;
 
-    console.log(currentPassword + newPassword)
-
     DealerModel.getDealerById(dealer_id, (error, dealer) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
@@ -671,6 +669,56 @@ const changePassword = (req, res) => {
 };
 
 const changeEmail = (req, res) => {
+
+    const { token, otp, insertedId, newEmail } = req.body;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email; // Use the correct field name from the token
+
+        DealerModel.getDealerByemail(email, async (error, existingDealer) => {
+            if (error) {
+                return res.status(500).send({ error: 'Error fetching data from the database' });
+            }
+
+            if (!existingDealer[0]) {
+                return res.status(404).send({ error: 'Password reset fail try again' });
+            }
+
+            DealerModel.getIsertRequest(insertedId, async (error, existingRequest) => {
+                if (error) {
+                    return res.status(500).send({ error: 'Error fetching data from the database' });
+                }
+
+                if (!existingRequest[0]) {
+                    return res.status(404).send({ error: 'Password reset fail try again' });
+                }
+
+                if (existingRequest[0].otp == otp) {
+
+
+                    DealerModel.changeEmail(existingDealer[0].dealer_id, newEmail, (error, results) => {
+                        if (error) {
+                            res.status(500).send({ error: 'Error updating email in the database' });
+                            return;
+                        }
+
+                        res.status(200).send({ message: 'Email changed successfully' });
+                    });
+
+                } else {
+                    return res.status(404).send({ error: 'Password reset fail try again' });
+                }
+
+            });
+        });
+    } catch (tokenError) {
+        return res.status(400).send({ error: 'Token is invalid or expired' });
+    }
+};
+
+
+const requestChangeEmail = (req, res) => {
     const { dealer_id } = req.params;
     const { currentEmail, newEmail } = req.body;
 
@@ -685,18 +733,56 @@ const changeEmail = (req, res) => {
             return;
         }
 
-        if (dealer[0].email !== currentEmail) {
+        if (dealer[0].dealer_email !== currentEmail) {
             res.status(400).send({ error: 'Current email is incorrect' });
             return;
         }
 
-        DealerModel.changeEmail(dealer_id, newEmail, (error, results) => {
+        // Generate a random OTP
+        function generateOTP() {
+            const otpLength = 6;
+            const digits = '0123456789';
+            let OTP = '';
+
+            for (let i = 0; i < otpLength; i++) {
+                OTP += digits[Math.floor(Math.random() * 10)];
+            }
+
+            return OTP;
+        }
+
+        const verificationCode = generateOTP();
+        const verificationToken = generateVerificationTokenQuick(dealer[0].dealer_email); // Make sure this function is defined
+
+        DealerModel.insertResetRequest(dealer[0].dealer_email, verificationToken, verificationCode, (error, resetRequest_id) => {
             if (error) {
-                res.status(500).send({ error: 'Error updating email in the database' });
+                res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
             }
 
-            res.status(200).send({ message: 'Email changed successfully' });
+            if (!resetRequest_id) {
+                res.status(404).send({ error: 'Failed to create user' });
+                return;
+            }
+
+            const emailContent = `
+                Hi, ${dealer[0].fullname}
+                
+                Your verification code is: ${verificationCode}
+                This is your email change request process.
+                You have 15 minutes to reset your email.
+            `;
+
+            // Assuming you have a sendEmail function
+            sendEmail(newEmail, 'Change Email Verification', emailContent);
+
+            // Send response back with token, message, and inserted ID
+            res.status(200).send({
+                message: 'Verification code sent successfully. Please check your new email.',
+                token: verificationToken,
+                insertedId: resetRequest_id
+            });
+
         });
     });
 };
@@ -942,5 +1028,6 @@ module.exports = {
     updateDealerProfile,
     updateaccount,
     getAllAccounts,
-    getAccountById
+    getAccountById,
+    requestChangeEmail
 };
