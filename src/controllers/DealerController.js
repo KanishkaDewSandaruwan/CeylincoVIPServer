@@ -21,8 +21,8 @@ const getCommisionByID = async (req, res) => {
 
     try {
         const existingDealer = DealerModel.getDealerById(dealer_id);
-
-        if (!existingDealer) {
+        console.log(existingDealer[0]);
+        if (!existingDealer[0]) {
             return res.status(404).send({ error: 'Dealer not found' });
         }
 
