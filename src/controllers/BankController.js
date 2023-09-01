@@ -90,7 +90,7 @@ const createPaymentAccount = (req, res) => {
             return;
         }
 
-        PaymentAccountModel.PaymentAccountModel(accountData.account_bank, (error, existingAccount) => {
+        PaymentAccountModel.getPaymentAccountByAccountNumber(accountData.account_bank, (error, existingAccount) => {
             if (error) {
                 res.status(500).send({ error: 'Error fetching data from the database' });
                 return;
