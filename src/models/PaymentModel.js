@@ -113,7 +113,7 @@ const PaymentModel = {
 
     getDealerCommitionCompletedPaymentSum(dealerid) {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 3 AND dealerid = ?';
+            const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0';
             connection.query(query, [dealerid] ,(error, results) => {
                 if (error) {
                     reject(error);

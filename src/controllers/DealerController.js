@@ -32,6 +32,8 @@ const getCommisionByID = async (req, res) => {
                 PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
             ]);
 
+            console.log(pendingCommision)
+
             return res.status(200).send({
                 pendingCommision: pendingCommision,
                 paidCommision: paidCommision,
