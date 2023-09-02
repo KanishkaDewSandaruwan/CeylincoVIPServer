@@ -31,7 +31,7 @@ const getCommisionByID = async (req, res) => {
         }
 
         try {
-            const [pendingCommision, paidCommision] = await Promise.all([
+            const [paidCommision, pendingCommision] = await Promise.all([
                 PaymentModel.getDealerCommitionCompletedPaymentSum(dealer_id),
                 PaymentModel.getDealerCommitionPendingPaymentSum(dealer_id),
             ]);
