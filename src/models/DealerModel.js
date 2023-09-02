@@ -24,15 +24,19 @@ const DealerModel = {
     },
 
     getAllDealer(callback) {
-        connection.query('SELECT * FROM dealer WHERE is_delete = 0 AND status = 1', callback);
+        connection.query('SELECT * FROM dealer WHERE is_delete = 0 ', callback);
     },
 
     getDealerById(dealer_id, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_id = ? AND status = 1', [dealer_id], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_id = ?', [dealer_id], callback);
     },
 
     getDealerByemail(email, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0 AND status = 1', [email], callback);
+        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0', [email], callback);
+    },
+
+    getDealerByPhonenumber(dealer_phone, callback) {
+        connection.query('SELECT * FROM dealer WHERE dealer_phone = ? AND is_delete = 0', [dealer_phone], callback);
     },
     
     insertResetRequest(email, token, otp, callback) {
