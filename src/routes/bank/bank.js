@@ -20,7 +20,7 @@ module.exports = (config) => {
     router.get('/:account_id', authorizeValidateDealer, getPaymentAccountById);
     router.get('/dealer/:dealerid', authorizeValidateDealer, getPaymentAccountByDealerId);
     router.put('/update/:account_id', authorizeValidateDealer, updatePaymentAccount);
-    router.put('/update/single/:account_id/:field', authorizeValidateDealer, updatePaymentAccountField);
+    router.put('/update/single/:dealerid/:field', authorizeValidateDealer, updatePaymentAccountField);
     router.delete('/delete/:account_id', authorizeValidateDealer, updateIsDeleteFlag);
     
     router.get('/dash/all', authenticateToken, getAllPaymentAccounts);

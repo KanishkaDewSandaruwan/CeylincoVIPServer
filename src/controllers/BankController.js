@@ -173,10 +173,10 @@ const updateIsDeleteFlag = (req, res) => {
 };
 
 const updatePaymentAccountField = (req, res) => {
-    const { account_id, field } = req.params;
+    const { dealerid, field } = req.params;
     const { value } = req.body;
 
-    PaymentAccountModel.getPaymentAccountById(account_id, (error, payment) => {
+    PaymentAccountModel.getPaymentAccountByDealerId(dealerid, (error, payment) => {
         if (error) {
             res.status(500).send({ error: 'Error fetching data from the database' });
             return;
@@ -187,7 +187,7 @@ const updatePaymentAccountField = (req, res) => {
             return;
         }
 
-        PaymentAccountModel.updatePaymentAccountField(account_id, field, value, (error, results) => {
+        PaymentAccountModel.updatePaymentAccountField(payment[0].account_id, field, value, (error, results) => {
             if (error) {
                 res.status(500).send({ error: 'Error updating payment account field in the database' });
                 return;
