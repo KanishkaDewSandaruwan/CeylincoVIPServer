@@ -89,7 +89,7 @@ const PaymentAccountModel = {
 
     getPaymentAccountById(account_id, callback) {
         const query = 'SELECT * FROM paymentaccount WHERE account_id = ? AND is_delete = 0';
-        connection.query(query, [dealerid], callback);
+        connection.query(query, [account_id], callback);
     },
 
 
