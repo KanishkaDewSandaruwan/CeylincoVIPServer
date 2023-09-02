@@ -149,57 +149,53 @@ const validate = (req, res) => {
 const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
 
-    DealerModel.getDealerByemail(dealer.dealer_email, async (error, existingDealer) => {
+    // Check if the dealer_email already exists
+    DealerModel.getDealerByEmail(dealer.dealer_email, async (error, existingDealer) => {
         if (error) {
             return res.status(500).send({ error: 'Error fetching data from the database' });
         }
 
-        if (existingDealer[0]) {
-            return res.status(404).send({ error: 'This Email is already exist' });
+        if (existingDealer.length > 0) {
+            return res.status(409).send({ error: 'This Email is already in use' });
         }
 
-        if (dealer.phonenumber && dealer.phonenumber !== existingDealer[0].phonenumber) {
-
-
-            DealerModel.getUserByPhonenumber(dealer.phonenumber, (error, results) => {
+        // Check if the dealer has a phonenumber and it's not the same as an existing dealer's phonenumber
+        if (dealer.phonenumber) {
+            DealerModel.getDealerByPhonenumber(dealer.phonenumber, (error, results) => {
                 if (error) {
-                    res.status(500).send({ error: 'Error fetching data from the database' });
-                    return;
+                    return res.status(500).send({ error: 'Error fetching data from the database' });
                 }
 
                 if (results.length > 0) {
-                    res.status(409).send({ error: 'Phone number already exists' });
-                    return;
+                    return res.status(409).send({ error: 'Phone number already exists' });
                 }
 
-                addDealerReg(dealer);
+                addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
             });
         } else {
-            addDealerReg(dealer);
+            addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
         }
-
     });
 };
 
-const addDealerReg = (dealer) => {
-
-    DealerModel.addDealers(dealer, (error, dealer_id) => {
+const addDealerReg = (dealer, res) => {
+    
+    DealerModel.addDealer(dealer, (error, dealer_id) => {
         if (error) {
-            res.status(500).send({ error: 'Error fetching data from the database' });
-            return;
+            return res.status(500).send({ error: 'Error fetching data from the database' });
         }
 
         if (!dealer_id) {
-            res.status(404).send({ error: 'Failed to create user' });
-            return;
+            return res.status(404).send({ error: 'Failed to create user' });
         }
 
         const verificationToken = generateVerificationToken(dealer.dealer_email);
         sendVerificationEmail(dealer.dealer_email, verificationToken);
 
-        res.status(200).send({ message: 'Dealer created successfully', dealer_id });
+        return res.status(200).send({ message: 'Dealer created successfully', dealer_id });
     });
 }
+
 
 
 const validateDealer = async (req, res) => {
