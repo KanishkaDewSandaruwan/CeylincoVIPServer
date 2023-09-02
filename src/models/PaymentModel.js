@@ -138,7 +138,7 @@ const PaymentModel = {
     },
 
     //dealer all
-    getDealerCommitionCompletedPaymentSum() {
+    getDealerCommitionCompletedPaymentSumAll() {
         return new Promise((resolve, reject) => {
             const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 3';
             connection.query(query, (error, results) => {
@@ -151,7 +151,7 @@ const PaymentModel = {
         });
     },
 
-    getDealerCommitionPendingPaymentSum() {
+    getDealerCommitionPendingPaymentSumAll() {
         return new Promise((resolve, reject) => {
             const query = 'SELECT SUM(commition_amount) as sum FROM payment WHERE is_delete = 0 AND status = 2';
             connection.query(query, (error, results) => {
