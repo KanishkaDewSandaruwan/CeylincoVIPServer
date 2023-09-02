@@ -78,7 +78,20 @@ const addPolicy = (req, res) => {
             return;
         }
 
+        const verificationLink = "http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com/";
+
+        const emailContent = `
+            Hi, Isuru
+            Policy ID - ${policyId}
+            New Policy has been received! Please check website to complete your deal 
+            ${verificationLink} 
+            `;
+
+        const emailSubject = `New Policy have been received`
+        sendEmail("ceylincodk97@gmail.com", emailSubject, emailContent);
+
         res.status(200).send({ success: true, policyId });
+
     });
 };
 
