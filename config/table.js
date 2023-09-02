@@ -47,7 +47,6 @@ const tableInfo = [
       { name: 'dealer_whatsapp_number', type: 'VARCHAR(255)' },
       { name: 'dealer_email', type: 'VARCHAR(255)' },
       { name: 'dealer_password', type: 'VARCHAR(255)' },
-      { name: 'pin_number', type: 'VARCHAR(4)' },
       { name: 'reg_date', type: 'DATETIME' },
       { name: 'company_id', type: 'INT(255)' },
       { name: 'status', type: 'INT(5)' },
