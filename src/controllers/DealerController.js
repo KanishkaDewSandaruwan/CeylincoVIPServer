@@ -159,7 +159,7 @@ const addDealer = (req, res) => {
             return res.status(409).send({ error: 'This Email is already in use' });
         }
 
-        console.log(dealer)
+     
         // Check if the dealer has a phonenumber and it's not the same as an existing dealer's phonenumber
         if (dealer.phonenumber) {
             DealerModel.getDealerByPhonenumber(dealer.phonenumber, (error, results) => {
@@ -174,6 +174,7 @@ const addDealer = (req, res) => {
                 addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
             });
         } else {
+            console.log(dealer)
             addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
         }
     });
