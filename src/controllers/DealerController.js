@@ -150,7 +150,7 @@ const addDealer = (req, res) => {
     const dealer = req.body; // Retrieve the user data from the request body
 
     // Check if the dealer_email already exists
-    DealerModel.getDealerByEmail(dealer.dealer_email, async (error, existingDealer) => {
+    DealerModel.getDealerByemail(dealer.dealer_email, async (error, existingDealer) => {
         if (error) {
             return res.status(500).send({ error: 'Error fetching data from the database' });
         }
@@ -179,8 +179,8 @@ const addDealer = (req, res) => {
 };
 
 const addDealerReg = (dealer, res) => {
-    
-    DealerModel.addDealer(dealer, (error, dealer_id) => {
+
+    DealerModel.addDealers(dealer, (error, dealer_id) => {
         if (error) {
             return res.status(500).send({ error: 'Error fetching data from the database' });
         }
