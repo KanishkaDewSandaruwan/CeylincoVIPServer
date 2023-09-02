@@ -174,7 +174,6 @@ const addDealer = (req, res) => {
                 addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
             });
         } else {
-            console.log(dealer)
             addDealerReg(dealer, res); // Pass 'res' to the addDealerReg function to send responses
         }
     });

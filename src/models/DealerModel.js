@@ -98,6 +98,7 @@ const DealerModel = {
         const { dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, company_id } = dealer;
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = '0'; // Convert numeric default values to strings
+        console.log("insertId", dealer_fullname);
 
         const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
@@ -120,7 +121,7 @@ const DealerModel = {
                 return;
             }
 
-            console.log(results.insertId);
+            console.log("insertId", results.insertId);
             const dealer_id = results.insertId;
             callback(null, dealer_id);
         });
