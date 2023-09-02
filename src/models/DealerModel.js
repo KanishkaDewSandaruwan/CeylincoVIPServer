@@ -100,7 +100,7 @@ const DealerModel = {
         const defaultvalues = '0'; // Convert numeric default values to strings
         console.log("insertId", dealer_fullname);
 
-        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, status, is_delete, reg_date, company_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, reg_date, company_id, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             dealer_fullname,
             dealer_address,
@@ -109,10 +109,10 @@ const DealerModel = {
             dealer_whatsapp_number,
             dealer_email,
             dealer_password,
-            defaultvalues,
-            defaultvalues,
             trndate,
-            company_id
+            company_id,
+            defaultvalues,
+            defaultvalues
         ];
 
         connection.query(query, values, (error, results) => {
