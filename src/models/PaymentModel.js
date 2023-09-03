@@ -261,13 +261,13 @@ const PaymentModel = {
         connection.query('SELECT * FROM payment WHERE is_delete = 0', callback);
     },
     getPaymentsCompleted(callback) {
-        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 3', callback);
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 3 ORDER By trndate DESC', callback);
     },
     getPaymentsConfirmed(callback) {
-        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 2', callback);
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 2 ORDER By trndate DESC', callback);
     },
     getPaymentsPending(callback) {
-        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 1', callback);
+        connection.query('SELECT * FROM payment WHERE is_delete = 0 AND status = 1 ORDER By trndate DESC', callback);
     },
 
     updatePaidAmount(paymentid, paid_amount, callback) {

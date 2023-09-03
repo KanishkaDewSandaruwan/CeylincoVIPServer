@@ -470,6 +470,18 @@ const verifyPolicy = async (req, res) => {
 
                         const emailSubject = `Insurence Was Confirmed`
 
+                        const emailContentAdmin = `
+                            Thank You!, Insurence Was Confirmed.
+                            Your payment ${policies[0].policy_price}.
+                            Confirmed by Ceylinco Pvt ltd.
+
+                            Contact ....
+                            Phone : 0766910710
+                            Email : ceylincodk97@gmail.com
+                        `;
+
+
+                        sendEmail("ceylincodk97@gmail.com", "Policy Confirmed By Customer", emailContentAdmin);
                         sendEmail(policies[0].customer_email, emailSubject, emailContent);
                         sendEmail(existingDealer[0].dealer_email, emailSubject, emailContent);
                         // Prepare the HTML response
