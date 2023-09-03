@@ -26,8 +26,7 @@ const UserModel = {
 
         if (isMatch) {
           // Passwords match, return the user's data
-          const user = results[0];
-          callback(null, user);
+          callback(null, results);
         } else {
           // Passwords do not match
           callback(null, null);

@@ -13,7 +13,7 @@ module.exports = (config) => {
     router.post('/reset-password/:token', newPassword);
 
     //user role permission authontication
-    router.post('/create',  addUser);
+    router.post('/create', authorizeAccessControll, addUser);
     router.get('/all', authorizeAccessControll, getAll);
     router.get('/:userid', authenticateToken, findUser);
     router.put('/status/:userid', authorizeAccessControll, changeStatus);
