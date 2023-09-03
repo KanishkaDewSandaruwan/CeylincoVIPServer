@@ -263,23 +263,78 @@ const sendManualEmail = (req, res) => {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
 
-            mailHandle(
-                policies[0].customer_email,
-                dealer[0].dealer_email,
-                policy_id,
-                message,
-                subject,
-                filePath,
-                req,
-                res
-            );
+            if (sender == 1) {
+
+                mailHandle(
+                    policies[0].customer_email,
+                    policies[0].customer_fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+
+                mailHandle(
+                    dealer[0].dealer_email,
+                    dealer[0].fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+
+            } else if (sender == 2) {
+                mailHandle(
+                    dealer[0].dealer_email,
+                    dealer[0].fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+            } else if (sender == 3) {
+                mailHandle(
+                    policies[0].customer_email,
+                    policies[0].customer_fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+            } else {
+
+                mailHandle(
+                    policies[0].customer_email,
+                    policies[0].customer_fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+
+                mailHandle(
+                    dealer[0].dealer_email,
+                    dealer[0].fullname,
+                    policy_id,
+                    message,
+                    subject,
+                    req,
+                    res
+                );
+
+            }
         });
     });
 };
 
-const mailHandle = (customerEmail, dealerEmail, policy_id, message, subject, filePath, req, res) => {
+const mailHandle = (email, fullname, policy_id, message, subject, req, res) => {
     const emailContent = `
-    Hi! ${customerEmail}
+    Hi! ${fullname}
     Policy ID - ${policy_id}
     
     ${message}
@@ -292,12 +347,10 @@ const mailHandle = (customerEmail, dealerEmail, policy_id, message, subject, fil
 
     if (filePath) {
         // Assuming you have a sendEmailWithAttachment function defined somewhere
-        sendEmailWithAttachment(customerEmail, subject, emailContent, filePath);
-        sendEmailWithAttachment(dealerEmail, subject, emailContent, filePath);
+        sendEmailWithAttachment(email, subject, emailContent, req.file);
     } else {
         // Assuming you have a sendEmail function defined somewhere
-        sendEmail(customerEmail, subject, emailContent);
-        sendEmail(dealerEmail, subject, emailContent);
+        sendEmail(email, subject, emailContent);
     }
 
     res.status(200).send({ message: 'Email Sent successfully' });
