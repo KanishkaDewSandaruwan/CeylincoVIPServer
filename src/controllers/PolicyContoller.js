@@ -345,7 +345,7 @@ const mailHandle = (email, fullname, policy_id, message, subject, req, res) => {
     Email: ceylincodk97@gmail.com
     `;
 
-    if (filePath) {
+    if (req.file && req.file.filename) {
         // Assuming you have a sendEmailWithAttachment function defined somewhere
         sendEmailWithAttachment(email, subject, emailContent, req.file);
     } else {
