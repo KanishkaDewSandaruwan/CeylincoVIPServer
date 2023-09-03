@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const DealerModel = {
 
-    getDealerCount() { 
+    getDealerCount() {
         return new Promise((resolve, reject) => {
             const query = 'SELECT COUNT(*) as count FROM dealer WHERE is_delete = 0 AND status = 1';
             connection.query(query, (error, results) => {
@@ -15,9 +15,38 @@ const DealerModel = {
             });
         });
     },
-    
-    getDealerUserByUsernameAndPassword(dealer_email, dealer_password, callback) {
-        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND dealer_password = ? AND is_delete = 0 AND status = 1', [dealer_email, dealer_password], callback);
+
+    getDealerUserByUsernameAndPassword(dealer_email, input_password, callback) {
+        connection.query('SELECT * FROM dealer WHERE dealer_email = ? AND is_delete = 0 AND status = 1', [dealer_email], (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+
+            if (results.length === 0) {
+                // Dealer with the provided email not found
+                callback(null, null);
+                return;
+            }
+
+            const storedPasswordHash = results[0].dealer_password;
+
+            // Compare the provided password with the stored password hash using bcrypt
+            bcrypt.compare(input_password, storedPasswordHash, (err, isMatch) => {
+                if (err) {
+                    callback(err, null);
+                    return;
+                }
+
+                if (isMatch) {
+
+                    callback(null, results);
+                } else {
+                    // Passwords do not match
+                    callback(null, null);
+                }
+            });
+        });
     },
 
     saveDealerToken(dealer_id, token, callback) {
@@ -39,16 +68,16 @@ const DealerModel = {
     getDealerByPhonenumber(dealer_phone, callback) {
         connection.query('SELECT * FROM dealer WHERE dealer_phone = ? AND is_delete = 0', [dealer_phone], callback);
     },
-    
+
     insertResetRequest(email, token, otp, callback) {
         const trndate = new Date();
         const accept = 0;
         const status = 0;
         const is_delete = 0;
-    
+
         const query = `INSERT INTO resetRequest (email, token, otp, trndate, accept, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const values = [email, token, otp, trndate, accept, status, is_delete];
-    
+
         connection.query(query, values, (error, results) => {
             if (error) {
                 callback(error, null);
@@ -75,9 +104,9 @@ const DealerModel = {
     updateDealerPasswordByEmail(dealer_email, dealer_password, callback) {
         const query = 'UPDATE dealer SET dealer_password = ? WHERE dealer_email = ?';
         const values = [dealer_password, dealer_email];
-    
+
         connection.query(query, values, callback);
-      },
+    },
 
     validate(field, value, callback) {
         const query = 'SELECT COUNT(*) AS count FROM dealer WHERE ?? = ? AND is_delete = 0';
@@ -140,7 +169,7 @@ const DealerModel = {
         const { dealerid, account_name, account_number, account_bank, account_bank_branch } = account;
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultValues = 0; // Convert numeric default values to numbers
-    
+
         const query = 'INSERT INTO paymentaccount (dealerid, account_name, account_number, account_bank, account_bank_branch, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         const values = [
             dealerid,
@@ -152,35 +181,35 @@ const DealerModel = {
             defaultValues,
             defaultValues
         ];
-    
+
         connection.query(query, values, (error, results) => {
             if (error) {
                 callback(error, null);
                 return;
             }
-    
+
             console.log(results.insertId);
             const account_id = results.insertId;
             callback(null, account_id);
         });
-    },    
+    },
 
     updatePaymentAccount(accountId, updatedAccount, callback) {
         const { account_name, account_number, account_bank, account_bank_branch } = updatedAccount;
-    
+
         const query = 'UPDATE paymentaccount SET account_name = ?, account_number = ?, account_bank = ?, account_bank_branch = ? WHERE account_id = ?';
         const values = [account_name, account_number, account_bank, account_bank_branch, accountId];
-    
+
         connection.query(query, values, (error, results) => {
             if (error) {
                 callback(error, null);
                 return;
             }
-    
+
             callback(null, results.affectedRows);
         });
     },
-    
+
     getAllPaymentAccounts(callback) {
         const query = 'SELECT * FROM paymentaccount WHERE is_delete = 0 AND status = 1';
         connection.query(query, (error, results) => {
@@ -188,7 +217,7 @@ const DealerModel = {
                 callback(error, null);
                 return;
             }
-    
+
             callback(null, results);
         });
     },
@@ -200,17 +229,17 @@ const DealerModel = {
                 callback(error, null);
                 return;
             }
-    
+
             if (results.length === 0) {
                 callback('Payment account not found', null);
                 return;
             }
-    
+
             callback(null, results[0]);
         });
     },
-    
-    
+
+
 
     //dealer
 
