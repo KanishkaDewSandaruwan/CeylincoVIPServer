@@ -1,4 +1,5 @@
 const { connection } = require('../../config/connection');
+const bcrypt = require('bcrypt');
 
 const DealerModel = {
 
