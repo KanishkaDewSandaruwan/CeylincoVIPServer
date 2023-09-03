@@ -196,7 +196,7 @@ const restPassword = async (req, res) => {
     }
 };
 
-const newPassword = async (req, res) => {
+const newPassword = (req, res) => {
     const { token } = req.params;
     const { newPassword, confirmPassword } = req.body;
 
@@ -209,51 +209,15 @@ const newPassword = async (req, res) => {
             return res.status(400).send({ error: 'Passwords do not match' });
         }
 
-        // Validate the new password for complexity (you can customize this)
-        if (!isValidPassword(newPassword)) {
-            return res.status(400).send({ error: 'Invalid password format' });
-        }
-
-        // Hash the new password before updating it
-        const hashedPassword = await hashPassword(newPassword);
-        
         // Update the user's password in the database
-        UserModel.updatePasswordByEmail(email, hashedPassword, (error, result) => {
-            if (error) {
-                return res.status(500).send({ error: 'Error updating password in the database' });
-            }
-            
-            if (result.affectedRows === 0) {
-                return res.status(404).send({ error: 'User not found or token expired' });
-            }
+        UserModel.updatePasswordByEmail(email, newPassword);
 
-            // Password updated successfully
-            const redirectUrl = 'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com';
-            return res.redirect(redirectUrl);
-        });
+        // Redirect the user to a success page
+        const redirectUrl = 'http://ceylincocollection.dashboard.s3-website-us-east-1.amazonaws.com';
+        return res.redirect(redirectUrl);
     } catch (tokenError) {
         return res.status(400).send({ error: 'Token is invalid or expired' });
     }
-};
-
-// Helper function to hash a password
-async function hashPassword(password) {
-    return new Promise((resolve, reject) => {
-        bcrypt.hash(password, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
-            if (err) {
-                reject(err);
-            } else {
-                resolve(hash);
-            }
-        });
-    });
-}
-
-// Helper function to validate password complexity (customize as needed)
-function isValidPassword(password) {
-    // Implement your password complexity validation logic here
-    // Example: Check for a minimum length and required character types
-    return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password);
 }
 
 const findUser = (req, res) => {

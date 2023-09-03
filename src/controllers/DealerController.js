@@ -988,8 +988,6 @@ const newPassword = (req, res) => {
                 return res.status(404).send({ error: 'Password reset fail try again' });
             }
 
-
-            console.log(newPassword)
             DealerModel.updateDealerPasswordByEmail(email, newPassword, (updateError, updateResults) => {
                 if (updateError) {
                     res.status(500).send({ error: 'Error updating password in the database' });
