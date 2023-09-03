@@ -104,17 +104,47 @@ const UserModel = {
   },
 
   updateUserPassword(userid, newPassword, callback) {
-    const query = 'UPDATE user SET password = ? WHERE userid = ?';
-    const values = [newPassword, userid];
+    // Hash the new password before updating it
+    bcrypt.hash(newPassword, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+      if (err) {
+        callback(err, null);
+        return;
+      }
 
-    connection.query(query, values, callback);
+      const query = 'UPDATE user SET password = ? WHERE userid = ?';
+      const values = [hash, userid]; // Use the hashed password
+
+      connection.query(query, values, (error, results) => {
+        if (error) {
+          callback(error, null);
+          return;
+        }
+
+        callback(null, results.affectedRows);
+      });
+    });
   },
 
   updatePasswordByEmail(email, newPassword, callback) {
-    const query = 'UPDATE user SET password = ? WHERE email = ?';
-    const values = [newPassword, email];
+    // Hash the new password before updating it
+    bcrypt.hash(newPassword, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+      if (err) {
+        callback(err, null);
+        return;
+      }
 
-    connection.query(query, values, callback);
+      const query = 'UPDATE user SET password = ? WHERE email = ?';
+      const values = [hash, email]; // Use the hashed password
+
+      connection.query(query, values, (error, results) => {
+        if (error) {
+          callback(error, null);
+          return;
+        }
+
+        callback(null, results.affectedRows);
+      });
+    });
   },
 
   changeEmail(userid, newEmail, callback) {
