@@ -105,6 +105,8 @@ const DealerModel = {
                 return;
             }
 
+            console.log(hash)
+
             const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, reg_date, company_id, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             const values = [
                 dealer_fullname,
@@ -126,7 +128,6 @@ const DealerModel = {
                     return;
                 }
 
-                console.log("insertId", results.insertId);
                 const dealer_id = results.insertId;
                 callback(null, dealer_id);
             });
