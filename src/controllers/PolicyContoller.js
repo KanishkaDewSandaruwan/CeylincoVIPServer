@@ -233,10 +233,9 @@ const updatePolicyPayment = (req, res) => {
     });
 };
 
-
 const sendManualEmail = (req, res) => {
     const { policy_id } = req.params;
-    const { policyid, subject, message } = req.body;
+    const { policyid, subject, message, sender } = req.body;
     let filePath = "";
 
     if (req.file && req.file.filename) {
@@ -244,7 +243,6 @@ const sendManualEmail = (req, res) => {
     } else {
         filePath = null; // Set filePath to null if no attachment
     }
-
 
     PolicyModel.getPolicyById(policy_id, (error, policies) => {
         if (error) {
@@ -255,6 +253,7 @@ const sendManualEmail = (req, res) => {
             return res.status(404).send({ error: 'Policy not found' });
         }
 
+        // Assuming you have a DealerModel defined somewhere
         DealerModel.getDealerById(policies[0].dealer_id, (error, dealer) => {
             if (error) {
                 return res.status(500).send({ error: 'Error fetching data from the database' });
@@ -264,43 +263,46 @@ const sendManualEmail = (req, res) => {
                 return res.status(404).send({ error: 'Dealer not found' });
             }
 
-            const emailContent = `
-            Hi! ${policies[0].customer_fullname}
-            Policy ID - ${policy_id}
-            
-            ${message}
-
-            Thank you for join with Ceylinco Genaral Ceylinco Genaral Insurance 
-            Please contact us for more information 
-            Phone : 0766 910 710
-            Email : ceylincodk97@gmail.com
-            `;
-
-            const emailContentDealer = `
-            Hi! ${dealer[0].dealer_fullname}
-            Policy ID - ${policy_id}
-
-            ${message}
-
-            Thank you for join with Ceylinco Genaral Ceylinco Genaral Insurance 
-            Please contact us for more information 
-            Phone : 0766 910 710
-            Email : ceylincodk97@gmail.com
-            `;
-
-            if (req.file && req.file.filename) {
-                sendEmailWithAttachment(policies[0].customer_email, subject, emailContent, req.file);
-                sendEmailWithAttachment(dealer[0].dealer_email, subject, emailContentDealer, req.file);
-            } else {
-                sendEmail(policies[0].customer_email, subject, emailContent);
-                sendEmail(dealer[0].dealer_email, subject, emailContentDealer);
-            }
-
-            res.status(200).send({ message: 'Email Sent successfully' });
-
+            mailHandle(
+                policies[0].customer_email,
+                dealer[0].dealer_email,
+                policy_id,
+                message,
+                subject,
+                filePath,
+                req,
+                res
+            );
         });
     });
 };
+
+const mailHandle = (customerEmail, dealerEmail, policy_id, message, subject, filePath, req, res) => {
+    const emailContent = `
+    Hi! ${customerEmail}
+    Policy ID - ${policy_id}
+    
+    ${message}
+
+    Thank you for joining with Ceylinco General Insurance 
+    Please contact us for more information 
+    Phone: 0766 910 710
+    Email: ceylincodk97@gmail.com
+    `;
+
+    if (filePath) {
+        // Assuming you have a sendEmailWithAttachment function defined somewhere
+        sendEmailWithAttachment(customerEmail, subject, emailContent, filePath);
+        sendEmailWithAttachment(dealerEmail, subject, emailContent, filePath);
+    } else {
+        // Assuming you have a sendEmail function defined somewhere
+        sendEmail(customerEmail, subject, emailContent);
+        sendEmail(dealerEmail, subject, emailContent);
+    }
+
+    res.status(200).send({ message: 'Email Sent successfully' });
+};
+
 
 function generateVerificationToken(email, paymentid, policy_id) {
     return jwt.sign({ email, paymentid, policy_id }, process.env.JWT_SECRET);
