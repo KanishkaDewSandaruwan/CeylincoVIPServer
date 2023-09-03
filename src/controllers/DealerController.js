@@ -3,6 +3,7 @@ const PaymentModel = require('../models/PaymentModel');
 const dealerView = require('../views/dealerView');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 const { sendEmail, sendEmailWithAttachment } = require('../../config/mail');
 require('dotenv').config(); // Load environment variables
 
@@ -658,18 +659,34 @@ const changePassword = (req, res) => {
             return;
         }
 
-        if (dealer[0].dealer_password !== currentPassword) {
-            res.status(400).send({ error: 'Current password is incorrect' });
-            return;
-        }
-
-        DealerModel.updateDealerPassword(dealer_id, newPassword, (error, results) => {
-            if (error) {
-                res.status(500).send({ error: 'Error updating password in the database' });
+        // Compare the current password with the stored password hash using bcrypt
+        bcrypt.compare(currentPassword, dealer[0].dealer_password, (err, isMatch) => {
+            if (err) {
+                res.status(500).send({ error: 'Error comparing passwords' });
                 return;
             }
 
-            res.status(200).send({ message: 'Password changed successfully' });
+            if (!isMatch) {
+                res.status(400).send({ error: 'Current password is incorrect' });
+                return;
+            }
+
+            // Hash the new password before updating it
+            bcrypt.hash(newPassword, 10, (hashErr, hash) => {
+                if (hashErr) {
+                    res.status(500).send({ error: 'Error hashing new password' });
+                    return;
+                }
+
+                DealerModel.updateDealerPassword(dealer_id, hash, (updateErr, results) => {
+                    if (updateErr) {
+                        res.status(500).send({ error: 'Error updating password in the database' });
+                        return;
+                    }
+
+                    res.status(200).send({ message: 'Password changed successfully' });
+                });
+            });
         });
     });
 };

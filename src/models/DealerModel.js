@@ -101,11 +101,26 @@ const DealerModel = {
     deleteIsertRequest_id(resetRequest_id, callback) {
         connection.query('DELETE FROM resetRequest WHERE resetRequest_id = ?', [resetRequest_id], callback);
     },
-    updateDealerPasswordByEmail(dealer_email, dealer_password, callback) {
-        const query = 'UPDATE dealer SET dealer_password = ? WHERE dealer_email = ?';
-        const values = [dealer_password, dealer_email];
-
-        connection.query(query, values, callback);
+    updateDealerPasswordByEmail(dealer_email, newPassword, callback) {
+        // Hash the new password before updating it
+        bcrypt.hash(newPassword, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+            if (err) {
+                callback(err, null);
+                return;
+            }
+    
+            const query = 'UPDATE dealer SET dealer_password = ? WHERE dealer_email = ?';
+            const values = [hash, dealer_email]; // Use the hashed password
+    
+            connection.query(query, values, (error, results) => {
+                if (error) {
+                    callback(error, null);
+                    return;
+                }
+    
+                callback(null, results.affectedRows);
+            });
+        });
     },
 
     validate(field, value, callback) {
@@ -260,10 +275,25 @@ const DealerModel = {
     },
 
     updateDealerPassword(dealer_id, newPassword, callback) {
-        const query = 'UPDATE dealer SET dealer_password = ? WHERE dealer_id = ?';
-        const values = [newPassword, dealer_id];
-
-        connection.query(query, values, callback);
+        // Hash the new password before updating it
+        bcrypt.hash(newPassword, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+            if (err) {
+                callback(err, null);
+                return;
+            }
+    
+            const query = 'UPDATE dealer SET dealer_password = ? WHERE dealer_id = ?';
+            const values = [hash, dealer_id]; // Use the hashed password
+    
+            connection.query(query, values, (error, results) => {
+                if (error) {
+                    callback(error, null);
+                    return;
+                }
+    
+                callback(null, results.affectedRows);
+            });
+        });
     },
 
     changeEmail(dealer_id, newEmail, callback) {
