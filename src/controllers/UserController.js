@@ -14,6 +14,8 @@ const login = (req, res) => {
             return;
         }
 
+        console.log()
+
         if (Array.isArray(results) && results.length > 0) {
             const user = results[0];
 

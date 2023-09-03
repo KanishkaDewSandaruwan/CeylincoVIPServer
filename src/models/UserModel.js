@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const UserModel = {
   getUserByUsernameAndPassword(username, password, callback) {
-    connection.query('SELECT * FROM user WHERE username = ? AND is_delete = 0 AND status = 1', [username], (error, results) => {
+    connection.query('SELECT * FROM user WHERE username = ? AND is_delete = 0', [username], (error, results) => {
       if (error) {
         callback(error, null);
         return;
