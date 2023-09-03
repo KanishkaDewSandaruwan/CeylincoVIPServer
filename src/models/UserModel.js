@@ -1,8 +1,39 @@
 const { connection } = require('../../config/connection');
+const bcrypt = require('bcrypt');
 
 const UserModel = {
   getUserByUsernameAndPassword(username, password, callback) {
-    connection.query('SELECT * FROM user WHERE username = ? AND password = ? AND is_delete = 0 AND status = 1', [username, password], callback);
+    connection.query('SELECT * FROM user WHERE username = ? AND is_delete = 0 AND status = 1', [username], (error, results) => {
+      if (error) {
+        callback(error, null);
+        return;
+      }
+
+      if (results.length === 0) {
+        // User with the provided username not found
+        callback(null, null);
+        return;
+      }
+
+      const storedPasswordHash = results[0].password;
+
+      // Compare the provided password with the stored password hash using bcrypt
+      bcrypt.compare(password, storedPasswordHash, (err, isMatch) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
+
+        if (isMatch) {
+          // Passwords match, return the user's data
+          const user = results[0];
+          callback(null, user);
+        } else {
+          // Passwords do not match
+          callback(null, null);
+        }
+      });
+    });
   },
 
   saveUserToken(userId, token, callback) {
@@ -34,17 +65,25 @@ const UserModel = {
     const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const defaultvalues = 0;
 
-    const query = 'INSERT INTO user (fullname, phonenumber, address, email, username, password, userrole, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)';
-    const values = [fullname, phonenumber, address, email, username, password, userrole, trndate, defaultvalues, defaultvalues];
-
-    connection.query(query, values, (error, results) => {
-      if (error) {
-        callback(error, null);
+    // Hash the password before inserting it into the database
+    bcrypt.hash(password, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+      if (err) {
+        callback(err, null);
         return;
       }
 
-      const userId = results.insertId;
-      callback(null, userId);
+      const query = 'INSERT INTO user (fullname, phonenumber, address, email, username, password, userrole, trndate, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      const values = [fullname, phonenumber, address, email, username, hash, userrole, trndate, defaultvalues, defaultvalues];
+
+      connection.query(query, values, (error, results) => {
+        if (error) {
+          callback(error, null);
+          return;
+        }
+
+        const userId = results.insertId;
+        callback(null, userId);
+      });
     });
   },
 
@@ -57,10 +96,10 @@ const UserModel = {
     connection.query(query, values, callback);
   },
 
-  updateUserProfile(fullname , phonenumber, address, email, userid, callback) {
+  updateUserProfile(fullname, phonenumber, address, email, userid, callback) {
 
     const query = 'UPDATE user SET fullname = ?, phonenumber = ?, address = ?, email = ? WHERE userid = ?';
-    const values = [fullname, phonenumber, address, email,  userid];
+    const values = [fullname, phonenumber, address, email, userid];
 
     connection.query(query, values, callback);
   },
@@ -110,7 +149,7 @@ const UserModel = {
   perma_deleteuser(userid, callback) {
     const query = 'DELETE FROM user WHERE userid = ?';
     const values = [userid];
-  
+
     connection.query(query, values, callback);
   },
 

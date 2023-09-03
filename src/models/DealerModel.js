@@ -99,30 +99,37 @@ const DealerModel = {
         const trndate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const defaultvalues = '0'; // Convert numeric default values to strings
 
-        const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, reg_date, company_id, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [
-            dealer_fullname,
-            dealer_address,
-            dealer_nic,
-            dealer_phone,
-            dealer_whatsapp_number,
-            dealer_email,
-            dealer_password,
-            trndate,
-            company_id,
-            defaultvalues,
-            defaultvalues
-        ];
-
-        connection.query(query, values, (error, results) => {
-            if (error) {
-                callback(error, null);
+        bcrypt.hash(dealer_password, 10, (err, hash) => { // 10 is the number of bcrypt salt rounds
+            if (err) {
+                callback(err, null);
                 return;
             }
 
-            console.log("insertId", results.insertId);
-            const dealer_id = results.insertId;
-            callback(null, dealer_id);
+            const query = 'INSERT INTO dealer (dealer_fullname, dealer_address, dealer_nic, dealer_phone, dealer_whatsapp_number, dealer_email, dealer_password, reg_date, company_id, status, is_delete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            const values = [
+                dealer_fullname,
+                dealer_address,
+                dealer_nic,
+                dealer_phone,
+                dealer_whatsapp_number,
+                dealer_email,
+                hash, // Store the hashed password
+                trndate,
+                company_id,
+                defaultvalues,
+                defaultvalues
+            ];
+
+            connection.query(query, values, (error, results) => {
+                if (error) {
+                    callback(error, null);
+                    return;
+                }
+
+                console.log("insertId", results.insertId);
+                const dealer_id = results.insertId;
+                callback(null, dealer_id);
+            });
         });
     },
 
