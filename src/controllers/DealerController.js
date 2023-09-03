@@ -38,12 +38,12 @@ const getCommisionByID = async (req, res) => {
             ]);
 
             console.log(pendingCommision)
-    
+
             return res.status(200).send({
                 pendingCommision: pendingCommision,
                 paidCommision: paidCommision
             });
-    
+
         } catch (error) {
             res.status(500).send({ error: 'Error fetching payment sums' });
         }
@@ -162,7 +162,7 @@ const addDealer = (req, res) => {
             return res.status(409).send({ error: 'This Email is already in use' });
         }
 
-     
+
         // Check if the dealer has a phonenumber and it's not the same as an existing dealer's phonenumber
         if (dealer.phonenumber) {
             DealerModel.getDealerByPhonenumber(dealer.phonenumber, (error, results) => {
@@ -671,22 +671,15 @@ const changePassword = (req, res) => {
                 return;
             }
 
-            // Hash the new password before updating it
-            bcrypt.hash(newPassword, 10, (hashErr, hash) => {
-                if (hashErr) {
-                    res.status(500).send({ error: 'Error hashing new password' });
+            DealerModel.updateDealerPassword(dealer_id, newPassword, (updateErr, results) => {
+                if (updateErr) {
+                    res.status(500).send({ error: 'Error updating password in the database' });
                     return;
                 }
 
-                DealerModel.updateDealerPassword(dealer_id, hash, (updateErr, results) => {
-                    if (updateErr) {
-                        res.status(500).send({ error: 'Error updating password in the database' });
-                        return;
-                    }
-
-                    res.status(200).send({ message: 'Password changed successfully' });
-                });
+                res.status(200).send({ message: 'Password changed successfully' });
             });
+
         });
     });
 };
